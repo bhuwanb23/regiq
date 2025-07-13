@@ -1,24 +1,6 @@
-# REGIQ AI/ML — Aggregate requirements
-#
-# This file is a thin re-exporter so legacy tooling (and `pip install -r
-# requirements.txt`) keeps working. The actual dependency surface is split
-# across two files so that CI can install the lightweight core deterministically
-# and the heavy ML extras best-effort:
-#
-#   requirements-core.txt   — required for the FastAPI service, routers, RAG,
-#                             unit tests, and the bias/risk/report flows we
-#                             keep wired in `services/api/**`.
-#
-#   requirements-extras.txt — optional heavyweights (torch, tensorflow, spacy,
-#                             aif360, prophet, jupyter, …). Treated as
-#                             best-effort in CI and locally.
-#
-# Notes on packages intentionally removed from this list:
-#   - `asyncio` is a stdlib module; the PyPI package of the same name is a
-#     stale shim that breaks on Python ≥ 3.12.
-#   - `pathlib` ditto — stdlib since Python 3.4.
-#   - `fbprophet` is the legacy name of `prophet`; only `prophet` is kept
-#     (under requirements-extras.txt) to avoid a duplicate, broken install.
-
--r requirements-core.txt
--r requirements-extras.txt
+fastapi==0.110.0
+uvicorn==0.29.0
+pydantic==2.6.4
+sqlalchemy==2.0.29
+redis==5.0.3
+httpx==0.27.0
