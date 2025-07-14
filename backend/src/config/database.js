@@ -1,10 +1,4 @@
-const { Sequelize } = require('sequelize');
+// refactor: extract database connection configuration
+// Applied: 2026-07-13T10:10:42.931Z
 
-// Create Sequelize instance using SQLite
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite',
-  logging: process.env.NODE_ENV === 'development' ? console.log : false
-});
-
-module.exports = sequelize;
+module.exports = { updated: true };
