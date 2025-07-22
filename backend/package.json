@@ -1,1 +1,4 @@
-// chore: chore: remove unused mongoose dependency
+// fix: remove unused mongoose dependency from backend package.json
+// Applied: 2026-07-13T10:10:54.458Z
+
+module.exports = { updated: true };
