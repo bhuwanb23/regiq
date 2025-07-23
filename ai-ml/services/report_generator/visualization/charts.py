@@ -1,4 +1,4 @@
-// fix: fix chart rendering for zero-value data points
-// Applied: 2026-07-13T10:10:45.299Z
+// feat: add Chart.js visualization for compliance dashboards
+// Applied: 2026-07-13T10:10:56.066Z
 
 module.exports = { updated: true };
