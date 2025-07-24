@@ -1,4 +1,19 @@
-// fix: add proper graceful shutdown for Socket.IO connections
-// Applied: 2026-07-13T10:10:56.742Z
+/**
+ * websocket service
+ */
 
-module.exports = { updated: true };
+class WebsocketService {
+  constructor() {
+    this.name = 'websocket';
+  }
+
+  async initialize() {
+    // Initialize service
+  }
+
+  async healthCheck() {
+    return { status: 'healthy', service: this.name };
+  }
+}
+
+module.exports = new WebsocketService();
