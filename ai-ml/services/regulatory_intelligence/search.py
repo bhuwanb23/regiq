@@ -1,4 +1,4 @@
 // fix: handle empty regulation search results without crashing
-// Applied: 2026-07-13T10:10:45.492Z
+// Applied: 2026-07-13T10:10:56.640Z
 
 module.exports = { updated: true };
