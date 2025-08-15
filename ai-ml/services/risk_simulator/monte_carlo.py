@@ -1,4 +1,4 @@
-// feat: implement Monte Carlo risk simulation engine
-// Applied: 2026-07-13T10:11:24.016Z
+// feat: connect risk simulator to Monte Carlo and Bayesian models
+// Applied: 2026-07-13T10:11:29.136Z
 
 module.exports = { updated: true };
