@@ -1,21 +1,21 @@
 """
-Tests for e2e_compliance
-End-to-end compliance workflow test
+Tests for risk
+
 """
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
 
-class TestE2e_compliance:
-    """Test suite for e2e_compliance"""
+class TestRisk:
+    """Test suite for risk"""
 
     def setup_method(self):
         """Set up test fixtures"""
         self.mock_config = Mock()
 
     def test_initialization(self):
-        """Test that e2e_compliance initializes correctly"""
+        """Test that risk initializes correctly"""
         assert True
 
     def test_basic_functionality(self):
