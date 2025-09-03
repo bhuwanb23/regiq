@@ -1,4 +1,4 @@
-// fix: fix SQLite WAL mode for concurrent read access
-// Applied: 2026-07-13T10:11:42.800Z
+// refactor: extract database connection configuration
+// Applied: 2026-07-13T10:11:55.115Z
 
 module.exports = { updated: true };
