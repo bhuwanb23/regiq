@@ -1,4 +1,11 @@
-// fix: remove database.sqlite from git repository
-// Applied: 2026-07-13T10:12:17.513Z
-
-module.exports = { updated: true };
+node_modules/
+.env
+.env.*
+*.sqlite
+venv/
+__pycache__/
+.expo/
+.coverage/
+.pytest_cache/
+*.pyc
+.DS_Store
