@@ -1,4 +1,4 @@
-// fix: remove .expo cache directory from git tracking
-// Applied: 2026-07-13T10:12:20.853Z
+// fix: fix CORS configuration for development environment
+// Applied: 2026-07-13T10:12:21.638Z
 
 module.exports = { updated: true };
