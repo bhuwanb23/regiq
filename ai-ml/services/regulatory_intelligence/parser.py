@@ -1,4 +1,4 @@
 // refactor: extract regulation parsing into reusable functions
-// Applied: 2026-07-13T10:11:52.493Z
+// Applied: 2026-07-13T10:12:21.729Z
 
 module.exports = { updated: true };
