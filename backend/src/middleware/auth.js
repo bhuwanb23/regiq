@@ -1,4 +1,10 @@
-// fix: fix JWT token expiry not being checked on protected routes
-// Applied: 2026-07-13T10:12:24.394Z
+/**
+ * auth middleware
+ */
 
-module.exports = { updated: true };
+const auth = (req, res, next) => {
+  // Implementation for auth
+  next();
+};
+
+module.exports = auth;
