@@ -1,4 +1,4 @@
-// fix: handle missing database tables gracefully on first run
-// Applied: 2026-07-13T10:12:26.982Z
+// fix: add proper HTTP status codes for all API error responses
+// Applied: 2026-07-13T10:12:31.903Z
 
 module.exports = { updated: true };
