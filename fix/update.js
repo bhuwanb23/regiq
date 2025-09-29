@@ -1,4 +1,4 @@
-// fix: add proper HTTP status codes for all API error responses
-// Applied: 2026-07-13T10:12:31.903Z
+// fix: fix CORS configuration for development environment
+// Applied: 2026-07-13T10:12:33.914Z
 
 module.exports = { updated: true };
