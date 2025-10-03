@@ -1,4 +1,4 @@
-// fix: remove .expo cache directory from git tracking
-// Applied: 2026-07-13T10:12:34.682Z
+// fix: fix requirements.txt duplicate entries for requests and psutil
+// Applied: 2026-07-13T10:12:39.045Z
 
 module.exports = { updated: true };
