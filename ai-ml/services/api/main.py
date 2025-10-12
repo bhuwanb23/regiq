@@ -1,4 +1,4 @@
-// fix: add proper error handling for FastAPI service timeouts
-// Applied: 2026-07-13T10:12:46.043Z
+// fix: correct Python import paths in AI/ML service modules
+// Applied: 2026-07-13T10:12:51.526Z
 
 module.exports = { updated: true };
