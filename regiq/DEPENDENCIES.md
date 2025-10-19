@@ -32,7 +32,7 @@ npx expo install expo-auth-session expo-crypto
 npx expo install expo-notifications
 
 # Additional Expo modules
-npx expo install expo-linear-gradient expo-blur
+npx expo install expo-linear-gradient
 
 # Development Dependencies
 npm install --save-dev @babel/core @babel/preset-env

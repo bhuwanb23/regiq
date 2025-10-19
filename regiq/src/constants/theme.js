@@ -1,9 +1,10 @@
 // REGIQ Design System - Fintech Theme
 export const COLORS = {
-  // Primary Colors - Professional Fintech Palette
-  primary: '#1E3A8A', // Navy Blue
-  primaryLight: '#3B82F6', // Lighter Blue
-  primaryDark: '#1E40AF', // Darker Blue
+  // Primary Colors - Beautiful Purple Palette
+  primary: '#8B5CF6', // Purple
+  primaryLight: '#A78BFA', // Lighter Purple
+  primaryDark: '#7C3AED', // Darker Purple
+  primaryGradient: ['#8B5CF6', '#7C3AED', '#6B46C1'], // Purple Gradient
   
   // Secondary Colors
   secondary: '#0D9488', // Teal

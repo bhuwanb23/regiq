@@ -5,10 +5,8 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ComplianceGauge from '../../components/common/ComplianceGauge';
 import ActionButton from '../../components/common/ActionButton';
@@ -78,23 +76,12 @@ const DashboardScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-      
+    <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.welcomeText}>Welcome back!</Text>
-            <Text style={styles.companyText}>FinTech Solutions Inc.</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.alertButton}
-            onPress={() => navigation.navigate('Alerts')}
-          >
-            <Ionicons name="notifications-outline" size={24} color={COLORS.white} />
-            {alerts.length > 0 && <View style={styles.alertBadge} />}
-          </TouchableOpacity>
+        {/* Welcome Section */}
+        <View style={styles.welcomeSection}>
+          <Text style={styles.welcomeText}>Welcome back!</Text>
+          <Text style={styles.companyText}>FinTech Solutions Inc.</Text>
         </View>
 
         {/* Compliance Health Score */}
@@ -166,7 +153,7 @@ const DashboardScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -178,37 +165,21 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: COLORS.primary,
+  welcomeSection: {
+    backgroundColor: COLORS.white,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
   welcomeText: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
-    fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.white,
+    fontSize: TYPOGRAPHY.fontSize.xl,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.textPrimary,
   },
   companyText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.white,
-    opacity: 0.8,
-    marginTop: 2,
-  },
-  alertButton: {
-    position: 'relative',
-    padding: SPACING.xs,
-  },
-  alertBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 8,
-    height: 8,
-    backgroundColor: COLORS.error,
-    borderRadius: 4,
+    fontSize: TYPOGRAPHY.fontSize.base,
+    color: COLORS.textSecondary,
+    marginTop: 4,
   },
   complianceSection: {
     backgroundColor: COLORS.white,
