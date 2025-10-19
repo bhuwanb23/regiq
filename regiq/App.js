@@ -7,7 +7,7 @@ import AppLayout from './src/components/navigation/AppLayout';
 import LandingScreen from './src/screens/landing/LandingScreen';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import RegulationIntelligenceScreen from './src/screens/regulations/RegulationIntelligenceScreen';
-import ModelAuditScreen from './src/screens/ai-audit/ModelAuditScreen';
+import AIAuditScreen from './src/screens/ai-audit/AIAuditScreen';
 import SimulationScreen from './src/screens/simulation/SimulationScreen';
 import ReportsScreen from './src/screens/reports/ReportsScreen';
 
@@ -41,7 +41,7 @@ export default function App() {
       case 'Regulations':
         return <RegulationIntelligenceScreen />;
       case 'AI Audit':
-        return <ModelAuditScreen />;
+        return <AIAuditScreen />;
       case 'Simulation':
         return <SimulationScreen />;
       case 'Reports':
