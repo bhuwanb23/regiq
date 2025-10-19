@@ -11,6 +11,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
+// Import all the rich components
+import BiasHeatmapChart from './charts/BiasHeatmapChart';
+import FeatureImportanceChart from './charts/FeatureImportanceChart';
+import ModelDriftChart from './charts/ModelDriftChart';
+import PerformanceMetrics from './metrics/PerformanceMetrics';
+import ExplainabilityInsights from './insights/ExplainabilityInsights';
+import RiskAssessment from './insights/RiskAssessment';
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const ModelDetailModal = ({ visible, model, onClose, onGenerateReport, onRunSimulation }) => {
@@ -106,11 +114,17 @@ const ModelDetailModal = ({ visible, model, onClose, onGenerateReport, onRunSimu
     </View>
   );
 
-  const TabButton = ({ id, title, isActive, onPress }) => (
+  const TabButton = ({ id, title, isActive, onPress, icon }) => (
     <TouchableOpacity
       style={[styles.tabButton, isActive && styles.tabButtonActive]}
       onPress={() => onPress(id)}
     >
+      <Ionicons 
+        name={icon} 
+        size={14} 
+        color={isActive ? COLORS.primary : COLORS.textSecondary}
+        style={styles.tabIcon}
+      />
       <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
         {title}
       </Text>
@@ -125,102 +139,169 @@ const ModelDetailModal = ({ visible, model, onClose, onGenerateReport, onRunSimu
             {/* Model Info */}
             <View style={styles.section}>
               <View style={styles.modelInfoCard}>
-                <Text style={styles.modelInfoTitle}>{name}</Text>
+                <View style={styles.modelInfoHeader}>
+                  <View style={styles.modelIconContainer}>
+                    <Ionicons name="hardware-chip" size={24} color={COLORS.primary} />
+                  </View>
+                  <View style={styles.modelTitleContainer}>
+                    <Text style={styles.modelInfoTitle}>{name}</Text>
+                    <Text style={styles.modelInfoSubtitle}>{type}</Text>
+                  </View>
+                  <View style={[styles.statusBadge, { backgroundColor: `${COLORS.success}20` }]}>
+                    <Text style={[styles.statusText, { color: COLORS.success }]}>{status}</Text>
+                  </View>
+                </View>
+                
                 <View style={styles.modelInfoGrid}>
                   <View style={styles.modelInfoItem}>
-                    <Text style={styles.modelInfoLabel}>Type:</Text>
-                    <Text style={styles.modelInfoValue}>{type}</Text>
-                  </View>
-                  <View style={styles.modelInfoItem}>
-                    <Text style={styles.modelInfoLabel}>Status:</Text>
-                    <Text style={[styles.modelInfoValue, { color: COLORS.success }]}>
-                      {status}
-                    </Text>
-                  </View>
-                  <View style={styles.modelInfoItem}>
+                    <Ionicons name="code-working" size={14} color={COLORS.textSecondary} />
                     <Text style={styles.modelInfoLabel}>Version:</Text>
                     <Text style={styles.modelInfoValue}>{version}</Text>
                   </View>
                   <View style={styles.modelInfoItem}>
+                    <Ionicons name="calendar" size={14} color={COLORS.textSecondary} />
                     <Text style={styles.modelInfoLabel}>Last Updated:</Text>
                     <Text style={styles.modelInfoValue}>{lastUpdated}</Text>
+                  </View>
+                  <View style={styles.modelInfoItem}>
+                    <Ionicons name="analytics" size={14} color={COLORS.textSecondary} />
+                    <Text style={styles.modelInfoLabel}>Predictions:</Text>
+                    <Text style={styles.modelInfoValue}>1.2M+ daily</Text>
+                  </View>
+                  <View style={styles.modelInfoItem}>
+                    <Ionicons name="server" size={14} color={COLORS.textSecondary} />
+                    <Text style={styles.modelInfoLabel}>Environment:</Text>
+                    <Text style={styles.modelInfoValue}>Production</Text>
                   </View>
                 </View>
               </View>
             </View>
 
-            {/* Key Metrics */}
+            {/* Quick Metrics */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Key Metrics</Text>
-              <View style={styles.metricsGrid}>
-                <View style={styles.metricCard}>
-                  <Text style={styles.metricValue}>{biasScore}</Text>
-                  <Text style={styles.metricLabel}>Bias Score</Text>
+              <Text style={styles.sectionTitle}>Quick Metrics</Text>
+              <View style={styles.quickMetricsContainer}>
+                <View style={styles.quickMetricCard}>
+                  <View style={[styles.metricIconContainer, { backgroundColor: `${COLORS.success}15` }]}>
+                    <Ionicons name="checkmark-circle" size={18} color={COLORS.success} />
+                  </View>
+                  <Text style={styles.quickMetricValue}>94.2%</Text>
+                  <Text style={styles.quickMetricLabel}>Accuracy</Text>
+                  <View style={styles.metricTrend}>
+                    <Ionicons name="arrow-up" size={10} color={COLORS.success} />
+                    <Text style={[styles.trendText, { color: COLORS.success }]}>+2.1%</Text>
+                  </View>
                 </View>
-                <View style={styles.metricCard}>
-                  <Text style={styles.metricValue}>94.2%</Text>
-                  <Text style={styles.metricLabel}>Accuracy</Text>
+                
+                <View style={styles.quickMetricCard}>
+                  <View style={[styles.metricIconContainer, { backgroundColor: `${COLORS.warning}15` }]}>
+                    <Ionicons name="people" size={18} color={COLORS.warning} />
+                  </View>
+                  <Text style={styles.quickMetricValue}>{biasScore}</Text>
+                  <Text style={styles.quickMetricLabel}>Bias Score</Text>
+                  <View style={styles.metricTrend}>
+                    <Ionicons name="arrow-down" size={10} color={COLORS.success} />
+                    <Text style={[styles.trendText, { color: COLORS.success }]}>-0.02</Text>
+                  </View>
                 </View>
-                <View style={styles.metricCard}>
-                  <Text style={styles.metricValue}>0.03</Text>
-                  <Text style={styles.metricLabel}>Drift Score</Text>
+              </View>
+              
+              <View style={styles.quickMetricsContainer}>
+                <View style={styles.quickMetricCard}>
+                  <View style={[styles.metricIconContainer, { backgroundColor: `${COLORS.info}15` }]}>
+                    <Ionicons name="trending-up" size={18} color={COLORS.info} />
+                  </View>
+                  <Text style={styles.quickMetricValue}>0.03</Text>
+                  <Text style={styles.quickMetricLabel}>Drift Score</Text>
+                  <View style={styles.metricTrend}>
+                    <Ionicons name="remove" size={10} color={COLORS.gray400} />
+                    <Text style={[styles.trendText, { color: COLORS.gray400 }]}>Stable</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.quickMetricCard}>
+                  <View style={[styles.metricIconContainer, { backgroundColor: `${COLORS.primary}15` }]}>
+                    <Ionicons name="shield-checkmark" size={18} color={COLORS.primary} />
+                  </View>
+                  <Text style={styles.quickMetricValue}>A+</Text>
+                  <Text style={styles.quickMetricLabel}>Overall Grade</Text>
+                  <View style={styles.metricTrend}>
+                    <Ionicons name="arrow-up" size={10} color={COLORS.success} />
+                    <Text style={[styles.trendText, { color: COLORS.success }]}>Improved</Text>
+                  </View>
                 </View>
               </View>
             </View>
+
+            {/* Recent Activity */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Recent Activity</Text>
+              <View style={styles.activityContainer}>
+                <View style={styles.activityItem}>
+                  <View style={[styles.activityIcon, { backgroundColor: `${COLORS.success}20` }]}>
+                    <Ionicons name="checkmark" size={12} color={COLORS.success} />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityTitle}>Audit Completed</Text>
+                    <Text style={styles.activityTime}>2 hours ago</Text>
+                  </View>
+                </View>
+                <View style={styles.activityItem}>
+                  <View style={[styles.activityIcon, { backgroundColor: `${COLORS.info}20` }]}>
+                    <Ionicons name="refresh" size={12} color={COLORS.info} />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityTitle}>Model Retrained</Text>
+                    <Text style={styles.activityTime}>1 day ago</Text>
+                  </View>
+                </View>
+                <View style={styles.activityItem}>
+                  <View style={[styles.activityIcon, { backgroundColor: `${COLORS.warning}20` }]}>
+                    <Ionicons name="warning" size={12} color={COLORS.warning} />
+                  </View>
+                  <View style={styles.activityContent}>
+                    <Text style={styles.activityTitle}>Bias Alert Triggered</Text>
+                    <Text style={styles.activityTime}>3 days ago</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        );
+
+      case 'performance':
+        return (
+          <View>
+            <PerformanceMetrics modelData={model} />
           </View>
         );
 
       case 'bias':
         return (
           <View>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Bias Analysis</Text>
-              <BiasHeatmapPlaceholder />
-            </View>
-            
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Feature Importance</Text>
-              <FeatureImportanceChart />
-            </View>
+            <BiasHeatmapChart data={model} />
+            <FeatureImportanceChart data={model} />
           </View>
         );
 
       case 'drift':
         return (
           <View>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Model Drift Detection</Text>
-              <DriftChart />
-            </View>
+            <ModelDriftChart data={model} />
           </View>
         );
 
       case 'explainability':
         return (
           <View>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Explainability Summary</Text>
-              
-              <View style={styles.explainabilityCard}>
-                <View style={styles.explainabilityHeader}>
-                  <Ionicons name="bulb" size={16} color={COLORS.info} />
-                  <Text style={styles.explainabilityTitle}>SHAP Analysis</Text>
-                </View>
-                <Text style={styles.explainabilityText}>
-                  Income and credit history are the strongest predictors with 67% combined influence on decisions.
-                </Text>
-              </View>
+            <ExplainabilityInsights modelData={model} />
+          </View>
+        );
 
-              <View style={styles.explainabilityCard}>
-                <View style={styles.explainabilityHeader}>
-                  <Ionicons name="search" size={16} color={COLORS.secondary} />
-                  <Text style={styles.explainabilityTitle}>LIME Insights</Text>
-                </View>
-                <Text style={styles.explainabilityText}>
-                  Local explanations show consistent feature attribution across demographic groups.
-                </Text>
-              </View>
-            </View>
+      case 'risk':
+        return (
+          <View>
+            <RiskAssessment modelData={model} />
           </View>
         );
 
@@ -251,25 +332,43 @@ const ModelDetailModal = ({ visible, model, onClose, onGenerateReport, onRunSimu
             <TabButton
               id="overview"
               title="Overview"
+              icon="information-circle"
               isActive={activeTab === 'overview'}
+              onPress={setActiveTab}
+            />
+            <TabButton
+              id="performance"
+              title="Performance"
+              icon="speedometer"
+              isActive={activeTab === 'performance'}
               onPress={setActiveTab}
             />
             <TabButton
               id="bias"
               title="Bias Analysis"
+              icon="people"
               isActive={activeTab === 'bias'}
               onPress={setActiveTab}
             />
             <TabButton
               id="drift"
               title="Drift Detection"
+              icon="trending-up"
               isActive={activeTab === 'drift'}
               onPress={setActiveTab}
             />
             <TabButton
               id="explainability"
               title="Explainability"
+              icon="bulb"
               isActive={activeTab === 'explainability'}
+              onPress={setActiveTab}
+            />
+            <TabButton
+              id="risk"
+              title="Risk Assessment"
+              icon="shield"
+              isActive={activeTab === 'risk'}
               onPress={setActiveTab}
             />
           </ScrollView>
@@ -332,9 +431,14 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.gray200,
   },
   tabButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     marginHorizontal: SPACING.xs,
+  },
+  tabIcon: {
+    marginRight: 4,
   },
   tabButtonActive: {
     borderBottomWidth: 2,
@@ -356,7 +460,7 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.md,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -366,29 +470,140 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
   },
+  modelInfoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  modelIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: `${COLORS.primary}20`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  modelTitleContainer: {
+    flex: 1,
+  },
+  modelInfoSubtitle: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  statusBadge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  statusText: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+  },
   modelInfoTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.sm,
   },
   modelInfoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   modelInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '50%',
     marginBottom: SPACING.xs,
   },
   modelInfoLabel: {
     fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
+    marginLeft: 4,
   },
   modelInfoValue: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginLeft: 4,
+  },
+  quickMetricsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
+  quickMetricCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.md,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: SPACING.xs,
+    minHeight: 100,
+    justifyContent: 'space-between',
+    ...SHADOWS.sm,
+  },
+  metricIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.xs,
+  },
+  quickMetricValue: {
+    fontSize: TYPOGRAPHY.fontSize.xl,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.textPrimary,
+    marginBottom: 4,
+  },
+  quickMetricLabel: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginBottom: SPACING.xs,
+  },
+  metricTrend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  trendText: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    marginLeft: SPACING.xs,
+  },
+  activityContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.sm,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray200,
+  },
+  activityIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+  activityTime: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    color: COLORS.textSecondary,
   },
   metricsGrid: {
     flexDirection: 'row',
