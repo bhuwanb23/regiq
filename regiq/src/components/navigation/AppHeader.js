@@ -91,6 +91,7 @@ const AppHeader = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
+    paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 24,
     shadowColor: '#000',

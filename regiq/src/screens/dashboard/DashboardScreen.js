@@ -5,49 +5,68 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  RefreshControl,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import ComplianceGauge from '../../components/common/ComplianceGauge';
 import ActionButton from '../../components/common/ActionButton';
+import StatCard from '../../components/dashboard/StatCard';
+import ComplianceMetrics from '../../components/dashboard/ComplianceMetrics';
+import RecentActivity from '../../components/dashboard/RecentActivity';
+import QuickActions from '../../components/dashboard/QuickActions';
+import useDashboardData from '../../hooks/useDashboardData';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const DashboardScreen = ({ navigation }) => {
-  // Mock data - will be replaced with real data from API
-  const complianceScore = 78;
-  const alerts = [
-    {
-      id: 1,
-      type: 'warning',
-      title: 'New RBI Digital Lending Guidelines',
-      description: 'Review required for KYC API compliance',
-      priority: 'high',
-      timestamp: '2 hours ago',
-    },
-    {
-      id: 2,
-      type: 'error',
-      title: 'AI Model Bias Detected',
-      description: 'Credit scoring model shows 6.7% gender bias',
-      priority: 'critical',
-      timestamp: '4 hours ago',
-    },
-    {
-      id: 3,
-      type: 'info',
-      title: 'EU AI Act Update',
-      description: 'New transparency requirements effective Jan 2025',
-      priority: 'medium',
-      timestamp: '1 day ago',
-    },
-  ];
+  const {
+    dashboardData,
+    loading,
+    refreshing,
+    refreshDashboard,
+    updateComplianceScore,
+    markAlertAsRead,
+    addActivity,
+  } = useDashboardData();
 
-  const quickStats = [
-    { label: 'Active Models', value: '12', icon: 'analytics-outline', color: COLORS.primary },
-    { label: 'Pending Tasks', value: '5', icon: 'checkmark-circle-outline', color: COLORS.warning },
-    { label: 'Reports Generated', value: '23', icon: 'document-text-outline', color: COLORS.success },
-    { label: 'Risk Score', value: 'Low', icon: 'shield-checkmark-outline', color: COLORS.secondary },
-  ];
+  const {
+    complianceScore,
+    user,
+    quickStats,
+    alerts,
+    recentActivity,
+    complianceMetrics,
+  } = dashboardData;
+
+  const handleActionPress = (action) => {
+    console.log('Action pressed:', action.id);
+    if (action.route) {
+      navigation.navigate(action.route);
+    }
+  };
+
+  const handleActivityPress = (activity) => {
+    console.log('Activity pressed:', activity.id);
+    // Navigate to activity details or handle action
+  };
+
+  const handleAlertPress = (alert) => {
+    console.log('Alert pressed:', alert.id);
+    markAlertAsRead(alert.id);
+    navigation.navigate('Alerts', { alertId: alert.id });
+  };
+
+  const handleGenerateReport = () => {
+    console.log('Generate report pressed');
+    navigation.navigate('Reports');
+  };
+
+  const handleViewComplianceDetails = () => {
+    console.log('View compliance details pressed');
+    navigation.navigate('Compliance');
+  };
 
   const getAlertIcon = (type) => {
     switch (type) {
@@ -57,6 +76,8 @@ const DashboardScreen = ({ navigation }) => {
         return 'warning';
       case 'info':
         return 'information-circle';
+      case 'success':
+        return 'checkmark-circle';
       default:
         return 'notifications';
     }
@@ -70,88 +91,123 @@ const DashboardScreen = ({ navigation }) => {
         return COLORS.warning;
       case 'medium':
         return COLORS.info;
+      case 'low':
+        return COLORS.success;
       default:
         return COLORS.gray500;
     }
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.loadingText}>Loading dashboard...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeText}>Welcome back!</Text>
-          <Text style={styles.companyText}>FinTech Solutions Inc.</Text>
-        </View>
-
-        {/* Compliance Health Score */}
-        <View style={styles.complianceSection}>
-          <ComplianceGauge score={complianceScore} />
-        </View>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshDashboard}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+      >
+        {/* Compliance Metrics */}
+        <ComplianceMetrics
+          complianceScore={complianceMetrics.overallScore}
+          regulations={complianceMetrics.regulations}
+          alerts={complianceMetrics.alerts}
+          onViewDetails={handleViewComplianceDetails}
+          onGenerateReport={handleGenerateReport}
+        />
 
         {/* Quick Stats */}
         <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Quick Overview</Text>
+          <Text style={styles.sectionTitle}>Performance Overview</Text>
           <View style={styles.statsGrid}>
             {quickStats.map((stat, index) => (
-              <View key={index} style={styles.statCard}>
-                <View style={[styles.statIcon, { backgroundColor: `${stat.color}20` }]}>
-                  <Ionicons name={stat.icon} size={24} color={stat.color} />
-                </View>
-                <Text style={styles.statValue}>{stat.value}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </View>
+              <StatCard
+                key={stat.id}
+                title={stat.title}
+                value={stat.value}
+                subtitle={stat.subtitle}
+                icon={stat.icon}
+                trend={stat.trend}
+                trendValue={stat.trendValue}
+                color={stat.color}
+                variant={index === 0 ? 'gradient' : index === 1 ? 'minimal' : 'default'}
+              />
             ))}
           </View>
         </View>
 
+        {/* Recent Activity */}
+        <RecentActivity
+          activities={recentActivity}
+          onViewAll={() => navigation.navigate('Activity')}
+          onActivityPress={handleActivityPress}
+        />
+
         {/* Recent Alerts */}
         <View style={styles.alertsSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Alerts</Text>
+            <Text style={styles.sectionTitle}>Priority Alerts</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
           </View>
           
           {alerts.slice(0, 3).map((alert) => (
-            <TouchableOpacity key={alert.id} style={styles.alertCard}>
+            <TouchableOpacity 
+              key={alert.id} 
+              style={styles.alertCard}
+              onPress={() => handleAlertPress(alert)}
+            >
               <View style={styles.alertContent}>
                 <View style={styles.alertHeader}>
-                  <Ionicons 
-                    name={getAlertIcon(alert.type)} 
-                    size={20} 
-                    color={getAlertColor(alert.priority)} 
-                  />
+                  <View style={[
+                    styles.alertIconContainer,
+                    { backgroundColor: `${getAlertColor(alert.priority)}20` }
+                  ]}>
+                    <Ionicons 
+                      name={getAlertIcon(alert.type)} 
+                      size={16} 
+                      color={getAlertColor(alert.priority)} 
+                    />
+                  </View>
                   <Text style={styles.alertTitle}>{alert.title}</Text>
+                  {alert.actionRequired && (
+                    <View style={styles.actionRequiredBadge}>
+                      <Text style={styles.actionRequiredText}>Action</Text>
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.alertDescription}>{alert.description}</Text>
-                <Text style={styles.alertTimestamp}>{alert.timestamp}</Text>
+                <View style={styles.alertFooter}>
+                  <Text style={styles.alertTimestamp}>{alert.timestamp}</Text>
+                  <Text style={[styles.alertCategory, { color: getAlertColor(alert.priority) }]}>
+                    {alert.category?.replace('_', ' ').toUpperCase()}
+                  </Text>
+                </View>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+              <Ionicons name="chevron-forward" size={16} color={COLORS.gray400} />
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionButtons}>
-            <ActionButton
-              title="Scan AI Model"
-              icon="analytics-outline"
-              onPress={() => navigation.navigate('AI Audit')}
-              style={styles.actionButton}
-            />
-            <ActionButton
-              title="Run Simulation"
-              icon="flask-outline"
-              variant="secondary"
-              onPress={() => navigation.navigate('Simulation')}
-              style={styles.actionButton}
-            />
-          </View>
-        </View>
+        <QuickActions onActionPress={handleActionPress} />
+        
+        {/* Bottom Spacing */}
+        <View style={styles.bottomSpacing} />
       </ScrollView>
     </View>
   );
@@ -162,78 +218,41 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  scrollView: {
-    flex: 1,
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  welcomeSection: {
-    backgroundColor: COLORS.white,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.lg,
-    marginBottom: SPACING.sm,
-  },
-  welcomeText: {
-    fontSize: TYPOGRAPHY.fontSize.xl,
-    fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
-  },
-  companyText: {
+  loadingText: {
     fontSize: TYPOGRAPHY.fontSize.base,
     color: COLORS.textSecondary,
-    marginTop: 4,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
-  complianceSection: {
-    backgroundColor: COLORS.white,
-    paddingVertical: SPACING.xl,
-    alignItems: 'center',
-    marginBottom: SPACING.md,
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.sm,
   },
   statsSection: {
-    backgroundColor: COLORS.white,
-    padding: SPACING.md,
     marginBottom: SPACING.md,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    backgroundColor: COLORS.surfaceSecondary,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  statIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.sm,
-  },
-  statValue: {
-    fontSize: TYPOGRAPHY.fontSize['2xl'],
-    fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
-  },
-  statLabel: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginTop: 2,
+    marginHorizontal: -SPACING.xs,
   },
   alertsSection: {
     backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.md,
     marginBottom: SPACING.md,
+    ...SHADOWS.sm,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -242,13 +261,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   viewAllText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   alertCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.gray200,
@@ -259,36 +278,54 @@ const styles = StyleSheet.create({
   alertHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
+  },
+  alertIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.sm,
   },
   alertTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
-    marginLeft: SPACING.xs,
     flex: 1,
+  },
+  actionRequiredBadge: {
+    backgroundColor: COLORS.error,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  actionRequiredText: {
+    fontSize: 9,
+    color: COLORS.white,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   alertDescription: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
-  },
-  alertTimestamp: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textTertiary,
+    color: COLORS.textSecondary,
+    lineHeight: 16,
+    marginBottom: SPACING.xs,
   },
-  actionsSection: {
-    backgroundColor: COLORS.white,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-  },
-  actionButtons: {
+  alertFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  actionButton: {
-    flex: 1,
-    marginHorizontal: SPACING.xs,
+  alertTimestamp: {
+    fontSize: 10,
+    color: COLORS.textTertiary,
+  },
+  alertCategory: {
+    fontSize: 10,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+  },
+  bottomSpacing: {
+    height: SPACING.xl,
   },
 });
 
