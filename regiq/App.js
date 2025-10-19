@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import AppLayout from './src/components/navigation/AppLayout';
 
 // Import screens
+import LandingScreen from './src/screens/landing/LandingScreen';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import RegulationScreen from './src/screens/regulations/RegulationScreen';
 import ModelAuditScreen from './src/screens/ai-audit/ModelAuditScreen';
@@ -11,8 +12,13 @@ import SimulationScreen from './src/screens/simulation/SimulationScreen';
 import ReportsScreen from './src/screens/reports/ReportsScreen';
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [notificationCount] = useState(5); // Mock notification count
+
+  const handleLandingFinish = () => {
+    setShowLanding(false);
+  };
 
   const handleTabPress = (tabName) => {
     setActiveTab(tabName);
@@ -45,6 +51,17 @@ export default function App() {
     }
   };
 
+  // Show landing screen first
+  if (showLanding) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <LandingScreen onFinish={handleLandingFinish} />
+      </>
+    );
+  }
+
+  // Show main app after landing
   return (
     <>
       <StatusBar style="light" />
