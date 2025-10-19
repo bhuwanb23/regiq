@@ -6,7 +6,7 @@ import AppLayout from './src/components/navigation/AppLayout';
 // Import screens
 import LandingScreen from './src/screens/landing/LandingScreen';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
-import RegulationScreen from './src/screens/regulations/RegulationScreen';
+import RegulationIntelligenceScreen from './src/screens/regulations/RegulationIntelligenceScreen';
 import ModelAuditScreen from './src/screens/ai-audit/ModelAuditScreen';
 import SimulationScreen from './src/screens/simulation/SimulationScreen';
 import ReportsScreen from './src/screens/reports/ReportsScreen';
@@ -39,7 +39,7 @@ export default function App() {
       case 'Dashboard':
         return <DashboardScreen />;
       case 'Regulations':
-        return <RegulationScreen />;
+        return <RegulationIntelligenceScreen />;
       case 'AI Audit':
         return <ModelAuditScreen />;
       case 'Simulation':
