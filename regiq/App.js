@@ -8,7 +8,7 @@ import LandingScreen from './src/screens/landing/LandingScreen';
 import DashboardScreen from './src/screens/dashboard/DashboardScreen';
 import RegulationIntelligenceScreen from './src/screens/regulations/RegulationIntelligenceScreen';
 import AIAuditScreen from './src/screens/ai-audit/AIAuditScreen';
-import SimulationScreen from './src/screens/simulation/SimulationScreen';
+import AIRiskSimulationScreen from './src/screens/simulation/AIRiskSimulationScreen';
 import ReportsScreen from './src/screens/reports/ReportsScreen';
 
 export default function App() {
@@ -43,7 +43,7 @@ export default function App() {
       case 'AI Audit':
         return <AIAuditScreen />;
       case 'Simulation':
-        return <SimulationScreen />;
+        return <AIRiskSimulationScreen />;
       case 'Reports':
         return <ReportsScreen />;
       default:
