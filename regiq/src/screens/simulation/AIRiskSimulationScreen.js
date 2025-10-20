@@ -70,7 +70,7 @@ const AIRiskSimulationScreen = ({ navigation = null }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
       <ScrollView 
         style={styles.content}

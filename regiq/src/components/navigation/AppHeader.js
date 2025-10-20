@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -46,7 +47,11 @@ const AppHeader = ({
             ) : (
               <View style={styles.logoTitleContainer}>
                 <View style={styles.logoIcon}>
-                  <Ionicons name="analytics" size={18} color="#8B5CF6" />
+                  <Image 
+                    source={require('../../../assets/REGIQ.png')} 
+                    style={styles.logoImage}
+                    resizeMode="contain"
+                  />
                 </View>
                 <View style={styles.titleContainer}>
                   <Text style={styles.headerTitle}>{title}</Text>
@@ -93,7 +98,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: 16,
     paddingBottom: 16,
-    paddingHorizontal: 24,
+    paddingHorizontal: 10,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -131,6 +136,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+    overflow: 'hidden',
+  },
+  logoImage: {
+    width: 20,
+    height: 20,
   },
   titleContainer: {
     alignItems: 'flex-start',

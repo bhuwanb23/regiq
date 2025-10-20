@@ -58,7 +58,7 @@ const AppNavbar = ({
   return (
     <View style={[styles.container, style]}>
       <LinearGradient
-        colors={['#FFFFFF', '#F8FAFC']}
+        colors={['#8B5CF6', '#7C3AED']}
         style={styles.navbarContainer}
       >
         <View style={styles.tabsContainer}>
@@ -78,7 +78,7 @@ const AppNavbar = ({
                   <Ionicons
                     name={isActive ? tab.icon : tab.iconOutline}
                     size={24}
-                    color={isActive ? '#FFFFFF' : '#6B7280'}
+                    color={isActive ? '#8B5CF6' : '#FFFFFF'}
                   />
                 </View>
               </TouchableOpacity>
@@ -95,14 +95,21 @@ const AppNavbar = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#8B5CF6',
   },
   navbarContainer: {
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopWidth: 0,
     paddingTop: 8,
-    paddingBottom: 6,
+    paddingBottom: 8,
     paddingHorizontal: 8,
+    elevation: 8,
+    shadowColor: '#8B5CF6',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -124,19 +131,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   activeTabIconContainer: {
-    backgroundColor: '#8B5CF6',
+    backgroundColor: '#FFFFFF',
     borderRadius: 19,
-    shadowColor: '#8B5CF6',
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
   bottomSafeArea: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#8B5CF6',
   },
 });
 
