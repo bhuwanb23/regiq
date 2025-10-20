@@ -1,0 +1,155 @@
+# REGIQ AI/ML API Keys Configuration Template
+# Copy this file to api_keys.yaml and fill in your actual API keys
+# NEVER commit api_keys.yaml to version control!
+
+# =============================================================================
+# LLM API KEYS
+# =============================================================================
+llm_providers:
+  google:
+    api_key: "YOUR_GOOGLE_GEMINI_API_KEY_HERE"
+    project_id: "your-gcp-project-id"
+    location: "us-central1"
+    
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY_HERE"
+    organization: "your-openai-org-id"
+    
+  anthropic:
+    api_key: "YOUR_ANTHROPIC_API_KEY_HERE"
+    
+  huggingface:
+    api_key: "YOUR_HUGGINGFACE_API_KEY_HERE"
+    
+# =============================================================================
+# CLOUD PROVIDER CREDENTIALS
+# =============================================================================
+cloud_providers:
+  aws:
+    access_key_id: "YOUR_AWS_ACCESS_KEY_ID"
+    secret_access_key: "YOUR_AWS_SECRET_ACCESS_KEY"
+    region: "us-east-1"
+    
+  google_cloud:
+    service_account_key: "path/to/service-account-key.json"
+    project_id: "your-gcp-project-id"
+    
+  azure:
+    subscription_id: "YOUR_AZURE_SUBSCRIPTION_ID"
+    client_id: "YOUR_AZURE_CLIENT_ID"
+    client_secret: "YOUR_AZURE_CLIENT_SECRET"
+    tenant_id: "YOUR_AZURE_TENANT_ID"
+
+# =============================================================================
+# DATABASE CREDENTIALS
+# =============================================================================
+databases:
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "regiq_ai_ml"
+    username: "regiq_user"
+    password: "YOUR_POSTGRES_PASSWORD"
+    
+  mongodb:
+    host: "localhost"
+    port: 27017
+    database: "regiq_documents"
+    username: "regiq_user"
+    password: "YOUR_MONGO_PASSWORD"
+    
+  redis:
+    host: "localhost"
+    port: 6379
+    password: "YOUR_REDIS_PASSWORD"
+    
+  elasticsearch:
+    host: "localhost"
+    port: 9200
+    username: "elastic"
+    password: "YOUR_ELASTICSEARCH_PASSWORD"
+
+# =============================================================================
+# VECTOR DATABASE CREDENTIALS
+# =============================================================================
+vector_databases:
+  pinecone:
+    api_key: "YOUR_PINECONE_API_KEY"
+    environment: "us-west1-gcp"
+    
+  weaviate:
+    url: "https://your-weaviate-cluster.weaviate.network"
+    api_key: "YOUR_WEAVIATE_API_KEY"
+
+# =============================================================================
+# EXTERNAL API INTEGRATIONS
+# =============================================================================
+external_apis:
+  regulatory_sources:
+    sec_edgar:
+      api_key: "YOUR_SEC_EDGAR_API_KEY"
+      user_agent: "your-company-name your-email@company.com"
+      
+    europa_eu:
+      api_key: "YOUR_EUROPA_API_KEY"
+      
+  monitoring:
+    datadog:
+      api_key: "YOUR_DATADOG_API_KEY"
+      app_key: "YOUR_DATADOG_APP_KEY"
+      
+    new_relic:
+      license_key: "YOUR_NEW_RELIC_LICENSE_KEY"
+      
+  notifications:
+    slack:
+      webhook_url: "YOUR_SLACK_WEBHOOK_URL"
+      bot_token: "YOUR_SLACK_BOT_TOKEN"
+      
+    email:
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      username: "your-email@company.com"
+      password: "YOUR_EMAIL_PASSWORD"
+
+# =============================================================================
+# SECURITY KEYS
+# =============================================================================
+security:
+  jwt:
+    secret_key: "YOUR_JWT_SECRET_KEY_HERE"
+    algorithm: "HS256"
+    expiration_hours: 24
+    
+  encryption:
+    master_key: "YOUR_ENCRYPTION_MASTER_KEY"
+    salt: "YOUR_ENCRYPTION_SALT"
+    
+  api_security:
+    rate_limit_secret: "YOUR_RATE_LIMIT_SECRET"
+    cors_origins: ["http://localhost:3000", "https://your-domain.com"]
+
+# =============================================================================
+# DEVELOPMENT SETTINGS
+# =============================================================================
+development:
+  debug_mode: true
+  log_level: "DEBUG"
+  mock_external_apis: false
+  
+# =============================================================================
+# PRODUCTION SETTINGS
+# =============================================================================
+production:
+  debug_mode: false
+  log_level: "INFO"
+  ssl_required: true
+  
+# =============================================================================
+# USAGE NOTES
+# =============================================================================
+# 1. Copy this file to api_keys.yaml
+# 2. Replace all placeholder values with your actual credentials
+# 3. Add api_keys.yaml to your .gitignore file
+# 4. Use environment variables in production for better security
+# 5. Rotate keys regularly according to your security policy

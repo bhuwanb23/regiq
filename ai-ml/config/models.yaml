@@ -1,0 +1,171 @@
+# REGIQ AI/ML Model Configuration
+# Configuration for all AI/ML models and services
+
+# =============================================================================
+# LLM MODELS CONFIGURATION
+# =============================================================================
+llm_models:
+  primary:
+    name: "gemini-1.5-pro"
+    provider: "google"
+    api_key_env: "GOOGLE_API_KEY"
+    max_tokens: 8192
+    temperature: 0.3
+    use_cases: ["regulatory_analysis", "report_generation"]
+    
+  secondary:
+    name: "gpt-4-turbo"
+    provider: "openai"
+    api_key_env: "OPENAI_API_KEY"
+    max_tokens: 4096
+    temperature: 0.2
+    use_cases: ["narrative_generation", "summarization"]
+    
+  fallback:
+    name: "llama-3-70b"
+    provider: "huggingface"
+    model_path: "meta-llama/Llama-2-70b-chat-hf"
+    local_deployment: true
+    use_cases: ["offline_processing"]
+
+# =============================================================================
+# NLP MODELS CONFIGURATION
+# =============================================================================
+nlp_models:
+  entity_recognition:
+    model: "en_core_web_lg"
+    provider: "spacy"
+    custom_entities: ["REGULATION", "DEADLINE", "PENALTY", "REQUIREMENT"]
+    
+  text_classification:
+    model: "distilbert-base-uncased"
+    provider: "huggingface"
+    fine_tuned_path: "./models/regulation_classifier"
+    
+  summarization:
+    model: "facebook/bart-large-cnn"
+    provider: "huggingface"
+    max_length: 512
+    min_length: 50
+
+# =============================================================================
+# BIAS DETECTION MODELS
+# =============================================================================
+bias_models:
+  fairness_metrics:
+    - demographic_parity
+    - equalized_odds
+    - calibration
+    - individual_fairness
+    
+  explainability_tools:
+    shap:
+      explainer_type: "TreeExplainer"
+      max_evals: 1000
+      
+    lime:
+      mode: "tabular"
+      discretize_continuous: true
+      
+  mitigation_strategies:
+    - preprocessing
+    - inprocessing
+    - postprocessing
+
+# =============================================================================
+# RISK SIMULATION MODELS
+# =============================================================================
+risk_simulation:
+  monte_carlo:
+    iterations: 10000
+    confidence_levels: [0.95, 0.99]
+    
+  bayesian_inference:
+    sampler: "NUTS"
+    chains: 4
+    draws: 2000
+    
+  time_series:
+    model: "prophet"
+    seasonality: true
+    holidays: true
+
+# =============================================================================
+# MODEL PERFORMANCE THRESHOLDS
+# =============================================================================
+performance_thresholds:
+  regulatory_intelligence:
+    accuracy: 0.85
+    processing_time: 2.0  # seconds
+    
+  bias_analysis:
+    fairness_score: 0.8
+    processing_time: 30.0  # seconds
+    
+  risk_simulation:
+    confidence_interval: 0.95
+    processing_time: 60.0  # seconds
+    
+  report_generation:
+    completeness_score: 0.9
+    processing_time: 10.0  # seconds
+
+# =============================================================================
+# TRAINING CONFIGURATION
+# =============================================================================
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 100
+  early_stopping_patience: 10
+  validation_split: 0.2
+  
+  data_augmentation:
+    enabled: true
+    techniques: ["paraphrasing", "back_translation"]
+    
+  hyperparameter_tuning:
+    method: "optuna"
+    n_trials: 100
+    
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+deployment:
+  model_serving:
+    framework: "fastapi"
+    port: 8000
+    workers: 4
+    
+  scaling:
+    min_replicas: 2
+    max_replicas: 10
+    cpu_threshold: 70
+    memory_threshold: 80
+    
+  monitoring:
+    metrics_collection: true
+    model_drift_detection: true
+    performance_logging: true
+
+# =============================================================================
+# SECURITY & COMPLIANCE
+# =============================================================================
+security:
+  data_encryption:
+    at_rest: true
+    in_transit: true
+    
+  access_control:
+    rbac_enabled: true
+    api_key_rotation: 30  # days
+    
+  audit_logging:
+    enabled: true
+    retention_days: 365
+    
+  compliance_frameworks:
+    - GDPR
+    - SOC2
+    - ISO27001
+    - EU_AI_ACT

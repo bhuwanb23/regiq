@@ -1,0 +1,224 @@
+# REGIQ AI/ML Database Configuration
+# Configuration for all database connections and data storage
+
+# =============================================================================
+# PRIMARY DATABASES
+# =============================================================================
+databases:
+  postgresql:
+    host: "${POSTGRES_HOST:-localhost}"
+    port: "${POSTGRES_PORT:-5432}"
+    database: "${POSTGRES_DB:-regiq_ai_ml}"
+    username: "${POSTGRES_USER:-regiq_user}"
+    password: "${POSTGRES_PASSWORD}"
+    ssl_mode: "require"
+    pool_size: 20
+    max_overflow: 30
+    
+    # Tables for structured data
+    tables:
+      users: "user_profiles"
+      auth: "authentication_logs"
+      bias_reports: "model_bias_analysis"
+      compliance_scores: "regulatory_compliance"
+      audit_trails: "system_audit_logs"
+      
+  mongodb:
+    host: "${MONGO_HOST:-localhost}"
+    port: "${MONGO_PORT:-27017}"
+    database: "${MONGO_DB:-regiq_documents}"
+    username: "${MONGO_USER:-regiq_user}"
+    password: "${MONGO_PASSWORD}"
+    auth_source: "admin"
+    replica_set: "${MONGO_REPLICA_SET}"
+    
+    # Collections for document storage
+    collections:
+      regulations: "regulatory_documents"
+      alerts: "compliance_alerts"
+      simulations: "risk_simulation_results"
+      reports: "generated_reports"
+      knowledge_base: "regulatory_knowledge"
+
+# =============================================================================
+# VECTOR DATABASES (for RAG)
+# =============================================================================
+vector_databases:
+  pinecone:
+    api_key: "${PINECONE_API_KEY}"
+    environment: "${PINECONE_ENV:-us-west1-gcp}"
+    index_name: "regiq-regulatory-embeddings"
+    dimension: 1536
+    metric: "cosine"
+    
+  chroma:
+    host: "${CHROMA_HOST:-localhost}"
+    port: "${CHROMA_PORT:-8000}"
+    collection_name: "regulatory_documents"
+    embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+
+# =============================================================================
+# CACHE DATABASES
+# =============================================================================
+cache:
+  redis:
+    host: "${REDIS_HOST:-localhost}"
+    port: "${REDIS_PORT:-6379}"
+    password: "${REDIS_PASSWORD}"
+    db: 0
+    max_connections: 50
+    
+    # Cache configurations
+    ttl:
+      model_predictions: 3600      # 1 hour
+      regulatory_summaries: 86400  # 24 hours
+      bias_reports: 604800         # 7 days
+      risk_simulations: 259200     # 3 days
+
+# =============================================================================
+# SEARCH & ANALYTICS
+# =============================================================================
+search:
+  elasticsearch:
+    hosts:
+      - "${ELASTICSEARCH_HOST:-localhost}:${ELASTICSEARCH_PORT:-9200}"
+    username: "${ELASTICSEARCH_USER:-elastic}"
+    password: "${ELASTICSEARCH_PASSWORD}"
+    use_ssl: true
+    verify_certs: true
+    
+    # Indices for different data types
+    indices:
+      logs: "regiq-ai-ml-logs"
+      metrics: "regiq-performance-metrics"
+      alerts: "regiq-system-alerts"
+      user_actions: "regiq-user-analytics"
+
+# =============================================================================
+# FILE STORAGE
+# =============================================================================
+file_storage:
+  s3:
+    bucket_name: "${S3_BUCKET_NAME:-regiq-ai-ml-storage}"
+    region: "${AWS_REGION:-us-east-1}"
+    access_key: "${AWS_ACCESS_KEY_ID}"
+    secret_key: "${AWS_SECRET_ACCESS_KEY}"
+    
+    # Storage paths
+    paths:
+      models: "models/"
+      datasets: "datasets/"
+      reports: "reports/"
+      backups: "backups/"
+      
+  google_cloud_storage:
+    bucket_name: "${GCS_BUCKET_NAME:-regiq-ai-ml-gcs}"
+    project_id: "${GCP_PROJECT_ID}"
+    credentials_path: "${GOOGLE_APPLICATION_CREDENTIALS}"
+    
+    # Storage classes
+    storage_classes:
+      hot_data: "STANDARD"
+      warm_data: "NEARLINE"
+      cold_data: "COLDLINE"
+
+# =============================================================================
+# DATA PIPELINE CONFIGURATION
+# =============================================================================
+data_pipeline:
+  batch_processing:
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    batch_size: 1000
+    max_retries: 3
+    
+  streaming:
+    kafka:
+      bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"
+      topics:
+        regulatory_updates: "regulatory-updates"
+        model_predictions: "model-predictions"
+        bias_alerts: "bias-detection-alerts"
+        
+  etl_jobs:
+    regulatory_scraping:
+      frequency: "daily"
+      sources: ["sec.gov", "eba.europa.eu", "bis.org"]
+      
+    model_retraining:
+      frequency: "weekly"
+      trigger_conditions: ["data_drift", "performance_degradation"]
+
+# =============================================================================
+# BACKUP & DISASTER RECOVERY
+# =============================================================================
+backup:
+  postgresql:
+    frequency: "daily"
+    retention_days: 30
+    compression: true
+    
+  mongodb:
+    frequency: "daily"
+    retention_days: 30
+    incremental: true
+    
+  file_storage:
+    frequency: "weekly"
+    cross_region_replication: true
+    versioning: true
+
+# =============================================================================
+# MONITORING & ALERTING
+# =============================================================================
+monitoring:
+  database_health:
+    connection_pool_threshold: 80
+    query_performance_threshold: 1000  # ms
+    disk_usage_threshold: 85           # %
+    
+  data_quality:
+    completeness_threshold: 95         # %
+    accuracy_threshold: 90             # %
+    freshness_threshold: 24            # hours
+    
+  alerts:
+    channels: ["email", "slack", "pagerduty"]
+    escalation_policy: "critical_issues"
+
+# =============================================================================
+# SECURITY CONFIGURATION
+# =============================================================================
+security:
+  encryption:
+    at_rest: true
+    algorithm: "AES-256"
+    key_rotation_days: 90
+    
+  access_control:
+    network_security: "vpc_only"
+    ip_whitelist: ["10.0.0.0/8", "172.16.0.0/12"]
+    
+  audit:
+    log_all_queries: true
+    sensitive_data_masking: true
+    retention_period: 2555  # 7 years
+
+# =============================================================================
+# ENVIRONMENT CONFIGURATIONS
+# =============================================================================
+environments:
+  development:
+    debug: true
+    log_level: "DEBUG"
+    auto_migrations: true
+    
+  staging:
+    debug: false
+    log_level: "INFO"
+    performance_testing: true
+    
+  production:
+    debug: false
+    log_level: "WARNING"
+    high_availability: true
+    read_replicas: 2

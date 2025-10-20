@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   navbarContainer: {
     borderTopWidth: 0,
-    paddingTop: 8,
+    paddingTop: 12,
     paddingBottom: 8,
     paddingHorizontal: 8,
     elevation: 8,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   bottomSafeArea: {
-    backgroundColor: '#8B5CF6',
+    backgroundColor: '#FFFFFF',
   },
 });
 
