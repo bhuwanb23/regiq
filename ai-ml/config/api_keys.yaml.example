@@ -3,7 +3,7 @@
 # NEVER commit api_keys.yaml to version control!
 
 # =============================================================================
-# LLM API KEYS
+# LLM API KEYS - Gemini Only
 # =============================================================================
 llm_providers:
   google:
@@ -11,39 +11,24 @@ llm_providers:
     project_id: "your-gcp-project-id"
     location: "us-central1"
     
-  openai:
-    api_key: "YOUR_OPENAI_API_KEY_HERE"
-    organization: "your-openai-org-id"
-    
-  anthropic:
-    api_key: "YOUR_ANTHROPIC_API_KEY_HERE"
-    
-  huggingface:
-    api_key: "YOUR_HUGGINGFACE_API_KEY_HERE"
-    
 # =============================================================================
-# CLOUD PROVIDER CREDENTIALS
+# CLOUD PROVIDER CREDENTIALS - Optional for Future
 # =============================================================================
 cloud_providers:
-  aws:
-    access_key_id: "YOUR_AWS_ACCESS_KEY_ID"
-    secret_access_key: "YOUR_AWS_SECRET_ACCESS_KEY"
-    region: "us-east-1"
-    
   google_cloud:
+    enabled: false
     service_account_key: "path/to/service-account-key.json"
     project_id: "your-gcp-project-id"
-    
-  azure:
-    subscription_id: "YOUR_AZURE_SUBSCRIPTION_ID"
-    client_id: "YOUR_AZURE_CLIENT_ID"
-    client_secret: "YOUR_AZURE_CLIENT_SECRET"
-    tenant_id: "YOUR_AZURE_TENANT_ID"
 
 # =============================================================================
 # DATABASE CREDENTIALS
 # =============================================================================
 databases:
+  # SQLite - no credentials needed for local development
+  sqlite:
+    database_path: "./data/regiq_local.db"
+    
+  # PostgreSQL for production
   postgresql:
     host: "localhost"
     port: 5432
@@ -51,35 +36,22 @@ databases:
     username: "regiq_user"
     password: "YOUR_POSTGRES_PASSWORD"
     
-  mongodb:
-    host: "localhost"
-    port: 27017
-    database: "regiq_documents"
-    username: "regiq_user"
-    password: "YOUR_MONGO_PASSWORD"
-    
+  # Optional: Redis for caching
   redis:
     host: "localhost"
     port: 6379
     password: "YOUR_REDIS_PASSWORD"
-    
-  elasticsearch:
-    host: "localhost"
-    port: 9200
-    username: "elastic"
-    password: "YOUR_ELASTICSEARCH_PASSWORD"
 
 # =============================================================================
-# VECTOR DATABASE CREDENTIALS
+# VECTOR DATABASE CREDENTIALS - Local First
 # =============================================================================
 vector_databases:
-  pinecone:
-    api_key: "YOUR_PINECONE_API_KEY"
-    environment: "us-west1-gcp"
+  # ChromaDB and FAISS are local - no credentials needed
+  chroma:
+    persist_directory: "./data/chroma_db"
     
-  weaviate:
-    url: "https://your-weaviate-cluster.weaviate.network"
-    api_key: "YOUR_WEAVIATE_API_KEY"
+  faiss:
+    index_path: "./data/faiss_index"
 
 # =============================================================================
 # EXTERNAL API INTEGRATIONS

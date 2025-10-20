@@ -45,15 +45,19 @@ statsmodels>=0.14.0
 monte-carlo>=0.1.0
 
 # =============================================================================
-# DATA PROCESSING & STORAGE
+# DATA PROCESSING & STORAGE - Local First
 # =============================================================================
 sqlalchemy>=2.0.0
+# SQLite (built into Python)
+# PostgreSQL for production
 psycopg2-binary>=2.9.0
-pymongo>=4.4.0
+# Optional: Redis for caching
 redis>=4.5.0
-elasticsearch>=8.8.0
-pinecone-client>=2.2.0
+# Local vector databases
 chromadb>=0.4.0
+faiss-cpu>=1.7.0
+# Optional: Elasticsearch for advanced search
+# elasticsearch>=8.8.0
 
 # =============================================================================
 # WEB FRAMEWORKS & APIs
@@ -75,11 +79,12 @@ reportlab>=4.0.0
 weasyprint>=59.0
 
 # =============================================================================
-# CLOUD & DEPLOYMENT
+# LOCAL STORAGE & DEPLOYMENT
 # =============================================================================
-boto3>=1.26.0
-google-cloud-storage>=2.9.0
-azure-storage-blob>=12.16.0
+# Local file system storage (no cloud dependencies)
+pathlib>=1.0.0
+# Optional: Google Cloud Storage for future scaling
+# google-cloud-storage>=2.9.0
 docker>=6.1.0
 
 # =============================================================================

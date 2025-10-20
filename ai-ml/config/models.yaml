@@ -11,22 +11,15 @@ llm_models:
     api_key_env: "GOOGLE_API_KEY"
     max_tokens: 8192
     temperature: 0.3
-    use_cases: ["regulatory_analysis", "report_generation"]
+    use_cases: ["regulatory_analysis", "report_generation", "narrative_generation", "summarization"]
     
-  secondary:
-    name: "gpt-4-turbo"
-    provider: "openai"
-    api_key_env: "OPENAI_API_KEY"
+  backup:
+    name: "gemini-1.5-flash"
+    provider: "google"
+    api_key_env: "GOOGLE_API_KEY"
     max_tokens: 4096
     temperature: 0.2
-    use_cases: ["narrative_generation", "summarization"]
-    
-  fallback:
-    name: "llama-3-70b"
-    provider: "huggingface"
-    model_path: "meta-llama/Llama-2-70b-chat-hf"
-    local_deployment: true
-    use_cases: ["offline_processing"]
+    use_cases: ["fast_processing", "batch_operations"]
 
 # =============================================================================
 # NLP MODELS CONFIGURATION

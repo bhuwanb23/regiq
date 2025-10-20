@@ -5,15 +5,11 @@
 # PRIMARY DATABASES
 # =============================================================================
 databases:
-  postgresql:
-    host: "${POSTGRES_HOST:-localhost}"
-    port: "${POSTGRES_PORT:-5432}"
-    database: "${POSTGRES_DB:-regiq_ai_ml}"
-    username: "${POSTGRES_USER:-regiq_user}"
-    password: "${POSTGRES_PASSWORD}"
-    ssl_mode: "require"
-    pool_size: 20
-    max_overflow: 30
+  # Local SQLite for development and initial setup
+  sqlite:
+    database_path: "./data/regiq_local.db"
+    echo: false
+    pool_recycle: 3600
     
     # Tables for structured data
     tables:
@@ -23,38 +19,44 @@ databases:
       compliance_scores: "regulatory_compliance"
       audit_trails: "system_audit_logs"
       
-  mongodb:
-    host: "${MONGO_HOST:-localhost}"
-    port: "${MONGO_PORT:-27017}"
-    database: "${MONGO_DB:-regiq_documents}"
-    username: "${MONGO_USER:-regiq_user}"
-    password: "${MONGO_PASSWORD}"
-    auth_source: "admin"
-    replica_set: "${MONGO_REPLICA_SET}"
+  # PostgreSQL for production
+  postgresql:
+    host: "${POSTGRES_HOST:-localhost}"
+    port: "${POSTGRES_PORT:-5432}"
+    database: "${POSTGRES_DB:-regiq_ai_ml}"
+    username: "${POSTGRES_USER:-regiq_user}"
+    password: "${POSTGRES_PASSWORD:-regiq_password}"
+    ssl_mode: "prefer"
+    pool_size: 10
+    max_overflow: 20
     
-    # Collections for document storage
-    collections:
+    # Same table structure as SQLite
+    tables:
+      users: "user_profiles"
+      auth: "authentication_logs"
+      bias_reports: "model_bias_analysis"
+      compliance_scores: "regulatory_compliance"
+      audit_trails: "system_audit_logs"
       regulations: "regulatory_documents"
       alerts: "compliance_alerts"
       simulations: "risk_simulation_results"
       reports: "generated_reports"
-      knowledge_base: "regulatory_knowledge"
 
 # =============================================================================
-# VECTOR DATABASES (for RAG)
+# VECTOR DATABASES (for RAG) - Local First
 # =============================================================================
 vector_databases:
-  pinecone:
-    api_key: "${PINECONE_API_KEY}"
-    environment: "${PINECONE_ENV:-us-west1-gcp}"
-    index_name: "regiq-regulatory-embeddings"
-    dimension: 1536
-    metric: "cosine"
-    
+  # Local ChromaDB for development
   chroma:
-    host: "${CHROMA_HOST:-localhost}"
-    port: "${CHROMA_PORT:-8000}"
+    persist_directory: "./data/chroma_db"
     collection_name: "regulatory_documents"
+    embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+    
+  # FAISS for local vector search
+  faiss:
+    index_path: "./data/faiss_index"
+    dimension: 384
+    index_type: "IndexFlatIP"
     embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
 
 # =============================================================================
@@ -95,14 +97,11 @@ search:
       user_actions: "regiq-user-analytics"
 
 # =============================================================================
-# FILE STORAGE
+# FILE STORAGE - Local First
 # =============================================================================
 file_storage:
-  s3:
-    bucket_name: "${S3_BUCKET_NAME:-regiq-ai-ml-storage}"
-    region: "${AWS_REGION:-us-east-1}"
-    access_key: "${AWS_ACCESS_KEY_ID}"
-    secret_key: "${AWS_SECRET_ACCESS_KEY}"
+  local:
+    base_path: "./data/storage"
     
     # Storage paths
     paths:
@@ -110,17 +109,19 @@ file_storage:
       datasets: "datasets/"
       reports: "reports/"
       backups: "backups/"
+      uploads: "uploads/"
       
+    # File size limits (in MB)
+    limits:
+      max_file_size: 100
+      max_dataset_size: 1000
+      
+  # Optional: Google Cloud Storage for production scaling
   google_cloud_storage:
-    bucket_name: "${GCS_BUCKET_NAME:-regiq-ai-ml-gcs}"
+    enabled: false
+    bucket_name: "${GCS_BUCKET_NAME}"
     project_id: "${GCP_PROJECT_ID}"
     credentials_path: "${GOOGLE_APPLICATION_CREDENTIALS}"
-    
-    # Storage classes
-    storage_classes:
-      hot_data: "STANDARD"
-      warm_data: "NEARLINE"
-      cold_data: "COLDLINE"
 
 # =============================================================================
 # DATA PIPELINE CONFIGURATION
