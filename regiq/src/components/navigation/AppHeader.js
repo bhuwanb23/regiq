@@ -46,7 +46,7 @@ const AppHeader = ({
             ) : (
               <View style={styles.logoTitleContainer}>
                 <View style={styles.logoIcon}>
-                  <Ionicons name="shield-checkmark" size={18} color="#8B5CF6" />
+                  <Ionicons name="analytics" size={18} color="#8B5CF6" />
                 </View>
                 <View style={styles.titleContainer}>
                   <Text style={styles.headerTitle}>{title}</Text>

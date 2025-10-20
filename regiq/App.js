@@ -10,10 +10,12 @@ import RegulationIntelligenceScreen from './src/screens/regulations/RegulationIn
 import AIAuditScreen from './src/screens/ai-audit/AIAuditScreen';
 import AIRiskSimulationScreen from './src/screens/simulation/AIRiskSimulationScreen';
 import ReportsScreen from './src/screens/reports/ReportsScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const [showProfile, setShowProfile] = useState(false);
   const [notificationCount] = useState(5); // Mock notification count
 
   const handleLandingFinish = () => {
@@ -30,8 +32,11 @@ export default function App() {
   };
 
   const handleSettingsPress = () => {
-    console.log('Settings pressed');
-    // Navigate to settings screen
+    setShowProfile(true);
+  };
+
+  const handleProfileBack = () => {
+    setShowProfile(false);
   };
 
   const renderActiveScreen = () => {
@@ -57,6 +62,16 @@ export default function App() {
       <>
         <StatusBar style="light" />
         <LandingScreen onFinish={handleLandingFinish} />
+      </>
+    );
+  }
+
+  // Show profile screen
+  if (showProfile) {
+    return (
+      <>
+        <StatusBar style="dark" />
+        <ProfileScreen navigation={{ goBack: handleProfileBack }} />
       </>
     );
   }
