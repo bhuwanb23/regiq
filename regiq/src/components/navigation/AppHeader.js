@@ -30,7 +30,7 @@ const AppHeader = ({
         colors={['#8B5CF6', '#7C3AED', '#6B46C1']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.headerContainer, { paddingTop: insets.top }]}
+        style={[styles.headerContainer, { paddingTop: insets.top + 8 }]}
       >
         <View style={styles.headerContent}>
           {/* Left Section - Logo and Title */}
