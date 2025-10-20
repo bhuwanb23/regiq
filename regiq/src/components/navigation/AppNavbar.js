@@ -121,10 +121,11 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    transition: 'all 0.2s ease',
+    overflow: 'hidden',
   },
   activeTabIconContainer: {
     backgroundColor: '#8B5CF6',
+    borderRadius: 19,
     shadowColor: '#8B5CF6',
     shadowOffset: {
       width: 0,
