@@ -7,8 +7,6 @@ Handles Gemini API setup, authentication, and rate limiting.
 import os
 import time
 import yaml
-import requests
-import json
 from typing import Optional, Dict, Any
 from pathlib import Path
 from dataclasses import dataclass
@@ -16,6 +14,13 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+try:
+    from google import genai
+    SDK_AVAILABLE = True
+except ImportError:
+    SDK_AVAILABLE = False
+    print("⚠️  Google GenAI SDK not installed. Run: pip install google-genai")
 
 @dataclass
 class GeminiConfig:
@@ -68,8 +73,8 @@ class GeminiAPIManager:
         
         return GeminiConfig(
             api_key=api_key,
-            model_name=yaml_config.get('model_name', 'gemini-1.5-pro'),
-            fallback_model=yaml_config.get('fallback_model', 'gemini-1.5-flash'),
+            model_name=yaml_config.get('model_name', 'gemini-2.5-flash'),
+            fallback_model=yaml_config.get('fallback_model', 'gemini-2.5-flash'),
             max_tokens=int(os.getenv('GEMINI_MAX_TOKENS', yaml_config.get('max_tokens', 8192))),
             temperature=float(os.getenv('GEMINI_TEMPERATURE', yaml_config.get('temperature', 0.3))),
             rate_limit_requests_per_minute=int(os.getenv('GEMINI_RATE_LIMIT_RPM', yaml_config.get('rate_limit_rpm', 60))),
@@ -96,44 +101,20 @@ class GeminiAPIManager:
         
         return None
     
-    def _make_request(self, model: str, prompt: str) -> Optional[Dict]:
-        """Make direct HTTP request to Gemini API."""
-        url = f"{self.base_url}/{model}:generateContent"
-        
-        headers = {
-            "x-goog-api-key": self.config.api_key,
-            "Content-Type": "application/json"
-        }
-        
-        payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {
-                            "text": prompt
-                        }
-                    ]
-                }
-            ]
-        }
-        
-        try:
-            response = requests.post(
-                url, 
-                headers=headers, 
-                json=payload, 
-                timeout=self.config.timeout_seconds
-            )
+    def _initialize_client(self) -> bool:
+        """Initialize the Gemini client."""
+        if not SDK_AVAILABLE:
+            print("❌ Google GenAI SDK not available")
+            return False
             
-            if response.status_code == 200:
-                return response.json()
-            else:
-                print(f"❌ API request failed: {response.status_code} - {response.text}")
-                return None
-                
+        try:
+            # Set API key as environment variable for the client
+            os.environ['GEMINI_API_KEY'] = self.config.api_key
+            self.client = genai.Client()
+            return True
         except Exception as e:
-            print(f"❌ Request error: {e}")
-            return None
+            print(f"❌ Failed to initialize Gemini client: {e}")
+            return False
     
     def _check_rate_limit(self) -> None:
         """Check and enforce rate limiting."""
@@ -161,6 +142,11 @@ class GeminiAPIManager:
     ) -> Optional[str]:
         """Generate content using Gemini API with error handling and retries."""
         
+        # Initialize client if needed
+        if not hasattr(self, 'client'):
+            if not self._initialize_client():
+                return None
+        
         # Use provided parameters or defaults
         model_name = model or self.config.model_name
         temp = temperature if temperature is not None else self.config.temperature
@@ -171,18 +157,13 @@ class GeminiAPIManager:
                 # Check rate limiting
                 self._check_rate_limit()
                 
-                # Make API request
-                response_data = self._make_request(model_name, prompt)
+                # Make API request using SDK
+                response = self.client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
                 
-                if response_data and 'candidates' in response_data:
-                    # Extract text from response
-                    candidates = response_data['candidates']
-                    if candidates and 'content' in candidates[0]:
-                        parts = candidates[0]['content']['parts']
-                        if parts and 'text' in parts[0]:
-                            return parts[0]['text']
-                
-                return None
+                return response.text
                 
             except Exception as e:
                 print(f"❌ Attempt {attempt + 1} failed: {e}")
@@ -218,11 +199,9 @@ class GeminiAPIManager:
     def get_available_models(self) -> list:
         """Get list of available Gemini models."""
         try:
-            # Available Gemini models via API
+            # Available Gemini models via SDK (only working models)
             available_models = [
-                "gemini-1.5-pro",
-                "gemini-1.5-flash", 
-                "gemini-2.5-flash"
+                "gemini-2.5-flash"  # Only this model is currently working
             ]
             return available_models
         except Exception as e:
