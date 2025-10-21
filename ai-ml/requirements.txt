@@ -145,11 +145,22 @@ memory-profiler>=0.60.0
 # =============================================================================
 # DOCUMENT PROCESSING
 # =============================================================================
+# PDF Processing
 pypdf2>=3.0.0
+pdfplumber>=0.9.0
+pymupdf>=1.23.0
+tabula-py>=2.8.0
+
+# Document Processing
 python-docx>=0.8.0
 openpyxl>=3.1.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
+
+# Web Scraping
+selenium>=4.15.0
+requests>=2.31.0
+scrapy>=2.11.0
 
 # =============================================================================
 # TIME SERIES & FORECASTING

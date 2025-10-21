@@ -15,6 +15,10 @@ tests/
 │   └── test_end_to_end.py  # Complete system workflows
 ├── performance/            # Performance and load tests
 │   └── test_benchmarks.py  # Performance benchmarks
+├── phase_2_1/              # Phase 2.1 specific tests
+│   ├── test_phase_2_1_comprehensive.py  # Comprehensive Phase 2.1 tests
+│   ├── test_eu_scraper_syntax.py       # EU scraper syntax tests
+│   └── README.md           # Phase 2.1 test documentation
 ├── conftest.py            # Global test configuration and fixtures
 └── README.md              # This file
 ```
@@ -38,6 +42,10 @@ python run_tests.py --suite all
 python run_tests.py --suite unit
 python run_tests.py --suite integration
 python run_tests.py --suite e2e
+
+# Phase 2.1 specific tests
+python tests/phase_2_1/test_phase_2_1_comprehensive.py
+python tests/phase_2_1/test_eu_scraper_syntax.py
 ```
 
 ## 🎯 **Test Categories**
@@ -85,6 +93,18 @@ python run_tests.py --suite e2e
 - API call performance
 - Database operation benchmarks
 - Concurrent request handling
+
+### **📋 Phase 2.1 Tests (`tests/phase_2_1/`)**
+- **Document Processing Pipeline tests**
+- **Comprehensive component testing**
+- **Phase-specific validation**
+- **Production readiness verification**
+
+**Examples:**
+- PDF processing functionality
+- Web scraping components
+- API integration testing
+- End-to-end pipeline validation
 
 ## 🏷️ **Test Markers**
 
