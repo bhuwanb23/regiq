@@ -49,6 +49,8 @@ venv.bak/
 # =============================================================================
 data/
 !data/.gitkeep
+!data/visualizations/README.md
+!data/visualizations/*/.gitkeep
 models/
 !models/.gitkeep
 *.db
@@ -105,6 +107,17 @@ Thumbs.db
 htmlcov/
 .tox/
 .nox/
+
+# Test artifacts and temporary files
+test_*.html
+test_*.png
+test_*.jpg
+test_*.jpeg
+test_*.svg
+test_*.pdf
+*_viz.html
+*_analysis.html
+*_report.html
 
 # =============================================================================
 # DOCUMENTATION

@@ -22,6 +22,26 @@ tests/
 ├── phase_2_2/              # Phase 2.2 specific tests
 │   ├── test_phase_2_2_comprehensive.py  # Comprehensive Phase 2.2 tests
 │   └── README.md           # Phase 2.2 test documentation
+├── phase_2_3/              # Phase 2.3 specific tests
+│   ├── test_phase_2_3_comprehensive.py  # Comprehensive Phase 2.3 tests
+│   └── README.md           # Phase 2.3 test documentation
+├── phase_2_4/              # Phase 2.4 specific tests
+│   ├── test_phase_2_4_comprehensive.py  # Comprehensive Phase 2.4 tests
+│   └── README.md           # Phase 2.4 test documentation
+├── phase_2_5/              # Phase 2.5 specific tests
+│   ├── test_phase_2_5_comprehensive.py  # Comprehensive Phase 2.5 tests
+│   └── README.md           # Phase 2.5 test documentation
+├── phase_3_1/              # Phase 3.1 specific tests
+│   ├── test_phase_3_1_comprehensive.py  # Comprehensive Phase 3.1 tests
+│   └── README.md           # Phase 3.1 test documentation
+├── phase_3_2/              # Phase 3.2 specific tests
+│   ├── test_phase_3_2_comprehensive.py  # Comprehensive Phase 3.2 tests
+│   ├── test_phase_3_2_fast.py           # Quick Phase 3.2 tests
+│   └── README.md           # Phase 3.2 test documentation
+├── phase_3_3/              # Phase 3.3 specific tests
+│   ├── test_phase_3_3_comprehensive.py  # Comprehensive Phase 3.3 tests
+│   ├── test_phase_3_3_fast.py           # Quick Phase 3.3 tests
+│   └── README.md           # Phase 3.3 test documentation
 ├── conftest.py            # Global test configuration and fixtures
 └── README.md              # This file
 ```
@@ -356,5 +376,43 @@ pytest -s  # Don't capture stdout
 2. **Check coverage**: `python run_tests.py --suite all --coverage`
 3. **Add tests for new features** as you develop them
 4. **Run tests before committing** code changes
+
+## Phase 3.2 Tests (Fairness Metrics)
+
+### Test Files
+- `phase_3_2/test_phase_3_2_comprehensive.py` - Full comprehensive test suite
+- `phase_3_2/test_phase_3_2_fast.py` - Quick test suite for development
+- `phase_3_2/README.md` - Phase 3.2 test documentation
+
+### Running Phase 3.2 Tests
+```bash
+# Quick tests (development)
+python tests/phase_3_2/test_phase_3_2_fast.py
+
+# Comprehensive tests (full validation)
+python tests/phase_3_2/test_phase_3_2_comprehensive.py
+
+# All Phase 3.2 tests
+python -m pytest tests/phase_3_2/ -v
+```
+
+## Phase 3.3 Tests (Explainability Tools)
+
+### Test Files
+- `phase_3_3/test_phase_3_3_comprehensive.py` - Full comprehensive test suite
+- `phase_3_3/test_phase_3_3_fast.py` - Quick test suite for development
+- `phase_3_3/README.md` - Phase 3.3 test documentation
+
+### Running Phase 3.3 Tests
+```bash
+# Quick tests (development)
+python tests/phase_3_3/test_phase_3_3_fast.py
+
+# Comprehensive tests (full validation)
+python tests/phase_3_3/test_phase_3_3_comprehensive.py
+
+# All Phase 3.3 tests
+python -m pytest tests/phase_3_3/ -v
+```
 
 **Happy Testing! 🧪✨**
