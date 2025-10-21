@@ -11,6 +11,21 @@ llm_providers:
     project_id: "your-gcp-project-id"
     location: "us-central1"
     
+    # Model Configuration
+    model_name: "gemini-1.5-pro"
+    fallback_model: "gemini-1.5-flash"
+    max_tokens: 8192
+    temperature: 0.3
+    
+    # Rate Limiting
+    rate_limit_rpm: 60  # Requests per minute
+    rate_limit_tpm: 32000  # Tokens per minute
+    
+    # Error Handling
+    max_retries: 3
+    retry_delay: 1.0
+    timeout_seconds: 30
+    
 # =============================================================================
 # CLOUD PROVIDER CREDENTIALS - Optional for Future
 # =============================================================================
