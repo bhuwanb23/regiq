@@ -19,6 +19,9 @@ tests/
 │   ├── test_phase_2_1_comprehensive.py  # Comprehensive Phase 2.1 tests
 │   ├── test_eu_scraper_syntax.py       # EU scraper syntax tests
 │   └── README.md           # Phase 2.1 test documentation
+├── phase_2_2/              # Phase 2.2 specific tests
+│   ├── test_phase_2_2_comprehensive.py  # Comprehensive Phase 2.2 tests
+│   └── README.md           # Phase 2.2 test documentation
 ├── conftest.py            # Global test configuration and fixtures
 └── README.md              # This file
 ```
@@ -46,6 +49,9 @@ python run_tests.py --suite e2e
 # Phase 2.1 specific tests
 python tests/phase_2_1/test_phase_2_1_comprehensive.py
 python tests/phase_2_1/test_eu_scraper_syntax.py
+
+# Phase 2.2 specific tests
+python tests/phase_2_2/test_phase_2_2_comprehensive.py
 ```
 
 ## 🎯 **Test Categories**
@@ -105,6 +111,18 @@ python tests/phase_2_1/test_eu_scraper_syntax.py
 - Web scraping components
 - API integration testing
 - End-to-end pipeline validation
+
+### **🧠 Phase 2.2 Tests (`tests/phase_2_2/`)**
+- **NLP Processing Pipeline tests**
+- **Text preprocessing and normalization**
+- **Entity recognition and extraction**
+- **Text classification and categorization**
+
+**Examples:**
+- Text cleaning and tokenization
+- Regulatory entity extraction
+- Date and penalty recognition
+- Risk and urgency classification
 
 ## 🏷️ **Test Markers**
 
