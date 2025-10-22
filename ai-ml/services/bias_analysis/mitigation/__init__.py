@@ -12,6 +12,16 @@ from .preprocessing import (
     BiasRemovalEngine
 )
 
+from .inprocessing import (
+    FairnessConstrainedClassifier,
+    ConstraintType,
+    OptimizationAlgorithm,
+    AdversarialDebiaser,
+    FairLogisticRegression,
+    FairGradientBoosting,
+    InprocessingEngine
+)
+
 from .validation import (
     MitigationValidator,
     ValidationReport
@@ -24,6 +34,15 @@ __all__ = [
     "FairDataAugmenter",
     "FeatureTransformer",
     "BiasRemovalEngine",
+    
+    # In-processing
+    "FairnessConstrainedClassifier",
+    "ConstraintType",
+    "OptimizationAlgorithm",
+    "AdversarialDebiaser",
+    "FairLogisticRegression",
+    "FairGradientBoosting",
+    "InprocessingEngine",
     
     # Validation
     "MitigationValidator",
