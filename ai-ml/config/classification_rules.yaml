@@ -1,0 +1,134 @@
+# REGIQ AI/ML - Bias Risk Classification Rules
+# Defines rules for classifying bias risk levels with context-aware overrides
+
+# Base classification rules (score-based)
+base_rules:
+  LOW:
+    score_range: [0.0, 0.25]
+    description: "Minimal bias - routine monitoring"
+  
+  MEDIUM:
+    score_range: [0.26, 0.50]
+    description: "Moderate bias - review within 30 days"
+  
+  HIGH:
+    score_range: [0.51, 0.75]
+    description: "Significant bias - remediation within 14 days"
+  
+  CRITICAL:
+    score_range: [0.76, 1.0]
+    description: "Severe bias - immediate action required"
+
+# Conditional override rules
+# These rules can escalate risk level based on specific metric thresholds
+override_rules:
+  
+  # Auto-escalate to CRITICAL if demographic parity is severely violated
+  demographic_parity_critical:
+    condition: "demographic_parity > 0.80"
+    escalate_to: "CRITICAL"
+    reason: "Demographic parity violation exceeds 80% - severe group disparity"
+    priority: 1
+  
+  # Auto-escalate to HIGH if equalized odds severely violated
+  equalized_odds_critical:
+    condition: "equalized_odds > 0.75"
+    escalate_to: "HIGH"
+    reason: "Equalized odds violation exceeds 75% - unequal error rates"
+    priority: 2
+  
+  # Escalate if multiple metrics exceed thresholds
+  multi_metric_violation:
+    condition: "count(metric > 0.60) >= 2"
+    escalate_to: "HIGH"
+    reason: "Multiple metrics exceed 60% threshold - systemic bias"
+    priority: 3
+  
+  # Escalate if calibration is extremely poor
+  calibration_critical:
+    condition: "calibration > 0.50"
+    escalate_to: "HIGH"
+    reason: "Calibration error exceeds 50% - model unreliable"
+    priority: 4
+  
+  # De-escalate if all individual metrics are low despite composite score
+  all_metrics_acceptable:
+    condition: "all(metric < 0.30)"
+    de_escalate_to: "LOW"
+    reason: "All individual metrics within acceptable bounds"
+    priority: 5
+
+# Regulatory context-specific rules
+regulatory_rules:
+  
+  # EU AI Act - stricter thresholds for high-risk systems
+  eu_ai_act_high_risk:
+    score_adjustments:
+      LOW: [0.0, 0.20]      # Stricter threshold
+      MEDIUM: [0.21, 0.40]
+      HIGH: [0.41, 0.65]
+      CRITICAL: [0.66, 1.0]
+    description: "EU AI Act Article 10 - High-Risk AI Systems"
+  
+  # GDPR - focus on demographic parity
+  gdpr:
+    metric_weights_override:
+      demographic_parity: 0.45  # Increased weight
+      equalized_odds: 0.30
+      calibration: 0.15
+      individual_fairness: 0.10
+    description: "GDPR Article 22 - Automated Decision Making"
+  
+  # US Fair Credit Reporting Act - focus on equalized odds
+  fair_credit:
+    metric_weights_override:
+      demographic_parity: 0.25
+      equalized_odds: 0.50  # Increased weight
+      calibration: 0.15
+      individual_fairness: 0.10
+    description: "Fair Credit Reporting Act compliance"
+
+# Industry-specific adjustments
+industry_rules:
+  
+  lending:
+    priority_metrics: ["equalized_odds", "demographic_parity"]
+    description: "Lending industry focuses on equal opportunity"
+  
+  hiring:
+    priority_metrics: ["demographic_parity", "individual_fairness"]
+    description: "Hiring focuses on group parity and consistency"
+  
+  insurance:
+    priority_metrics: ["calibration", "demographic_parity"]
+    description: "Insurance requires accurate risk assessment"
+
+# Alert configuration by risk level
+alert_config:
+  LOW:
+    send_email: false
+    send_sms: false
+    send_webhook: false
+    in_app_notification: true
+    alert_priority: "low"
+  
+  MEDIUM:
+    send_email: true
+    send_sms: false
+    send_webhook: false
+    in_app_notification: true
+    alert_priority: "medium"
+  
+  HIGH:
+    send_email: true
+    send_sms: false
+    send_webhook: true
+    in_app_notification: true
+    alert_priority: "high"
+  
+  CRITICAL:
+    send_email: true
+    send_sms: true
+    send_webhook: true
+    in_app_notification: true
+    alert_priority: "urgent"

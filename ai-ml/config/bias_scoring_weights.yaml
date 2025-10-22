@@ -1,0 +1,82 @@
+# REGIQ AI/ML - Bias Scoring Weight Profiles
+# Defines weight configurations for different industry contexts
+
+# Default weight profile (balanced approach)
+default:
+  demographic_parity: 0.30
+  equalized_odds: 0.35
+  calibration: 0.20
+  individual_fairness: 0.15
+  description: "Balanced approach for general fintech applications"
+
+# Lending/Credit scoring profile
+lending:
+  demographic_parity: 0.25
+  equalized_odds: 0.45  # Higher weight on equal opportunity
+  calibration: 0.20
+  individual_fairness: 0.10
+  description: "Optimized for credit scoring and lending models (Fair Credit Reporting Act compliance)"
+  regulatory_context: ["Fair Credit Reporting Act", "Equal Credit Opportunity Act"]
+
+# Hiring/Employment profile
+hiring:
+  demographic_parity: 0.45  # Higher weight on group parity
+  equalized_odds: 0.30
+  calibration: 0.15
+  individual_fairness: 0.10
+  description: "Optimized for hiring and employment models (EEOC compliance)"
+  regulatory_context: ["Title VII", "EEOC Guidelines", "EU AI Act"]
+
+# Insurance underwriting profile
+insurance:
+  demographic_parity: 0.30
+  equalized_odds: 0.35
+  calibration: 0.25  # Higher weight on calibration for actuarial accuracy
+  individual_fairness: 0.10
+  description: "Optimized for insurance underwriting models"
+  regulatory_context: ["State Insurance Regulations", "GDPR"]
+
+# EU AI Act high-risk systems profile
+eu_ai_act_high_risk:
+  demographic_parity: 0.40
+  equalized_odds: 0.35
+  calibration: 0.15
+  individual_fairness: 0.10
+  description: "Stricter weights for EU AI Act high-risk systems"
+  regulatory_context: ["EU AI Act Article 10", "EU AI Act Article 13"]
+
+# GDPR-focused profile
+gdpr_focused:
+  demographic_parity: 0.40  # Strong focus on group fairness
+  equalized_odds: 0.30
+  calibration: 0.15
+  individual_fairness: 0.15
+  description: "GDPR-compliant weight profile emphasizing non-discrimination"
+  regulatory_context: ["GDPR Article 22", "GDPR Recital 71"]
+
+# Financial services (banking) profile
+banking:
+  demographic_parity: 0.30
+  equalized_odds: 0.40
+  calibration: 0.20
+  individual_fairness: 0.10
+  description: "Optimized for banking and financial services"
+  regulatory_context: ["Dodd-Frank Act", "CFPB Guidelines", "ECOA"]
+
+# Healthcare-adjacent fintech profile
+healthcare_fintech:
+  demographic_parity: 0.35
+  equalized_odds: 0.35
+  calibration: 0.20
+  individual_fairness: 0.10
+  description: "Optimized for health savings, medical lending, etc."
+  regulatory_context: ["HIPAA", "ACA Section 1557"]
+
+# Custom profile template (for user-defined weights)
+custom:
+  demographic_parity: 0.25
+  equalized_odds: 0.25
+  calibration: 0.25
+  individual_fairness: 0.25
+  description: "Equal weights - customize as needed"
+  regulatory_context: []
