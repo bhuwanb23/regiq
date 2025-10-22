@@ -1,4 +1,4 @@
 // fix: fix hardcoded localhost URLs in backend API client
-// Applied: 2026-07-13T10:13:02.569Z
+// Applied: 2026-07-13T10:13:04.153Z
 
 module.exports = { updated: true };
