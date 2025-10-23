@@ -16,6 +16,7 @@ Modules:
 - scenario_engine: Unified scenario orchestration
 
 All scenarios integrate with Phase 4.2 risk models.
+For visualization data generation, see services.risk_simulator.visualization package.
 """
 
 # Regulatory Scenarios
