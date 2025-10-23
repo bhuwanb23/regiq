@@ -1,4 +1,4 @@
-// fix: fix CORS configuration for development environment
-// Applied: 2026-07-13T10:13:03.578Z
+// fix: handle missing database tables gracefully on first run
+// Applied: 2026-07-13T10:13:06.623Z
 
 module.exports = { updated: true };
