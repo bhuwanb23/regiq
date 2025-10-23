@@ -51,7 +51,7 @@ data/
 !data/.gitkeep
 !data/visualizations/README.md
 !data/visualizations/*/.gitkeep
-models/
+# models/
 !models/.gitkeep
 *.db
 *.sqlite
