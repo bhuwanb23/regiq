@@ -14,7 +14,6 @@
 *Empowering financial institutions to navigate complex AI regulations with confidence, transparency, and automated governance*
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-success?style=for-the-badge)](https://regiq-demo.com)
-[![Hackathon Winner](https://img.shields.io/badge/🏆_Hackathon-Winner-gold?style=for-the-badge)](https://github.com/regiq-ai)
 [![Best AI Solution](https://img.shields.io/badge/🤖_Best_AI-Solution-purple?style=for-the-badge)](https://github.com/regiq-ai)
 
 </div>
@@ -25,42 +24,17 @@
 
 ### 💔 **Fintech AI Compliance Crisis**
 
-<table>
-<tr>
-<td width="50%">
+<div align="center">
 
-#### 🚨 **Regulatory Chaos**
-- **500+ AI regulations** across 50+ jurisdictions
-- **Weekly updates** to compliance requirements  
-- **Manual tracking** leads to 70% compliance gaps
-- **$4.7M average** fine for non-compliance
-- **Sudden regulatory changes** (RBI, EU AI Act, MAS, SEC) create confusion
+![Problem Statement](./images/readme/PS.png)
 
-</td>
-<td width="50%">
-
-#### 🔍 **AI Model Opacity**
-- **Black box algorithms** with zero explainability
-- **Hidden biases** affecting 80% of AI models
-- **No standardized auditing** processes
-- **Risk assessment** takes 6+ months manually
-- **AI model bias** causes unfair credit decisions and discrimination
-
-</td>
-</tr>
-</table>
+</div>
 
 ### 📊 **Market Impact & Root Causes**
 
 <div align="center">
 
-| **Core Challenge** | **Description** | **Impact** |
-|:---:|:---:|:---:|
-| **🚀 Rapid AI Evolution** | Models evolve faster than regulations can catch up | 70% compliance gaps |
-| **📄 Unstructured Regulations** | Compliance documents in legal language, PDFs, circulars | 6+ months manual processing |
-| **🔍 Lack of Transparency** | AI models are black boxes — regulators can't see "why" | 80% models have hidden bias |
-| **⚖️ Manual Compliance** | Current compliance relies on static human audits | $2.4M average compliance cost |
-| **🎯 Bias Blind Spots** | Fintech models unknowingly discriminate by geography, gender, age | 40% unfair credit decisions |
+![Market Causes and Problems](./images/readme/market_causes%20and_problems.png)
 
 </div>
 
@@ -82,6 +56,54 @@
 ### 🚀 **REGIQ = Regulatory Intelligence + AI Governance + Fairness Engine**
 
 **REGIQ is an AI-driven compliance assistant for fintechs that automatically reads global financial regulations, audits AI models for fairness and explainability, and predicts future compliance risks before they occur.**
+
+## 🧠 **REGIQ Core Features**
+
+<div align="center">
+
+![Core Features](./images/readme/core_features.png)
+
+</div>
+
+---
+
+## 📊 **Technical Feasibility**
+
+<div align="center">
+
+![Feasibility](./images/readme/feasibility.png)
+
+</div>
+
+---
+
+## 🚀 **Innovation Highlights**
+
+<div align="center">
+
+![Innovation](./images/readme/innovation.png)
+
+</div>
+
+---
+
+## 📈 **Scalability Features**
+
+<div align="center">
+
+![Scalability](./images/readme/scalability.png)
+
+</div>
+
+---
+
+## 🎯 **SWOT Analysis**
+
+<div align="center">
+
+![SWOT Analysis](./images/readme/swot.png)
+
+</div>
 
 ---
 
@@ -168,87 +190,32 @@ graph TB
 
 ---
 
-## 🧠 **REGIQ Core Features**
-
-### 🎯 **1. Intelligent Regulation Tracking**
-```
-🔄 Real-time regulation monitoring across 50+ jurisdictions
-📊 AI-powered impact analysis and risk scoring
-🎯 Personalized compliance recommendations
-📱 Instant mobile alerts for regulatory changes
-📄 Automated document parsing and summarization
-```
-
-### 🤖 **2. Automated AI Model Auditing**
-```
-🔍 SHAP & LIME explainability analysis
-⚖️ Automated bias detection and fairness metrics
-📈 Performance monitoring and drift detection
-🛡️ Compliance certification generation
-🎯 Demographic parity and equalized odds testing
-```
-
-### 🎲 **3. Synthetic Risk Simulation**
-```
-🎭 Generate realistic compliance scenarios
-📊 Monte Carlo risk simulations
-🎯 Stress testing for edge cases
-📋 Automated remediation suggestions
-🔮 Predictive compliance risk assessment
-```
-
-### 📊 **4. Executive Reporting Suite**
-```
-📈 Real-time compliance dashboards
-📄 Automated audit reports
-🎨 Beautiful data visualizations
-📧 Stakeholder communication tools
-📋 Regulator-ready documentation
-```
-
----
 
 ## 🎨 **User Experience & Interface**
 
-### 📱 **Mobile-First Professional Design**
-
 <div align="center">
 
-| 🏠 **Dashboard** | 📊 **Analytics** | ⚙️ **Settings** |
-|:---:|:---:|:---:|
-| ![Dashboard](https://img.shields.io/badge/Compliance-94%25-success?style=flat-square) | ![Analytics](https://img.shields.io/badge/Models-12_Active-blue?style=flat-square) | ![Settings](https://img.shields.io/badge/Alerts-3_New-orange?style=flat-square) |
-| Real-time compliance score | Model performance metrics | Personalized preferences |
+### 📱 **Intuitive Mobile-First Design**
+
+![Dashboard](https://img.shields.io/badge/📊_Compliance-94%25-success?style=for-the-badge)
+![Models](https://img.shields.io/badge/🤖_Models-12_Active-blue?style=for-the-badge)
+![Alerts](https://img.shields.io/badge/🚨_Alerts-3_New-orange?style=for-the-badge)
+
+**Real-time insights • One-click reports • Instant notifications**
 
 </div>
 
-### 🎯 **Key User Journeys**
+### 🎯 **Built for Every User**
 
-#### 👨‍💼 **For Compliance Officers**
-```
-1. 📊 View real-time compliance dashboard
-2. 🔍 Drill down into specific regulation impacts
-3. 📋 Generate automated audit reports
-4. 📧 Share insights with stakeholders
-5. 🚨 Receive instant alerts for regulatory changes
-```
+<div align="center">
 
-#### 👩‍💻 **For Data Scientists**
-```
-1. 🤖 Upload AI models for analysis
-2. 📈 Review bias and fairness metrics
-3. 🔧 Implement suggested improvements
-4. ✅ Obtain compliance certification
-5. 🔍 Understand model decisions with SHAP/LIME
-```
+| 👨‍💼 **Compliance Officers** | 👩‍💻 **Data Scientists** | 👨‍💼 **Executives** |
+|:---:|:---:|:---:|
+| **Real-time dashboards** | **AI model auditing** | **Strategic insights** |
+| **Automated reports** | **Bias detection** | **ROI tracking** |
+| **Regulatory alerts** | **Explainability tools** | **Risk monitoring** |
 
-#### 👨‍💼 **For Executives**
-```
-1. 📊 Monitor organization-wide compliance health
-2. 💰 Track compliance costs and ROI
-3. 🎯 Make data-driven strategic decisions
-4. 📈 Demonstrate regulatory readiness
-5. 🛡️ Ensure ethical AI deployment
-```
+</div>
 
 ---
 
@@ -258,44 +225,17 @@ graph TB
 
 <div align="center">
 
-| **Metric** | **Before REGIQ** | **With REGIQ** | **Improvement** |
-|:---:|:---:|:---:|:---:|
-| **Compliance Time** | 6 months | 2 weeks | ![85% faster](https://img.shields.io/badge/85%25-faster-success) |
-| **Manual Effort** | 40 hours/week | 5 hours/week | ![87% reduction](https://img.shields.io/badge/87%25-reduction-success) |
-| **Compliance Gaps** | 70% | 5% | ![93% improvement](https://img.shields.io/badge/93%25-improvement-success) |
-| **Audit Costs** | $500K | $50K | ![90% savings](https://img.shields.io/badge/90%25-savings-success) |
-| **Bias Detection** | Manual (6 months) | Automated (24 hours) | ![99% faster](https://img.shields.io/badge/99%25-faster-success) |
+![Target Market](./images/readme/business_impact.png)
 
 </div>
 
 ### 🎯 **Target Market & Use Cases**
 
-#### 🏦 **Fintech Startup (Loan Model)**
-```
-1. Uploads model for audit
-2. REGIQ finds bias against lower-income groups
-3. Suggests reweighting strategy
-4. Generates compliance report automatically
-5. Achieves regulatory approval in 2 weeks
-```
+<div align="center">
 
-#### 💳 **Payment App**
-```
-1. REGIQ reads new RBI data localization regulation
-2. Warns: "Customer data servers not compliant"
-3. Provides migration roadmap
-4. Tracks compliance progress in real-time
-5. Prevents $2M+ regulatory fine
-```
+![Target Market](./images/readme/target_market.png)
 
-#### 🧾 **Audit Team**
-```
-1. Uses REGIQ dashboard to track all models
-2. Monitors risk and bias health continuously
-3. Auto-generates regulator-ready documentation
-4. Reduces audit preparation from 3 months to 1 week
-5. Ensures 100% compliance across all models
-```
+</div>
 
 ---
 
@@ -303,14 +243,12 @@ graph TB
 
 ### 📋 **Prerequisites**
 
-```bash
-📱 Node.js 18+ and npm/yarn
-🐍 Python 3.9+
-🐳 Docker & Docker Compose
-📊 PostgreSQL 14+ (or SQLite for development)
-🔄 Redis 6+
+- Node.js 18+ and npm/yarn
+- Python 3.9+
+- Docker & Docker Compose
+- PostgreSQL 14+ (or SQLite for development)
+- Redis 6+
 🔑 Google Cloud API key for Gemini
-```
 
 ### ⚡ **Quick Setup**
 
@@ -356,7 +294,43 @@ python -m services.gemini.main
 
 ### 🔧 **AI/ML Services Architecture**
 
-```python
+<div align="center">
+
+#### 🔄 **Core AI/ML Pipeline Flow**
+
+</div>
+
+```mermaid
+graph LR
+    A[Document Ingestion] --> B[Text Extraction]
+    B --> C[LLM Summarization]
+    C --> D[Entity Recognition]
+    D --> E[Knowledge Graph]
+    E --> F[RAG System]
+    F --> G[Compliance Recommendations]
+    G --> H[Bias Detection]
+    H --> I[Risk Simulation]
+    I --> J[Report Generation]
+    
+    style A fill:#4F46E5,stroke:#312E81,color:#fff
+    style B fill:#7C3AED,stroke:#4C1D95,color:#fff
+    style C fill:#F59E0B,stroke:#92400E,color:#000
+    style D fill:#10B981,stroke:#065F46,color:#fff
+    style E fill:#8B5CF6,stroke:#5B21B6,color:#fff
+    style F fill:#0EA5E9,stroke:#0891B2,color:#fff
+    style G fill:#EC4899,stroke:#BE185D,color:#fff
+    style H fill:#EF4444,stroke:#B91C1C,color:#fff
+    style I fill:#10B981,stroke:#065F46,color:#fff
+    style J fill:#F59E0B,stroke:#92400E,color:#000
+```
+
+<div align="center">
+
+#### ⚙️ **Pipeline Component Details**
+
+</div>
+
+```
 # Core AI/ML Pipeline
 Document Ingestion → Text Extraction → LLM Summarization → 
 Entity Recognition → Knowledge Graph → RAG System → 
@@ -423,33 +397,11 @@ Risk Simulation → Report Generation
 
 ## 🔮 **Future Roadmap**
 
-### 🎯 **Phase 1: Foundation** *(Current)*
-- ✅ Core compliance tracking
-- ✅ Basic AI model auditing
-- ✅ Mobile app MVP
-- ✅ Regulation database
-- ✅ Bias detection engine
+<div align="center">
 
-### 🚀 **Phase 2: Intelligence** *(Q2 2024)*
-- 🔄 Advanced AI explanations
-- 📊 Predictive compliance analytics
-- 🤖 Automated remediation
-- 🌐 Multi-language support
-- 🔮 Regulatory change prediction
+![Future Roadmap](./images/readme/future_roadmap.png)
 
-### 🌟 **Phase 3: Scale** *(Q4 2024)*
-- 🏢 Enterprise integrations
-- 📈 Advanced reporting suite
-- 🤝 Third-party AI model support
-- 🌍 Global regulation coverage
-- 🔗 API ecosystem
-
-### 🚀 **Phase 4: Innovation** *(2025)*
-- 🧠 AI-powered legal assistant
-- 🔮 Regulatory change prediction
-- 🤖 Autonomous compliance
-- 🌐 Blockchain audit trails
-- 🎯 Voice-based explainability
+</div>
 
 ---
 
@@ -468,48 +420,6 @@ Risk Simulation → Report Generation
 
 </div>
 
-### 🏆 **Awards & Recognition**
-
-<div align="center">
-
-![Hackathon Winner](https://img.shields.io/badge/🏆_Hackathon-Winner-gold?style=for-the-badge)
-![Innovation Award](https://img.shields.io/badge/🚀_Innovation-Award-blue?style=for-the-badge)
-![Best AI Solution](https://img.shields.io/badge/🤖_Best_AI-Solution-purple?style=for-the-badge)
-![Fintech Excellence](https://img.shields.io/badge/💳_Fintech-Excellence-green?style=for-the-badge)
-
-</div>
-
----
-
-## 📞 **Contact & Demo**
-
-<div align="center">
-
-### 🎯 **Ready to Transform Your AI Compliance?**
-
-[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-success?style=for-the-badge)](https://regiq-demo.com)
-[![Schedule Call](https://img.shields.io/badge/📞_Schedule-Call-blue?style=for-the-badge)](https://calendly.com/regiq-team)
-[![Email Us](https://img.shields.io/badge/📧_Email-Us-orange?style=for-the-badge)](mailto:hello@regiq.ai)
-
-**📧 Email:** hello@regiq.ai  
-**🌐 Website:** www.regiq.ai  
-**📱 LinkedIn:** /company/regiq-ai  
-**🐦 Twitter:** @RegiqAI  
-**💼 GitHub:** /regiq-ai
-
-</div>
-
----
-
-## 📄 **License & Open Source**
-
-<div align="center">
-
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://choosealicense.com/licenses/mit/)
-
-**MIT License** - Feel free to use, modify, and distribute
-
-</div>
 
 ---
 
