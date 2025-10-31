@@ -1,0 +1,75 @@
+{
+  "model_info": {
+    "model_id": "credit_risk_model_v2.1",
+    "model_type": "XGBoost Classifier",
+    "model_name": "Credit Risk Assessment Model",
+    "training_date": "2024-10-15",
+    "performance_metrics": {
+      "accuracy": 0.847,
+      "precision": 0.823,
+      "recall": 0.791,
+      "f1_score": 0.807,
+      "auc_roc": 0.892
+    }
+  },
+  "fairness_metrics": {
+    "demographic_parity": 0.156,
+    "equalized_odds": 0.089,
+    "calibration": 0.034,
+    "individual_fairness": 0.067
+  },
+  "bias_score": {
+    "overall_score": 0.734,
+    "risk_level": "medium",
+    "flagged_attributes": ["gender", "age_group"],
+    "score_interpretation": "Model shows moderate bias requiring attention"
+  },
+  "explainability": {
+    "feature_importance": {
+      "credit_history_length": 0.284,
+      "income_to_debt_ratio": 0.197,
+      "employment_status": 0.156,
+      "credit_utilization": 0.134,
+      "payment_history": 0.112,
+      "age": 0.067,
+      "gender": 0.050
+    },
+    "shap_values": {
+      "global_importance": [
+        "credit_history_length",
+        "income_to_debt_ratio", 
+        "employment_status"
+      ],
+      "local_explanations_available": true
+    },
+    "lime_explanations": {
+      "sample_explanations": 150,
+      "explanation_fidelity": 0.89
+    },
+    "top_features": [
+      "credit_history_length",
+      "income_to_debt_ratio",
+      "employment_status"
+    ]
+  },
+  "mitigation_results": {
+    "applied_techniques": [
+      "preprocessing_reweighting",
+      "fairness_constraints",
+      "threshold_optimization"
+    ],
+    "before_after_comparison": {
+      "demographic_parity_before": 0.234,
+      "demographic_parity_after": 0.156,
+      "equalized_odds_before": 0.145,
+      "equalized_odds_after": 0.089
+    },
+    "effectiveness": 0.67
+  },
+  "recommendations": [
+    "Apply additional preprocessing bias mitigation techniques",
+    "Consider removing or transforming gender-related features",
+    "Implement continuous fairness monitoring in production",
+    "Conduct regular bias audits with diverse datasets"
+  ]
+}

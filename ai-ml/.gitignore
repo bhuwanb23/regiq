@@ -120,6 +120,30 @@ test_*.pdf
 *_report.html
 
 # =============================================================================
+# PHASE 5.1 REPORT GENERATION - GENERATED FILES
+# =============================================================================
+services/report_generator/generated_reports/
+services/report_generator/temp_outputs/
+services/report_generator/cache/
+*.generated.html
+*.generated.pdf
+*.temp.json
+
+# Test Generated Files
+tests/phase_5_1/generated_outputs/
+tests/phase_5_1/temp_files/
+tests/phase_5_1/benchmark_results/
+tests/phase_5_1/coverage_reports/
+
+# Template Cache Files
+*.template.cache
+*.render.cache
+
+# Performance Test Results
+benchmark_*.json
+performance_*.log
+
+# =============================================================================
 # DOCUMENTATION
 # =============================================================================
 docs/_build/

@@ -1,0 +1,69 @@
+{
+  "summary": {
+    "overview": "Comprehensive regulatory analysis completed for fintech AI systems",
+    "key_points": [
+      "Analyzed 25 relevant regulations across 5 jurisdictions",
+      "Identified 3 high-priority compliance gaps",
+      "Established compliance roadmap with 6-month timeline"
+    ],
+    "total_regulations": 25,
+    "compliance_score": 0.78
+  },
+  "regulations": [
+    {
+      "id": "eu_ai_act_2024",
+      "name": "EU AI Act 2024",
+      "jurisdiction": "European Union",
+      "status": "active",
+      "relevance_score": 0.95
+    },
+    {
+      "id": "gdpr_2018",
+      "name": "General Data Protection Regulation",
+      "jurisdiction": "European Union", 
+      "status": "active",
+      "relevance_score": 0.87
+    },
+    {
+      "id": "fair_credit_reporting_act",
+      "name": "Fair Credit Reporting Act",
+      "jurisdiction": "United States",
+      "status": "active",
+      "relevance_score": 0.82
+    }
+  ],
+  "compliance_status": {
+    "overall_status": "partial_compliance",
+    "compliant_count": 19,
+    "non_compliant_count": 6,
+    "pending_review": 2
+  },
+  "deadlines": [
+    {
+      "regulation": "EU AI Act Implementation",
+      "date": "2025-08-02",
+      "description": "Full compliance with AI Act requirements",
+      "priority": "high"
+    },
+    {
+      "regulation": "GDPR Data Processing Review",
+      "date": "2025-03-15",
+      "description": "Annual data processing compliance review",
+      "priority": "medium"
+    }
+  ],
+  "recommendations": [
+    "Implement comprehensive AI governance framework",
+    "Enhance data protection measures for GDPR compliance",
+    "Establish regular compliance monitoring and reporting"
+  ],
+  "risk_assessment": {
+    "risk_level": "medium",
+    "risk_score": 0.65,
+    "risk_factors": [
+      "Pending AI Act implementation requirements",
+      "Cross-jurisdictional compliance complexity",
+      "Evolving regulatory landscape"
+    ]
+  }
+}
