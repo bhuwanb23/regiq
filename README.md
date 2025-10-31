@@ -13,9 +13,6 @@
 
 *Empowering financial institutions to navigate complex AI regulations with confidence, transparency, and automated governance*
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-success?style=for-the-badge)](https://regiq-demo.com)
-[![Best AI Solution](https://img.shields.io/badge/🤖_Best_AI-Solution-purple?style=for-the-badge)](https://github.com/regiq-ai)
-
 </div>
 
 ---
@@ -117,35 +114,37 @@
 
 ```mermaid
 graph TB
-    A[📱 React Native App] --> B[🚀 FastAPI Backend]
-    B --> C[🤖 AI/ML Services]
-    B --> D[📊 PostgreSQL Database]
-    C --> E[🧠 Google Gemini AI]
-    C --> F[🔍 SHAP/LIME Analysis]
-    C --> G[⚖️ Bias Detection Engine]
-    B --> H[📡 Redis Cache]
-    B --> I[🔔 Notification Service]
+    A[📱 React Native App] --> B[⚡ Node.js API Server]
+    B --> C[🐍 FastAPI Backend]
+    C --> D[🤖 AI/ML Services]
+    C --> E[📊 PostgreSQL Database]
+    D --> F[🧠 Google Gemini AI]
+    D --> G[🔍 SHAP/LIME Analysis]
+    D --> H[⚖️ Bias Detection Engine]
+    C --> I[📡 Redis Cache]
+    B --> J[🔔 Notification Service]
     
-    subgraph "AI/ML Engine"
-        J[📄 Regulatory Intelligence]
-        K[⚖️ Bias & Fairness Analysis]
-        L[🎲 Risk Simulator]
-        M[📋 Report Generator]
+    subgraph "🐳 Docker Services"
+        K[📄 Regulatory Intelligence]
+        L[⚖️ Bias & Fairness Analysis]
+        M[🎲 Risk Simulator]
+        N[📋 Report Generator]
     end
     
-    C --> J
-    C --> K
-    C --> L
-    C --> M
+    D --> K
+    D --> L
+    D --> M
+    D --> N
     
     style A fill:#61DAFB,stroke:#20232A,color:#fff
-    style B fill:#009688,stroke:#004D40,color:#fff
-    style C fill:#FF6B6B,stroke:#C92A2A,color:#fff
-    style E fill:#4285F4,stroke:#1565C0,color:#fff
-    style J fill:#8B5CF6,stroke:#6D28D9,color:#fff
-    style K fill:#EF4444,stroke:#DC2626,color:#fff
-    style L fill:#10B981,stroke:#059669,color:#fff
-    style M fill:#F59E0B,stroke:#D97706,color:#000
+    style B fill:#68D391,stroke:#38A169,color:#fff
+    style C fill:#009688,stroke:#004D40,color:#fff
+    style D fill:#FF6B6B,stroke:#C92A2A,color:#fff
+    style F fill:#4285F4,stroke:#1565C0,color:#fff
+    style K fill:#8B5CF6,stroke:#6D28D9,color:#fff
+    style L fill:#EF4444,stroke:#DC2626,color:#fff
+    style M fill:#10B981,stroke:#059669,color:#fff
+    style N fill:#F59E0B,stroke:#D97706,color:#000
 ```
 
 ### 🛠️ **Comprehensive Tech Stack**
@@ -166,12 +165,12 @@ graph TB
 <td width="33%">
 
 #### ⚡ **Backend**
-- **FastAPI** for high-performance APIs
+- **Node.js** + Express for API gateway
+- **FastAPI** for AI/ML microservices
 - **PostgreSQL** for data persistence
 - **Redis** for caching & sessions
-- **Celery** for background tasks
-- **JWT** authentication
-- **SQLite** for local development
+- **JWT** authentication & middleware
+- **Docker** for containerization
 
 </td>
 <td width="33%">
@@ -254,17 +253,54 @@ graph TB
 
 #### 🎯 **1. Clone the Repository**
 ```bash
-git clone https://github.com/your-username/regiq.git
+git clone https://github.com/bhuwanb23/regiq.git
 cd regiq
 ```
 
 #### 🐳 **2. Docker Setup (Recommended)**
+
+**Production Environment:**
 ```bash
-# Start all services
-docker-compose up -d
+# Build and start all services
+docker-compose up --build -d
+
+# View logs for all services
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+**Development Environment (with pgAdmin & Redis Commander):**
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up --build -d
+
+# Access development tools:
+# - pgAdmin: http://localhost:5050 (admin@regiq.com / admin123)
+# - Redis Commander: http://localhost:8081
+# - API Gateway: http://localhost:3000
+# - FastAPI: http://localhost:8000
+# - AI/ML Services: http://localhost:8001
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Stop development environment
+docker-compose -f docker-compose.dev.yml down
+```
+
+**Individual Service Management:**
+```bash
+# Rebuild specific service
+docker-compose up --build <service-name>
+
+# Scale services
+docker-compose up --scale ai-ml-services=3
+
+# Execute commands in running container
+docker-compose exec api-gateway npm run test
+docker-compose exec fastapi-backend python -m pytest
 ```
 
 #### 📱 **3. Mobile App Setup**
@@ -274,18 +310,40 @@ npm install
 npx expo start
 ```
 
-#### ⚡ **4. Backend Setup**
+#### ⚡ **4. Backend API Server (Node.js)**
+```bash
+cd backend
+npm install
+npm run dev
+# Server runs on http://localhost:3000
+```
+
+#### 🐍 **5. FastAPI Backend (Python)**
 ```bash
 cd backend
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn app.server:app --host 0.0.0.0 --port 8000 --reload
+# API runs on http://localhost:8000
 ```
 
-#### 🤖 **5. AI Services Setup**
+#### 🤖 **6. AI/ML Services Setup**
 ```bash
 cd ai-ml
 pip install -r requirements.txt
 python -m services.gemini.main
+# AI services run on http://localhost:8001
+```
+
+#### 🔧 **Environment Configuration**
+```bash
+# Copy environment files
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp ai-ml/.env.example ai-ml/.env
+
+# Add your API keys
+# GOOGLE_API_KEY=your_gemini_api_key
+# DATABASE_URL=postgresql://user:pass@localhost:5432/regiq
 ```
 
 ---

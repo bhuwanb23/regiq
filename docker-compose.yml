@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: regiq-postgres
+    environment:
+      POSTGRES_DB: regiq
+      POSTGRES_USER: regiq_user
+      POSTGRES_PASSWORD: regiq_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - regiq-network
+
+  # Redis Cache
+  redis:
+    image: redis:6-alpine
+    container_name: regiq-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - regiq-network
+
+  # Node.js API Gateway
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.node
+    container_name: regiq-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://regiq_user:regiq_password@postgres:5432/regiq
+      - REDIS_URL=redis://redis:6379
+      - FASTAPI_URL=http://fastapi-backend:8000
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - regiq-network
+
+  # FastAPI Backend
+  fastapi-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.python
+    container_name: regiq-fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://regiq_user:regiq_password@postgres:5432/regiq
+      - REDIS_URL=redis://redis:6379
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./backend:/app
+    networks:
+      - regiq-network
+
+  # AI/ML Services
+  ai-ml-services:
+    build:
+      context: ./ai-ml
+      dockerfile: Dockerfile
+    container_name: regiq-ai-ml
+    ports:
+      - "8001:8001"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - FASTAPI_URL=http://fastapi-backend:8000
+    depends_on:
+      - fastapi-backend
+    volumes:
+      - ./ai-ml:/app
+    networks:
+      - regiq-network
+
+volumes:
+  postgres_data:
+
+networks:
+  regiq-network:
+    driver: bridge
