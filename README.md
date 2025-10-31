@@ -324,20 +324,6 @@ graph LR
     style J fill:#F59E0B,stroke:#92400E,color:#000
 ```
 
-<div align="center">
-
-#### ⚙️ **Pipeline Component Details**
-
-</div>
-
-```
-# Core AI/ML Pipeline
-Document Ingestion → Text Extraction → LLM Summarization → 
-Entity Recognition → Knowledge Graph → RAG System → 
-Compliance Recommendations → Bias Detection → 
-Risk Simulation → Report Generation
-```
-
 ### 🛠️ **Key Technologies**
 
 <table>
@@ -411,12 +397,32 @@ Risk Simulation → Report Generation
 
 ### 🏆 **Built by Passionate Innovators**
 
-| **Role** | **Expertise** | **Contribution** |
-|:---:|:---:|:---:|
-| **🎯 Product Lead** | AI Ethics & Compliance | Vision & Strategy |
-| **👨‍💻 Tech Lead** | Full-Stack Development | Architecture & Implementation |
-| **🤖 AI Engineer** | Machine Learning & NLP | AI Services & Models |
-| **🎨 UX Designer** | Mobile & Web Design | User Experience |
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="https://github.com/DhikshaG.png" width="100" height="100" style="border-radius: 50%;" alt="Dhiksha G"/>
+<br/>
+<strong>Dhiksha Shivruthi G</strong>
+<br/>
+<em>🎯 Team Leader & AI/ML Architect</em>
+<br/>
+<a href="https://github.com/DhikshaG">@DhikshaG</a>
+<br/>
+<small>Vision & Strategy • AI Services & Models</small>
+</td>
+<td align="center" width="50%">
+<img src="https://github.com/bhuwanb23.png" width="100" height="100" style="border-radius: 50%;" alt="Bhuwan B"/>
+<br/>
+<strong>Bhuwan B</strong>
+<br/>
+<em>👨‍💻 App & Backend Developer</em>
+<br/>
+<a href="https://github.com/bhuwanb23">@bhuwanb23</a>
+<br/>
+<small>Full Stack Development • Mobile Apps</small>
+</td>
+</tr>
+</table>
 
 </div>
 
@@ -425,7 +431,7 @@ Risk Simulation → Report Generation
 
 <div align="center">
 
-### 🚀 **"Making AI Compliance Simple, Transparent, and Automated"**
+### **"Making AI Compliance Simple, Transparent, and Automated"**
 
 **Built with ❤️ for a safer, more ethical AI future**
 
