@@ -28,6 +28,7 @@ from ..utils.section_builder import SectionBuilder
 from .summary_sections import ExecutiveSummaryBuilder
 from .metrics_display import ExecutiveMetricsDisplay
 from .recommendations import ExecutiveRecommendations
+from ...narrative.narrative_generator import NarrativeGenerator
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -54,6 +55,10 @@ class ExecutiveTemplate(BaseTemplate):
         self.summary_builder = ExecutiveSummaryBuilder()
         self.metrics_display = ExecutiveMetricsDisplay()
         self.recommendations = ExecutiveRecommendations()
+        
+        # Initialize narrative generator
+        self.narrative_generator = NarrativeGenerator()
+        self.enable_narratives = True
         
         self.logger = logging.getLogger(__name__)
     
@@ -454,6 +459,100 @@ class ExecutiveTemplate(BaseTemplate):
         except Exception as e:
             self.logger.error(f"Failed to generate executive insights: {str(e)}")
             return {"error": "Could not generate insights"}
+    
+    def generate_enhanced_report(self, data: ReportData, output_format: str = "html") -> Dict[str, Any]:
+        """
+        Generate enhanced report with intelligent narratives.
+        
+        Args:
+            data: Report data
+            output_format: Output format (html, json)
+            
+        Returns:
+            Enhanced report with narratives
+        """
+        try:
+            # Generate base report
+            base_report = self.generate_report(data, output_format)
+            
+            if not self.enable_narratives:
+                return base_report
+            
+            # Generate narratives for each section
+            enhanced_sections = []
+            
+            for section in self.sections:
+                try:
+                    # Prepare section data for narrative generation
+                    section_data = {
+                        "section_content": section.content,
+                        "section_type": section.section_type,
+                        "regulatory_data": data.regulatory_data,
+                        "bias_analysis_data": data.bias_analysis_data,
+                        "risk_simulation_data": data.risk_simulation_data
+                    }
+                    
+                    # Generate narrative for this section
+                    narrative_section = self.narrative_generator.generate_narrative_for_section(
+                        section_data=section_data,
+                        section_id=section.section_id,
+                        section_title=section.title,
+                        audience_type="executive",
+                        section_type=section.section_type
+                    )
+                    
+                    # Create enhanced section
+                    enhanced_section = {
+                        "section_id": section.section_id,
+                        "title": section.title,
+                        "structured_content": section.content,
+                        "narrative": narrative_section.narrative,
+                        "confidence_score": narrative_section.confidence_score,
+                        "section_type": section.section_type,
+                        "order": section.order,
+                        "metadata": narrative_section.metadata
+                    }
+                    
+                    enhanced_sections.append(enhanced_section)
+                    
+                except Exception as e:
+                    self.logger.error(f"Failed to enhance section {section.section_id}: {str(e)}")
+                    # Include original section without narrative
+                    enhanced_sections.append({
+                        "section_id": section.section_id,
+                        "title": section.title,
+                        "structured_content": section.content,
+                        "narrative": None,
+                        "confidence_score": 0.0,
+                        "section_type": section.section_type,
+                        "order": section.order,
+                        "metadata": {"narrative_error": str(e)}
+                    })
+            
+            # Create enhanced report
+            enhanced_report = {
+                **base_report,
+                "enhanced": True,
+                "narrative_enabled": True,
+                "enhanced_sections": enhanced_sections,
+                "narrative_stats": {
+                    "total_sections": len(enhanced_sections),
+                    "sections_with_narratives": len([s for s in enhanced_sections if s["narrative"]]),
+                    "average_confidence": sum(s["confidence_score"] for s in enhanced_sections) / len(enhanced_sections) if enhanced_sections else 0.0
+                }
+            }
+            
+            self.logger.info(f"Generated enhanced executive report with {len(enhanced_sections)} narrative sections")
+            
+            return enhanced_report
+            
+        except Exception as e:
+            self.logger.error(f"Enhanced report generation failed: {str(e)}")
+            # Fallback to base report
+            base_report = self.generate_report(data, output_format)
+            base_report["enhanced"] = False
+            base_report["enhancement_error"] = str(e)
+            return base_report
     
     def __str__(self) -> str:
         """String representation."""

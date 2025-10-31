@@ -134,6 +134,10 @@ tests/phase_5_1/generated_outputs/
 tests/phase_5_1/temp_files/
 tests/phase_5_1/benchmark_results/
 tests/phase_5_1/coverage_reports/
+tests/phase_5_2/generated_outputs/
+tests/phase_5_2/temp_files/
+tests/phase_5_2/benchmark_results/
+tests/phase_5_2/coverage_reports/
 
 # Template Cache Files
 *.template.cache
