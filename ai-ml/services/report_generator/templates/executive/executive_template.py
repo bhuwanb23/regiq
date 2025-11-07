@@ -70,7 +70,7 @@ class ExecutiveTemplate(BaseTemplate):
     
     def get_supported_formats(self) -> List[str]:
         """Get supported output formats."""
-        return ["html", "pdf", "json"]
+        return ["html", "pdf", "json", "csv", "xlsx"]
     
     def validate_data(self, data: ReportData) -> Tuple[bool, List[str]]:
         """

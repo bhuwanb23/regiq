@@ -145,7 +145,7 @@ tests/phase_5_3/coverage_reports/
 tests/phase_5_4/generated_outputs/
 tests/phase_5_4/temp_files/
 tests/phase_5_4/benchmark_results/
-tests/phase_5_4/coverage_reports/
+tests/phase_5_4/fixtures/
 
 # Template Cache Files
 *.template.cache
