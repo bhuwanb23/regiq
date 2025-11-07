@@ -5,10 +5,13 @@ Main entry point for the FastAPI application.
 """
 
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
+
+# Import routers
+from services.api.routers import health, auth
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -48,11 +51,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "REGIQ AI/ML API"}
+# Include routers
+app.include_router(health.router)
+app.include_router(auth.router)
 
 # Root endpoint
 @app.get("/")

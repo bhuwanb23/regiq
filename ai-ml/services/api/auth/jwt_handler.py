@@ -9,13 +9,16 @@ from typing import Optional
 import jwt
 from jwt import PyJWTError
 import bcrypt
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))
 from config.env_config import get_env_config
 
 # Get configuration
 config = get_env_config()
-SECRET_KEY = config.get("JWT_SECRET_KEY", "regiq-ai-ml-secret-key-for-development-only")
+SECRET_KEY = config.get("JWT_SECRET_KEY", "regiq-ai-ml-secret-key-for-development-only") or "regiq-ai-ml-secret-key-for-development-only"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(config.get("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(config.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30") or "30")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Create JWT access token."""
