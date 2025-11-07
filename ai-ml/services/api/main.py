@@ -12,6 +12,10 @@ import logging
 
 # Import routers
 from services.api.routers import health, auth
+from services.api.routers.regulatory_intelligence import main as regulatory_intelligence_router
+from services.api.routers.bias_analysis import main as bias_analysis_router
+from services.api.routers.risk_simulator import main as risk_simulator_router
+from services.api.routers.report_generator import main as report_generator_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,6 +58,10 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router)
 app.include_router(auth.router)
+app.include_router(regulatory_intelligence_router.router)
+app.include_router(bias_analysis_router.router)
+app.include_router(risk_simulator_router.router)
+app.include_router(report_generator_router.router)
 
 # Root endpoint
 @app.get("/")
