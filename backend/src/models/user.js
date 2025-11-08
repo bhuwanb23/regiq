@@ -40,11 +40,29 @@ module.exports = (sequelize, DataTypes) => {
     lastLogin: {
       type: DataTypes.DATE,
       field: 'last_login'
+    },
+    preferences: {
+      type: DataTypes.JSON,
+      defaultValue: {
+        theme: 'light',
+        notifications: true,
+        language: 'en'
+      }
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: 'is_deleted'
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      field: 'deleted_at'
     }
   }, {
     tableName: 'users',
     timestamps: true,
-    underscored: true
+    underscored: true,
+    paranoid: true
   });
 
   return User;
