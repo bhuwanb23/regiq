@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(helmet()); // Security headers
 app.use(cors()); // Cross-origin resource sharing
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(cookieParser()); // Parse cookies
 
 // Basic routes
 app.get('/', (req, res) => {
@@ -33,6 +35,10 @@ app.get('/health', (req, res) => {
     uptime: process.uptime()
   });
 });
+
+// Auth routes
+const authRoutes = require('./routes/auth.routes');
+app.use('/auth', authRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
