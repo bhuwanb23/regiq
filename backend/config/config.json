@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "regiq_user",
+    "password": null,
+    "database": "regiq_backend",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "regiq_user",
+    "password": null,
+    "database": "regiq_backend_test",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "regiq_user",
+    "password": null,
+    "database": "regiq_backend",
+    "host": "127.0.0.1",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

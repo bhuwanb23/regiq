@@ -8,31 +8,34 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DB_HOST=mongodb
-      - DB_PORT=27017
+      - DB_HOST=postgres
+      - DB_PORT=5432
       - DB_NAME=regiq_backend
+      - DB_USER=regiq_user
+      - DB_PASSWORD=regiq_password
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
-      - mongodb
+      - postgres
     networks:
       - regiq-network
 
-  mongodb:
-    image: mongo:5.0
+  postgres:
+    image: postgres:13
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      - POSTGRES_DB=regiq_backend
+      - POSTGRES_USER=regiq_user
+      - POSTGRES_PASSWORD=regiq_password
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - regiq-network
 
 volumes:
-  mongodb_data:
+  postgres_data:
 
 networks:
   regiq-network:
