@@ -7,6 +7,7 @@ Tests system performance under various load conditions.
 import pytest
 import time
 import statistics
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from unittest.mock import Mock, patch
 
