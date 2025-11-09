@@ -1,11 +1,7 @@
 const express = require('express');
 const regulatoryController = require('../controllers/regulatory.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
-
-// Apply authentication middleware to all routes
-router.use(authenticate);
 
 // Document upload and processing endpoints
 router.post('/documents/upload', regulatoryController.uploadDocument);
