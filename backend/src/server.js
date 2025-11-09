@@ -60,6 +60,10 @@ app.use('/risk', riskSimulationRoutes);
 const reportGenerationRoutes = require('./routes/reportGeneration.routes');
 app.use('/reports', reportGenerationRoutes);
 
+// Data Ingestion routes
+const dataIngestionRoutes = require('./routes/dataIngestion.routes');
+app.use('/data', dataIngestionRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

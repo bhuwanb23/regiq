@@ -35,7 +35,11 @@ const modelDefiners = [
   require('./reportSchedule'),
   require('./reportDistribution'),
   require('./reportVersion'),
-  require('./reportAnalytics')
+  require('./reportAnalytics'),
+  require('./dataValidationRule'),
+  require('./dataQualityMetric'),
+  require('./dataLineage'),
+  require('./fileUpload')
 ];
 
 // We define all models according to their files.

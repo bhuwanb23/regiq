@@ -119,3 +119,9 @@ Dockerfile
 
 # DATABASE-SQLITE
 database.sqlite
+
+# json files
+*.json
+!.json
+
+test.txt
