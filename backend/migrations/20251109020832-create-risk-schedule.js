@@ -2,46 +2,50 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('risk_simulations', {
+    await queryInterface.createTable('risk_schedules', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
       },
-      name: {
+      schedule_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
       description: {
         type: Sequelize.TEXT
       },
-      scenario_id: {
-        type: Sequelize.UUID,
+      schedule_type: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      simulation_type: {
-        type: Sequelize.STRING,
-        defaultValue: 'monte_carlo'
+      frequency: {
+        type: Sequelize.STRING
       },
-      iterations: {
-        type: Sequelize.INTEGER,
-        defaultValue: 1000
+      cron_expression: {
+        type: Sequelize.STRING
       },
-      time_horizon: {
-        type: Sequelize.INTEGER
+      next_run_time: {
+        type: Sequelize.DATE
       },
-      model_parameters: {
+      last_run_time: {
+        type: Sequelize.DATE
+      },
+      last_run_status: {
+        type: Sequelize.STRING
+      },
+      parameters: {
         type: Sequelize.JSON
       },
-      status: {
-        type: Sequelize.ENUM('pending', 'configured', 'running', 'completed', 'failed'),
-        defaultValue: 'pending'
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       },
-      summary_statistics: {
-        type: Sequelize.JSON
+      timezone: {
+        type: Sequelize.STRING
       },
-      results: {
+      notification_emails: {
         type: Sequelize.JSON
       },
       created_at: {
@@ -55,6 +59,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('risk_simulations');
+    await queryInterface.dropTable('risk_schedules');
   }
 };

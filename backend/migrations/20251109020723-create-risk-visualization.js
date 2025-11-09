@@ -2,46 +2,49 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('risk_simulations', {
+    await queryInterface.createTable('risk_visualizations', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
       },
-      name: {
+      visualization_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
       description: {
         type: Sequelize.TEXT
       },
-      scenario_id: {
+      visualization_type: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      data_type: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      data: {
+        type: Sequelize.JSON,
+        allowNull: false
+      },
+      x_axis_label: {
+        type: Sequelize.STRING
+      },
+      y_axis_label: {
+        type: Sequelize.STRING
+      },
+      chart_title: {
+        type: Sequelize.STRING
+      },
+      simulation_id: {
         type: Sequelize.UUID,
         allowNull: false
       },
-      simulation_type: {
-        type: Sequelize.STRING,
-        defaultValue: 'monte_carlo'
+      scenario_id: {
+        type: Sequelize.UUID
       },
-      iterations: {
-        type: Sequelize.INTEGER,
-        defaultValue: 1000
-      },
-      time_horizon: {
-        type: Sequelize.INTEGER
-      },
-      model_parameters: {
-        type: Sequelize.JSON
-      },
-      status: {
-        type: Sequelize.ENUM('pending', 'configured', 'running', 'completed', 'failed'),
-        defaultValue: 'pending'
-      },
-      summary_statistics: {
-        type: Sequelize.JSON
-      },
-      results: {
+      metadata: {
         type: Sequelize.JSON
       },
       created_at: {
@@ -55,6 +58,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('risk_simulations');
+    await queryInterface.dropTable('risk_visualizations');
   }
 };

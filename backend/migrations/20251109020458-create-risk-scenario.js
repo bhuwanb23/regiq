@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('risk_simulations', {
+    await queryInterface.createTable('risk_scenarios', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -16,32 +16,45 @@ module.exports = {
       description: {
         type: Sequelize.TEXT
       },
-      scenario_id: {
-        type: Sequelize.UUID,
+      scenario_type: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      simulation_type: {
-        type: Sequelize.STRING,
-        defaultValue: 'monte_carlo'
+      parameters: {
+        type: Sequelize.JSON
       },
-      iterations: {
-        type: Sequelize.INTEGER,
-        defaultValue: 1000
+      probability: {
+        type: Sequelize.FLOAT,
+        validate: {
+          min: 0,
+          max: 1
+        }
+      },
+      impact: {
+        type: Sequelize.FLOAT,
+        validate: {
+          min: 0,
+          max: 100
+        }
+      },
+      severity: {
+        type: Sequelize.ENUM('low', 'medium', 'high', 'critical'),
+        defaultValue: 'medium'
       },
       time_horizon: {
         type: Sequelize.INTEGER
       },
-      model_parameters: {
-        type: Sequelize.JSON
+      jurisdiction: {
+        type: Sequelize.STRING
       },
-      status: {
-        type: Sequelize.ENUM('pending', 'configured', 'running', 'completed', 'failed'),
-        defaultValue: 'pending'
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       },
-      summary_statistics: {
-        type: Sequelize.JSON
+      created_by: {
+        type: Sequelize.UUID
       },
-      results: {
+      metadata: {
         type: Sequelize.JSON
       },
       created_at: {
@@ -55,6 +68,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('risk_simulations');
+    await queryInterface.dropTable('risk_scenarios');
   }
 };

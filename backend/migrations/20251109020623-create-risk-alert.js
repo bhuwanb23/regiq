@@ -2,46 +2,54 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('risk_simulations', {
+    await queryInterface.createTable('risk_alerts', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
       },
-      name: {
+      alert_name: {
         type: Sequelize.STRING,
         allowNull: false
       },
       description: {
         type: Sequelize.TEXT
       },
-      scenario_id: {
-        type: Sequelize.UUID,
+      alert_type: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-      simulation_type: {
-        type: Sequelize.STRING,
-        defaultValue: 'monte_carlo'
+      severity: {
+        type: Sequelize.ENUM('low', 'medium', 'high', 'critical'),
+        defaultValue: 'medium'
       },
-      iterations: {
-        type: Sequelize.INTEGER,
-        defaultValue: 1000
+      threshold: {
+        type: Sequelize.FLOAT
       },
-      time_horizon: {
-        type: Sequelize.INTEGER
+      current_value: {
+        type: Sequelize.FLOAT
       },
-      model_parameters: {
+      triggered_at: {
+        type: Sequelize.DATE
+      },
+      resolved_at: {
+        type: Sequelize.DATE
+      },
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
+      simulation_id: {
+        type: Sequelize.UUID
+      },
+      scenario_id: {
+        type: Sequelize.UUID
+      },
+      recipients: {
         type: Sequelize.JSON
       },
-      status: {
-        type: Sequelize.ENUM('pending', 'configured', 'running', 'completed', 'failed'),
-        defaultValue: 'pending'
-      },
-      summary_statistics: {
-        type: Sequelize.JSON
-      },
-      results: {
+      metadata: {
         type: Sequelize.JSON
       },
       created_at: {
@@ -55,6 +63,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('risk_simulations');
+    await queryInterface.dropTable('risk_alerts');
   }
 };
