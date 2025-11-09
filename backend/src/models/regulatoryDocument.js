@@ -53,6 +53,22 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.ENUM('pending', 'processed', 'archived'),
       defaultValue: 'pending'
+    },
+    fileSize: {
+      type: DataTypes.INTEGER,
+      field: 'file_size'
+    },
+    mimeType: {
+      type: DataTypes.STRING,
+      field: 'mime_type'
+    },
+    uploadedBy: {
+      type: DataTypes.UUID,
+      field: 'uploaded_by'
+    },
+    processedAt: {
+      type: DataTypes.DATE,
+      field: 'processed_at'
     }
   }, {
     tableName: 'regulatory_documents',

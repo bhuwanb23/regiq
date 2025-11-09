@@ -6,6 +6,12 @@ const sequelize = require('../config/database');
 const modelDefiners = [
   require('./user'),
   require('./regulatoryDocument'),
+  require('./complianceResult'),
+  require('./regulatoryAlert'),
+  require('./documentVersion'),
+  require('./documentMetadata'),
+  require('./documentShare'),
+  require('./analysisResult'),
   require('./modelAnalysis'),
   require('./riskSimulation'),
   require('./report'),

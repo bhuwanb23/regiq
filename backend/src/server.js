@@ -44,6 +44,10 @@ app.use('/auth', authRoutes);
 const userRoutes = require('./routes/user.routes');
 app.use('/users', userRoutes);
 
+// Regulatory routes
+const regulatoryRoutes = require('./routes/regulatory.routes');
+app.use('/regulatory', regulatoryRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
