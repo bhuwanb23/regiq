@@ -56,6 +56,10 @@ app.use('/bias', biasAnalysisRoutes);
 const riskSimulationRoutes = require('./routes/riskSimulation.routes');
 app.use('/risk', riskSimulationRoutes);
 
+// Report Generation routes
+const reportGenerationRoutes = require('./routes/reportGeneration.routes');
+app.use('/reports', reportGenerationRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

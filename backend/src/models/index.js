@@ -29,7 +29,13 @@ const modelDefiners = [
   require('./report'),
   require('./dataPipelineJob'),
   require('./alert'),
-  require('./auditLog')
+  require('./auditLog'),
+  require('./reportTemplate'),
+  require('./reportGeneration'),
+  require('./reportSchedule'),
+  require('./reportDistribution'),
+  require('./reportVersion'),
+  require('./reportAnalytics')
 ];
 
 // We define all models according to their files.
