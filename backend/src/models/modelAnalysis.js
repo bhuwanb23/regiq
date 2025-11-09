@@ -81,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
     analysisParameters: {
       type: DataTypes.JSON,
       field: 'analysis_parameters'
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at'
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updated_at'
     }
   }, {
     tableName: 'model_analyses',

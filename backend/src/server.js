@@ -48,6 +48,10 @@ app.use('/users', userRoutes);
 const regulatoryRoutes = require('./routes/regulatory.routes');
 app.use('/regulatory', regulatoryRoutes);
 
+// Bias Analysis routes
+const biasAnalysisRoutes = require('./routes/biasAnalysis.routes');
+app.use('/bias', biasAnalysisRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
