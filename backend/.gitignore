@@ -116,3 +116,6 @@ public/
 # Docker
 Dockerfile
 .dockerignore
+
+# DATABASE-SQLITE
+database.sqlite

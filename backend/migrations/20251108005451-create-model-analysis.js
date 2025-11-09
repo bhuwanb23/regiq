@@ -2,78 +2,86 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ModelAnalyses', {
+    await queryInterface.createTable('model_analyses', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        allowNull: false
       },
-      modelId: {
-        type: Sequelize.UUID
+      model_id: {
+        type: Sequelize.UUID,
+        allowNull: false
       },
-      modelName: {
-        type: Sequelize.STRING
+      model_name: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      modelType: {
-        type: Sequelize.STRING
+      model_type: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       framework: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       version: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      targetVariable: {
-        type: Sequelize.STRING
+      target_variable: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      protectedAttributes: {
-        type: Sequelize.JSON
+      protected_attributes: {
+        type: Sequelize.JSON,
+        allowNull: false
       },
-      trainingDataSize: {
+      training_data_size: {
         type: Sequelize.INTEGER
       },
-      performanceMetrics: {
+      performance_metrics: {
         type: Sequelize.JSON
       },
-      demographicParityDifference: {
+      demographic_parity_difference: {
         type: Sequelize.FLOAT
       },
-      equalOpportunityDifference: {
+      equal_opportunity_difference: {
         type: Sequelize.FLOAT
       },
-      disparateImpact: {
+      disparate_impact: {
         type: Sequelize.FLOAT
       },
-      statisticalParityDifference: {
+      statistical_parity_difference: {
         type: Sequelize.FLOAT
       },
-      consistencyScore: {
+      consistency_score: {
         type: Sequelize.FLOAT
       },
-      featureImportanceBias: {
+      feature_importance_bias: {
         type: Sequelize.JSON
       },
-      groupMetrics: {
+      group_metrics: {
         type: Sequelize.JSON
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.ENUM('pending', 'in_progress', 'completed', 'failed'),
+        defaultValue: 'pending'
       },
-      analysisParameters: {
+      analysis_parameters: {
         type: Sequelize.JSON
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ModelAnalyses');
+    await queryInterface.dropTable('model_analyses');
   }
 };

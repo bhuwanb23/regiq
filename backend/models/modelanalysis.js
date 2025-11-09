@@ -1,40 +1,100 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class ModelAnalysis extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+  const ModelAnalysis = sequelize.define('ModelAnalysis', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    modelId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      field: 'model_id'
+    },
+    modelName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'model_name'
+    },
+    modelType: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'model_type'
+    },
+    framework: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    version: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    targetVariable: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'target_variable'
+    },
+    protectedAttributes: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      field: 'protected_attributes'
+    },
+    trainingDataSize: {
+      type: DataTypes.INTEGER,
+      field: 'training_data_size'
+    },
+    performanceMetrics: {
+      type: DataTypes.JSON,
+      field: 'performance_metrics'
+    },
+    demographicParityDifference: {
+      type: DataTypes.FLOAT,
+      field: 'demographic_parity_difference'
+    },
+    equalOpportunityDifference: {
+      type: DataTypes.FLOAT,
+      field: 'equal_opportunity_difference'
+    },
+    disparateImpact: {
+      type: DataTypes.FLOAT,
+      field: 'disparate_impact'
+    },
+    statisticalParityDifference: {
+      type: DataTypes.FLOAT,
+      field: 'statistical_parity_difference'
+    },
+    consistencyScore: {
+      type: DataTypes.FLOAT,
+      field: 'consistency_score'
+    },
+    featureImportanceBias: {
+      type: DataTypes.JSON,
+      field: 'feature_importance_bias'
+    },
+    groupMetrics: {
+      type: DataTypes.JSON,
+      field: 'group_metrics'
+    },
+    status: {
+      type: DataTypes.ENUM('pending', 'in_progress', 'completed', 'failed'),
+      defaultValue: 'pending'
+    },
+    analysisParameters: {
+      type: DataTypes.JSON,
+      field: 'analysis_parameters'
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at'
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updated_at'
     }
-  }
-  ModelAnalysis.init({
-    modelId: DataTypes.UUID,
-    modelName: DataTypes.STRING,
-    modelType: DataTypes.STRING,
-    framework: DataTypes.STRING,
-    version: DataTypes.STRING,
-    targetVariable: DataTypes.STRING,
-    protectedAttributes: DataTypes.JSON,
-    trainingDataSize: DataTypes.INTEGER,
-    performanceMetrics: DataTypes.JSON,
-    demographicParityDifference: DataTypes.FLOAT,
-    equalOpportunityDifference: DataTypes.FLOAT,
-    disparateImpact: DataTypes.FLOAT,
-    statisticalParityDifference: DataTypes.FLOAT,
-    consistencyScore: DataTypes.FLOAT,
-    featureImportanceBias: DataTypes.JSON,
-    groupMetrics: DataTypes.JSON,
-    status: DataTypes.STRING,
-    analysisParameters: DataTypes.JSON
   }, {
-    sequelize,
-    modelName: 'ModelAnalysis',
+    tableName: 'model_analyses',
+    timestamps: true,
+    underscored: true
   });
+
   return ModelAnalysis;
 };
