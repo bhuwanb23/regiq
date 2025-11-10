@@ -41,7 +41,11 @@ const modelDefiners = [
   require('./dataLineage'),
   require('./fileUpload'),
   require('./jobStatus'),
-  require('./jobHistory')
+  require('./jobHistory'),
+  require('./searchIndex'),
+  require('./searchAnalytics'),
+  require('./searchFacets'),
+  require('./searchCache')
 ];
 
 // We define all models according to their files.

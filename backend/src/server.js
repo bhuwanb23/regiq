@@ -76,6 +76,10 @@ app.use('/status', jobStatusRoutes);
 const alertRoutes = require('./routes/alert.routes');
 app.use('/alerts', alertRoutes);
 
+// Search routes
+const searchRoutes = require('./routes/search.routes');
+app.use('/search', searchRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

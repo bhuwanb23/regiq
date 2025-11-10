@@ -1,8 +1,8 @@
 module.exports = (sequelize, DataTypes) => {
   const RegulatoryDocument = sequelize.define('RegulatoryDocument', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true
     },
     title: {
@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'mime_type'
     },
     uploadedBy: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       field: 'uploaded_by'
     },
     processedAt: {
