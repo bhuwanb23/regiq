@@ -39,7 +39,9 @@ const modelDefiners = [
   require('./dataValidationRule'),
   require('./dataQualityMetric'),
   require('./dataLineage'),
-  require('./fileUpload')
+  require('./fileUpload'),
+  require('./jobStatus'),
+  require('./jobHistory')
 ];
 
 // We define all models according to their files.

@@ -68,6 +68,14 @@ app.use('/data', dataIngestionRoutes);
 const aiMlRoutes = require('./routes/ai-ml.routes');
 app.use('/ai-ml', aiMlRoutes);
 
+// Job Status routes
+const jobStatusRoutes = require('./routes/jobStatus.routes');
+app.use('/status', jobStatusRoutes);
+
+// Alert routes
+const alertRoutes = require('./routes/alert.routes');
+app.use('/alerts', alertRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -85,8 +93,12 @@ app.use((req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`REGIQ Backend Server is running on port ${PORT}`);
 });
 
-module.exports = app;
+// Initialize WebSocket server
+const websocketService = require('./services/websocket.service');
+websocketService.initialize(server);
+
+module.exports = { app, server };
