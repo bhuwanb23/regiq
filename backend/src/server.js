@@ -64,6 +64,10 @@ app.use('/reports', reportGenerationRoutes);
 const dataIngestionRoutes = require('./routes/dataIngestion.routes');
 app.use('/data', dataIngestionRoutes);
 
+// AI/ML routes
+const aiMlRoutes = require('./routes/ai-ml.routes');
+app.use('/ai-ml', aiMlRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
