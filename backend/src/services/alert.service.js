@@ -1,4 +1,5 @@
 const { JobStatus, JobHistory, Alert, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const winston = require('winston');
 const websocketService = require('./websocket.service');
 
@@ -49,7 +50,7 @@ class AlertService {
         where: {
           status: 'failed',
           failedAt: {
-            [sequelize.Op.gte]: oneMinuteAgo
+            [Op.gte]: oneMinuteAgo
           }
         }
       });
@@ -85,7 +86,7 @@ class AlertService {
         where: {
           status: 'processing',
           updatedAt: {
-            [sequelize.Op.lt]: fiveMinutesAgo
+            [Op.lt]: fiveMinutesAgo
           }
         }
       });

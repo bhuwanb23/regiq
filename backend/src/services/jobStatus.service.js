@@ -1,4 +1,5 @@
 const { JobStatus, JobHistory, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const winston = require('winston');
 const websocketService = require('./websocket.service');
 
@@ -324,7 +325,7 @@ class JobStatusService {
         where: {
           status: 'completed',
           createdAt: {
-            [sequelize.Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+            [Op.gte]: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
           }
         },
         order: [['createdAt', 'DESC']],

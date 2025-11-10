@@ -1,4 +1,5 @@
 const { JobStatus, JobHistory, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const winston = require('winston');
 const os = require('os');
 
@@ -99,7 +100,7 @@ class PerformanceMetricsService {
         where: {
           status: 'completed',
           createdAt: {
-            [sequelize.Op.gte]: new Date(Date.now() - 60 * 60 * 1000) // Last hour
+            [Op.gte]: new Date(Date.now() - 60 * 60 * 1000) // Last hour
           }
         },
         order: [['createdAt', 'DESC']],
