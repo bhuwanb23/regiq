@@ -91,12 +91,12 @@ class SearchService {
       const results = {
         data: await Promise.all(rows.map(async (item) => {
           // Get the associated document
-          const document = await RegulatoryDocument.findByPk(item.document_id || item.documentId, {
+          const document = await RegulatoryDocument.findByPk(item.document_id, {
             attributes: ['id', 'title', 'content', 'jurisdiction', 'documentType', 'effectiveDate', 'createdAt']
           });
           
           return {
-            id: document ? document.id : item.document_id || item.documentId,
+            id: document ? document.id : item.document_id,
             title: document ? document.title : item.title,
             content: document ? document.content : item.content,
             jurisdiction: document ? document.jurisdiction : item.jurisdiction,
@@ -264,9 +264,16 @@ class SearchService {
    */
   async indexDocument(document) {
     try {
-      if (!document || !document.id) {
+      // Validate document object
+      if (!document || typeof document !== 'object') {
+        throw new Error('Document data is required and must be an object');
+      }
+      
+      if (!document.id) {
         throw new Error('Document ID is required');
       }
+      
+      console.log('Indexing document with data:', document);
       
       // This will be handled by the database triggers
       // The triggers automatically sync the FTS table with the search_indices table

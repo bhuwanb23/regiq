@@ -90,6 +90,14 @@ class SearchController {
    */
   async indexDocument(req, res) {
     try {
+      // Check if body exists and has document property
+      if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Document data is required'
+        });
+      }
+
       const { document } = req.body;
 
       if (!document) {

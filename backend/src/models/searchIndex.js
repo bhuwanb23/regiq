@@ -5,10 +5,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    documentId: {
+    document_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'document_id'
+      allowNull: false
     },
     title: {
       type: DataTypes.STRING,
@@ -18,10 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    documentType: {
+    document_type: {
       type: DataTypes.STRING,
-      allowNull: true,
-      field: 'document_type'
+      allowNull: true
     },
     jurisdiction: {
       type: DataTypes.STRING,

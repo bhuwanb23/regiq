@@ -1,6 +1,6 @@
 const request = require('supertest');
-const { app } = require('../src/server');
-const { SearchIndex, SearchAnalytics, SearchCache } = require('../src/models');
+const { app, server } = require('../src/server');
+const { SearchIndex, SearchAnalytics, SearchCache, RegulatoryDocument } = require('../src/models');
 const { sequelize } = require('../src/models');
 
 describe('Search API', () => {
@@ -10,8 +10,10 @@ describe('Search API', () => {
   });
 
   afterAll(async () => {
-    // Close database connection after tests
+    // Close database connection and server after tests
     await sequelize.close();
+    // Close the server to prevent hanging tests
+    server.close();
   });
 
   describe('GET /search', () => {
@@ -66,9 +68,18 @@ describe('Search API', () => {
     });
 
     it('should successfully index a document', async () => {
+      // First create a regulatory document
+      const regulatoryDocument = await RegulatoryDocument.create({
+        title: 'Test Document',
+        content: 'This is a test document for search functionality',
+        documentType: 'regulation',
+        jurisdiction: 'US',
+        source: 'test-source'
+      });
+
       const documentData = {
         document: {
-          id: 1,
+          id: regulatoryDocument.id,
           title: 'Test Document',
           content: 'This is a test document for search functionality',
           jurisdiction: 'US',
@@ -98,8 +109,34 @@ describe('Search API', () => {
     });
 
     it('should successfully remove document from index', async () => {
+      // First create a regulatory document
+      const regulatoryDocument = await RegulatoryDocument.create({
+        title: 'Test Document 2',
+        content: 'This is another test document for search functionality',
+        documentType: 'regulation',
+        jurisdiction: 'US',
+        source: 'test-source'
+      });
+
+      // Index the document
+      const documentData = {
+        document: {
+          id: regulatoryDocument.id,
+          title: 'Test Document 2',
+          content: 'This is another test document for search functionality',
+          jurisdiction: 'US',
+          documentType: 'regulation',
+          source: 'test-source'
+        }
+      };
+
+      await request(app)
+        .post('/search/index')
+        .send(documentData);
+
+      // Now delete it
       const response = await request(app)
-        .delete('/search/index/1')
+        .delete(`/search/index/${regulatoryDocument.id}`)
         .expect(200);
 
       expect(response.body.success).toBe(true);

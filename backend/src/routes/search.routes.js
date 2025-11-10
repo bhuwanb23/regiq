@@ -23,4 +23,12 @@ router.delete('/index/:documentId', (req, res, next) => {
   next();
 }, searchController.removeDocumentFromIndex);
 
+// Handle case where documentId is missing
+router.delete('/index/', (req, res) => {
+  res.status(400).json({
+    success: false,
+    message: 'Document ID is required'
+  });
+});
+
 module.exports = router;
