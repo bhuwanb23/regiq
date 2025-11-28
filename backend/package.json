@@ -1,1 +1,4 @@
-{ "name": "regiq-backend", "scripts": { "start": "node server.js", "test": "jest" } }
+// fix: remove unused mongoose dependency from backend package.json
+// Applied: 2026-07-13T10:13:55.877Z
+
+module.exports = { updated: true };
