@@ -1,0 +1,8 @@
+Title,Report Type,Generated At,Status,Total Regulations,Compliant,Non-Compliant,Pending
+"Q4 2025 Compliance Report","compliance","Tue Dec 16 2025 10:48:38 GMT+0530 (India Standard Time)","completed","142","128","5","9"
+
+Jurisdiction,Regulation,Status,Action Required
+"United States","GDPR Compliance Act","compliant",""
+"Canada","PIPEDA Amendment #42","non-compliant","Update privacy policy by Jan 15, 2026"
+"European Union","Digital Services Act","compliant",""
+"Australia","Privacy Act 1988","pending","Review required by Feb 1, 2026"
