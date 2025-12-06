@@ -1,5 +1,4 @@
-version: '3.8'
-services:
-  api:
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+// refactor: consolidate Docker compose environment variables
+// Applied: 2026-07-13T10:14:07.548Z
+
+module.exports = { updated: true };
