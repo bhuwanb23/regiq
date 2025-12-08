@@ -7,12 +7,15 @@ class SearchController {
    * @param {Object} res - Express response object
    */
   async searchDocuments(req, res) {
+    console.log('Search controller called with query:', req.query);
     try {
       const {
         q,
         filters,
         page,
-        limit
+        limit,
+        sortBy,
+        sortOrder
       } = req.query;
 
       // Parse filters if provided as JSON string
@@ -32,8 +35,12 @@ class SearchController {
         q: q || '',
         filters: parsedFilters,
         page: parseInt(page) || 1,
-        limit: parseInt(limit) || 10
+        limit: parseInt(limit) || 10,
+        sortBy: sortBy || 'relevance',
+        sortOrder: sortOrder || 'desc'
       };
+      
+      console.log('Calling SearchService with searchQuery:', searchQuery);
 
       const results = await SearchService.searchDocuments(searchQuery);
 
@@ -78,6 +85,97 @@ class SearchController {
       res.status(500).json({
         success: false,
         message: 'Failed to get suggestions',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Get popular search queries
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getPopularQueries(req, res) {
+    try {
+      const { limit = 10 } = req.query;
+      const popularQueries = await SearchService.getPopularQueries(parseInt(limit));
+
+      res.json({
+        success: true,
+        data: popularQueries
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get popular queries',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Get search trends over time
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getSearchTrends(req, res) {
+    try {
+      const { days = 30 } = req.query;
+      const trends = await SearchService.getSearchTrends(parseInt(days));
+
+      res.json({
+        success: true,
+        data: trends
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get search trends',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Get zero result searches
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getZeroResultSearches(req, res) {
+    try {
+      const { limit = 10 } = req.query;
+      const zeroResults = await SearchService.getZeroResultSearches(parseInt(limit));
+
+      res.json({
+        success: true,
+        data: zeroResults
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get zero result searches',
+        error: error.message
+      });
+    }
+  }
+
+  /**
+   * Get cache statistics
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getCacheStats(req, res) {
+    try {
+      const stats = await SearchService.getCacheStats();
+
+      res.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get cache statistics',
         error: error.message
       });
     }

@@ -14,28 +14,40 @@ class SearchService {
    * @returns {Object} Search results with pagination info
    */
   async searchDocuments(query) {
+    console.log('searchDocuments called with query:', query);
+    
+    // Ensure query is an object to prevent "Cannot read properties of undefined" errors
+    const safeQuery = query || {};
+    
     const {
       q = '',
       filters = {},
       page = 1,
-      limit = 10
-    } = query;
+      limit = 10,
+      sortBy = 'relevance',
+      sortOrder = 'desc'
+    } = safeQuery;
+
+    console.log('Parsed parameters:', { q, filters, page, limit, sortBy, sortOrder });
 
     const offset = (page - 1) * limit;
 
     // Check cache first
-    const cacheKey = this.generateCacheKey(query);
+    const cacheKey = this.generateCacheKey(safeQuery);
     const cachedResult = await this.getCachedResult(cacheKey);
     if (cachedResult) {
       return cachedResult;
     }
 
+    // Track response time
+    const startTime = Date.now();
+    
     try {
       let count, rows;
 
       // If we have a search query, use FTS
       if (q) {
-        // Use raw query for FTS search
+        // Use raw query for FTS search with timeout
         const ftsQuery = `
           SELECT si.*, sf.rank
           FROM search_indices si
@@ -45,12 +57,14 @@ class SearchService {
           LIMIT ? OFFSET ?
         `;
         
+        // Add query timeout (5 seconds)
         const ftsResults = await sequelize.query(ftsQuery, {
           replacements: [q, limit, offset],
-          type: sequelize.QueryTypes.SELECT
+          type: sequelize.QueryTypes.SELECT,
+          timeout: 5000
         });
         
-        // Get count for pagination
+        // Get count for pagination with timeout
         const countQuery = `
           SELECT COUNT(*) as count
           FROM search_indices si
@@ -60,13 +74,14 @@ class SearchService {
         
         const countResult = await sequelize.query(countQuery, {
           replacements: [q],
-          type: sequelize.QueryTypes.SELECT
+          type: sequelize.QueryTypes.SELECT,
+          timeout: 5000
         });
         
         count = countResult[0].count;
         rows = ftsResults;
       } else {
-        // Regular search without FTS
+        // Regular search without FTS with timeout
         const whereConditions = this.buildFilterWhereConditions(filters);
         
         const result = await SearchIndex.findAndCountAll({
@@ -77,35 +92,64 @@ class SearchService {
             attributes: ['id', 'title', 'content', 'jurisdiction', 'documentType', 'effectiveDate', 'createdAt']
           }],
           limit,
-          offset
+          offset,
+          timeout: 5000
         });
         
         count = result.count;
         rows = result.rows;
       }
 
-      // Track search analytics
-      await this.trackSearch(q, count, filters);
+      // Calculate response time
+      const responseTime = Date.now() - startTime;
+      
+      // Track search analytics with response time
+      await this.trackSearch(q, count, filters, responseTime);
 
-      // Prepare results
+      // Prepare results with enhanced ranking
+      let searchData = await Promise.all(rows.map(async (item) => {
+        // Get the associated document
+        const document = await RegulatoryDocument.findByPk(item.document_id, {
+          attributes: ['id', 'title', 'content', 'jurisdiction', 'documentType', 'effectiveDate', 'createdAt']
+        });
+        
+        // Calculate enhanced relevance score
+        const relevanceScore = this.calculateRelevanceScore(item, document, q);
+        
+        return {
+          id: document ? document.id : item.document_id,
+          title: document ? document.title : item.title,
+          content: document ? document.content : item.content,
+          jurisdiction: document ? document.jurisdiction : item.jurisdiction,
+          documentType: document ? document.documentType : null,
+          effectiveDate: document ? document.effectiveDate : null,
+          createdAt: document ? document.createdAt : item.createdAt,
+          relevanceScore: relevanceScore
+        };
+      }));
+      
+      // Sort results based on sortBy parameter
+      if (sortBy === 'relevance') {
+        searchData.sort((a, b) => {
+          if (sortOrder === 'asc') {
+            return a.relevanceScore - b.relevanceScore;
+          } else {
+            return b.relevanceScore - a.relevanceScore;
+          }
+        });
+      } else if (sortBy === 'date' && sortOrder === 'desc') {
+        searchData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (sortBy === 'date' && sortOrder === 'asc') {
+        searchData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      }
+      
+      // Apply pagination to sorted data
+      const startIndex = offset;
+      const endIndex = startIndex + limit;
+      const paginatedData = searchData.slice(startIndex, endIndex);
+
       const results = {
-        data: await Promise.all(rows.map(async (item) => {
-          // Get the associated document
-          const document = await RegulatoryDocument.findByPk(item.document_id, {
-            attributes: ['id', 'title', 'content', 'jurisdiction', 'documentType', 'effectiveDate', 'createdAt']
-          });
-          
-          return {
-            id: document ? document.id : item.document_id,
-            title: document ? document.title : item.title,
-            content: document ? document.content : item.content,
-            jurisdiction: document ? document.jurisdiction : item.jurisdiction,
-            documentType: document ? document.documentType : null,
-            effectiveDate: document ? document.effectiveDate : null,
-            createdAt: document ? document.createdAt : item.createdAt,
-            relevanceScore: item.rank || 0
-          };
-        })),
+        data: paginatedData,
         pagination: {
           page,
           limit,
@@ -120,9 +164,93 @@ class SearchService {
 
       return results;
     } catch (error) {
+      // Track failed searches
+      const responseTime = Date.now() - startTime;
+      await this.trackSearch(q, 0, filters, responseTime);
+      
       console.error('Search failed:', error);
       throw new Error(`Search failed: ${error.message}`);
     }
+  }
+
+  /**
+   * Calculate enhanced relevance score for search results
+   * @param {Object} item - Search index item
+   * @param {Object} document - Associated regulatory document
+   * @param {string} query - Search query
+   * @returns {number} Relevance score between 0 and 1
+   */
+  calculateRelevanceScore(item, document, query) {
+    // Start with FTS rank if available
+    let score = item.rank || 0;
+    
+    // If we don't have a query, return a basic score based on document properties
+    if (!query) {
+      // Boost newer documents
+      if (document && document.createdAt) {
+        const now = new Date();
+        const created = new Date(document.createdAt);
+        const daysOld = (now - created) / (1000 * 60 * 60 * 24);
+        // Newer documents get higher scores (max boost for documents less than 30 days old)
+        const freshnessBoost = Math.max(0, 1 - (daysOld / 30));
+        score += freshnessBoost * 0.3;
+      }
+      
+      // Boost documents with compliance scores
+      if (document && document.complianceScore) {
+        score += (document.complianceScore / 100) * 0.2;
+      }
+      
+      return Math.min(1, score);
+    }
+    
+    // Enhanced scoring for queries
+    
+    // 1. Term frequency in title (weighted heavily)
+    const titleMatches = (item.title || '').toLowerCase().split(' ').filter(word => 
+      word.includes(query.toLowerCase())
+    ).length;
+    score += titleMatches * 0.4;
+    
+    // 2. Term frequency in content
+    const contentMatches = (item.content || '').toLowerCase().split(' ').filter(word => 
+      word.includes(query.toLowerCase())
+    ).length;
+    score += contentMatches * 0.1;
+    
+    // 3. Exact phrase match bonus
+    if ((item.title || '').toLowerCase().includes(query.toLowerCase())) {
+      score += 0.3;
+    }
+    
+    if ((item.content || '').toLowerCase().includes(query.toLowerCase())) {
+      score += 0.1;
+    }
+    
+    // 4. Document type boosting
+    const importantDocTypes = ['regulation', 'directive', 'act'];
+    if (document && document.documentType && 
+        importantDocTypes.includes(document.documentType.toLowerCase())) {
+      score += 0.2;
+    }
+    
+    // 5. Freshness boost
+    if (document && document.createdAt) {
+      const now = new Date();
+      const created = new Date(document.createdAt);
+      const daysOld = (now - created) / (1000 * 60 * 60 * 24);
+      // Newer documents get higher scores (max boost for documents less than 30 days old)
+      const freshnessBoost = Math.max(0, 1 - (daysOld / 30));
+      score += freshnessBoost * 0.15;
+    }
+    
+    // 6. Compliance score boost
+    if (document && document.complianceScore) {
+      score += (document.complianceScore / 100) * 0.1;
+    }
+    
+    // Normalize score to 0-1 range
+    return Math.min(1, score);
   }
 
   /**
@@ -131,11 +259,16 @@ class SearchService {
    * @returns {string} Cache key
    */
   generateCacheKey(query) {
-    return JSON.stringify(query);
+    // Create a more stable cache key by sorting keys
+    const sortedQuery = {};
+    Object.keys(query).sort().forEach(key => {
+      sortedQuery[key] = query[key];
+    });
+    return JSON.stringify(sortedQuery);
   }
 
   /**
-   * Get cached search results
+   * Get cached search results with LRU eviction
    * @param {string} key - Cache key
    * @returns {Object|null} Cached results or null
    */
@@ -143,14 +276,20 @@ class SearchService {
     try {
       const cacheEntry = await SearchCache.findOne({
         where: {
-          query_hash: key,  // Using the actual column name
+          query_hash: key,
           expires_at: {
             [Op.gt]: new Date()
           }
-        }
+        },
+        order: [['accessed_at', 'DESC']] // Get most recently accessed
       });
 
       if (cacheEntry) {
+        // Update last accessed time for LRU eviction
+        await cacheEntry.update({
+          accessed_at: new Date()
+        });
+        
         return cacheEntry.results;
       }
       return null;
@@ -169,13 +308,15 @@ class SearchService {
     try {
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 1); // Cache for 1 hour
+      const now = new Date();
 
       await SearchCache.upsert({
         query_hash: key,
         query: results.query,
         results: results,
         result_count: results.pagination.total,
-        created_at: new Date(),
+        created_at: now,
+        accessed_at: now,
         expires_at: expiresAt
       });
     } catch (error) {
@@ -212,17 +353,152 @@ class SearchService {
    * @param {string} query - Search query
    * @param {number} resultCount - Number of results
    * @param {Object} filters - Applied filters
+   * @param {number} responseTime - Response time in milliseconds
+   * @param {string} userId - User ID (if available)
+   * @param {string} sessionId - Session ID (if available)
    */
-  async trackSearch(query, resultCount, filters) {
+  async trackSearch(query, resultCount, filters, responseTime = 0, userId = null, sessionId = null) {
     try {
+      // Ensure query is a string to prevent "Cannot read properties of undefined" errors
+      const safeQuery = query || '';
+      const safeFilters = filters || {};
+      const safeResultCount = resultCount || 0;
+      const safeResponseTime = responseTime || 0;
+      
       await SearchAnalytics.create({
-        query,
-        result_count: resultCount,
-        filters: JSON.stringify(filters),
+        query: safeQuery,
+        result_count: safeResultCount,
+        filters: JSON.stringify(safeFilters),
+        response_time: safeResponseTime,
+        user_id: userId,
+        session_id: sessionId,
         timestamp: new Date()
       });
     } catch (error) {
       console.warn('Failed to track search:', error.message);
+    }
+  }
+
+  /**
+   * Get popular search queries
+   * @param {number} limit - Number of queries to return
+   * @returns {Array} Popular search queries
+   */
+  async getPopularQueries(limit = 10) {
+    try {
+      const popularQueries = await SearchAnalytics.findAll({
+        attributes: [
+          'query',
+          [sequelize.fn('COUNT', sequelize.col('query')), 'count'],
+          [sequelize.fn('AVG', sequelize.col('results_count')), 'avg_results'],
+          [sequelize.fn('AVG', sequelize.col('response_time')), 'avg_response_time']
+        ],
+        group: ['query'],
+        order: [[sequelize.fn('COUNT', sequelize.col('query')), 'DESC']],
+        limit: limit
+      });
+      
+      return popularQueries.map(item => ({
+        query: item.query,
+        count: item.getDataValue('count'),
+        avgResults: parseFloat(item.getDataValue('avg_results')).toFixed(2),
+        avgResponseTime: parseFloat(item.getDataValue('avg_response_time')).toFixed(2)
+      }));
+    } catch (error) {
+      console.warn('Failed to get popular queries:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get search trends over time
+   * @param {number} days - Number of days to analyze
+   * @returns {Array} Search trends data
+   */
+  async getSearchTrends(days = 30) {
+    try {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      const trends = await SearchAnalytics.findAll({
+        attributes: [
+          [sequelize.fn('DATE', sequelize.col('timestamp')), 'date'],
+          [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
+          [sequelize.fn('AVG', sequelize.col('results_count')), 'avg_results']
+        ],
+        where: {
+          timestamp: {
+            [Op.gte]: startDate
+          }
+        },
+        group: [sequelize.fn('DATE', sequelize.col('timestamp'))],
+        order: [[sequelize.fn('DATE', sequelize.col('timestamp')), 'ASC']]
+      });
+      
+      return trends.map(item => ({
+        date: item.getDataValue('date'),
+        count: item.getDataValue('count'),
+        avgResults: parseFloat(item.getDataValue('avg_results')).toFixed(2)
+      }));
+    } catch (error) {
+      console.warn('Failed to get search trends:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get zero result searches
+   * @param {number} limit - Number of queries to return
+   * @returns {Array} Zero result searches
+   */
+  async getZeroResultSearches(limit = 10) {
+    try {
+      const zeroResults = await SearchAnalytics.findAll({
+        attributes: ['query', 'filters', 'timestamp'],
+        where: {
+          results_count: 0
+        },
+        order: [['timestamp', 'DESC']],
+        limit: limit
+      });
+      
+      return zeroResults;
+    } catch (error) {
+      console.warn('Failed to get zero result searches:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Warm the cache with popular queries
+   * @param {number} limit - Number of popular queries to warm
+   */
+  async warmCacheWithPopularQueries(limit = 50) {
+    try {
+      // Get popular queries
+      const popularQueries = await this.getPopularQueries(limit);
+      
+      // Warm cache for each popular query
+      for (const item of popularQueries) {
+        const query = item.query;
+        
+        // Skip if already cached
+        const cacheKey = this.generateCacheKey({ q: query });
+        const cachedResult = await this.getCachedResult(cacheKey);
+        if (cachedResult) {
+          continue;
+        }
+        
+        // Execute search to populate cache
+        try {
+          await this.searchDocuments({ q: query });
+          console.log(`Warmed cache for query: ${query}`);
+        } catch (error) {
+          console.warn(`Failed to warm cache for query: ${query}`, error.message);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to warm cache with popular queries:', error.message);
     }
   }
 

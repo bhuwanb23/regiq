@@ -8,6 +8,12 @@ router.get('/', searchController.searchDocuments);
 // Get search suggestions
 router.get('/suggestions', searchController.getSuggestions);
 
+// Search analytics endpoints
+router.get('/analytics/popular', searchController.getPopularQueries);
+router.get('/analytics/trends', searchController.getSearchTrends);
+router.get('/analytics/zero-results', searchController.getZeroResultSearches);
+router.get('/analytics/cache-stats', searchController.getCacheStats);
+
 // Index a document for search (admin only)
 router.post('/index', searchController.indexDocument);
 

@@ -12,7 +12,7 @@ module.exports = {
       },
       documentId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         field: 'document_id',
         references: {
           model: 'RegulatoryDocuments',
@@ -63,7 +63,7 @@ module.exports = {
       CREATE VIRTUAL TABLE IF NOT EXISTS search_fts USING fts5(
         title, 
         content, 
-        documentType, 
+        document_type, 
         jurisdiction, 
         source, 
         tags,
@@ -76,26 +76,26 @@ module.exports = {
     await queryInterface.sequelize.query(`
       CREATE TRIGGER IF NOT EXISTS search_indices_ai AFTER INSERT ON search_indices 
       BEGIN
-        INSERT INTO search_fts(rowid, title, content, documentType, jurisdiction, source, tags) 
-        VALUES (new.id, new.title, new.content, new.documentType, new.jurisdiction, new.source, new.tags);
+        INSERT INTO search_fts(rowid, title, content, document_type, jurisdiction, source, tags) 
+        VALUES (new.id, new.title, new.content, new.document_type, new.jurisdiction, new.source, new.tags);
       END;
     `);
 
     await queryInterface.sequelize.query(`
       CREATE TRIGGER IF NOT EXISTS search_indices_ad AFTER DELETE ON search_indices 
       BEGIN
-        INSERT INTO search_fts(search_fts, rowid, title, content, documentType, jurisdiction, source, tags) 
-        VALUES ('delete', old.id, old.title, old.content, old.documentType, old.jurisdiction, old.source, old.tags);
+        INSERT INTO search_fts(search_fts, rowid, title, content, document_type, jurisdiction, source, tags) 
+        VALUES ('delete', old.id, old.title, old.content, old.document_type, old.jurisdiction, old.source, old.tags);
       END;
     `);
 
     await queryInterface.sequelize.query(`
       CREATE TRIGGER IF NOT EXISTS search_indices_au AFTER UPDATE ON search_indices 
       BEGIN
-        INSERT INTO search_fts(search_fts, rowid, title, content, documentType, jurisdiction, source, tags) 
-        VALUES ('delete', old.id, old.title, old.content, old.documentType, old.jurisdiction, old.source, old.tags);
-        INSERT INTO search_fts(rowid, title, content, documentType, jurisdiction, source, tags) 
-        VALUES (new.id, new.title, new.content, new.documentType, new.jurisdiction, new.source, new.tags);
+        INSERT INTO search_fts(search_fts, rowid, title, content, document_type, jurisdiction, source, tags) 
+        VALUES ('delete', old.id, old.title, old.content, old.document_type, old.jurisdiction, old.source, old.tags);
+        INSERT INTO search_fts(rowid, title, content, document_type, jurisdiction, source, tags) 
+        VALUES (new.id, new.title, new.content, new.document_type, new.jurisdiction, new.source, new.tags);
       END;
     `);
   },

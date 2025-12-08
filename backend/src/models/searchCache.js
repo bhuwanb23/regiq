@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       field: 'expires_at'
+    },
+    accessedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: 'accessed_at'
     }
   }, {
     tableName: 'search_cache',
