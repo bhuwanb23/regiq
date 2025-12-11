@@ -1,4 +1,4 @@
 // fix: remove .expo cache directory from git tracking
-// Applied: 2026-07-13T10:14:13.837Z
+// Applied: 2026-07-13T10:14:15.597Z
 
 module.exports = { updated: true };
