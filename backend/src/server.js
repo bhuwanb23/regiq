@@ -80,6 +80,14 @@ app.use('/alerts', alertRoutes);
 const searchRoutes = require('./routes/search.routes');
 app.use('/search', searchRoutes);
 
+// Notification routes
+const notificationRoutes = require('./routes/notification.routes');
+app.use('/notifications', notificationRoutes);
+
+// Audit routes
+const auditRoutes = require('./routes/audit.routes');
+app.use('/audit', auditRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -104,5 +112,8 @@ const server = app.listen(PORT, () => {
 // Initialize WebSocket server
 const websocketService = require('./services/websocket.service');
 websocketService.initialize(server);
+
+// Initialize notification scheduler
+const notificationScheduler = require('./services/notification.scheduler');
 
 module.exports = { app, server };

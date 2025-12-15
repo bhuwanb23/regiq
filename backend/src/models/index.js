@@ -45,7 +45,11 @@ const modelDefiners = [
   require('./searchIndex'),
   require('./searchAnalytics'),
   require('./searchFacets'),
-  require('./searchCache')
+  require('./searchCache'),
+  require('./notification'),
+  require('./notificationTemplate'),
+  require('./notificationPreference'),
+  require('./notificationAnalytics')
 ];
 
 // We define all models according to their files.
