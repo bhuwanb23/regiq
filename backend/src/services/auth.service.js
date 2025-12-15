@@ -20,18 +20,21 @@ class AuthService {
       }
 
       // Validate password strength
-      const passwordValidation = passwordUtils.validatePasswordStrength(userData.passwordHash);
+      const passwordValidation = passwordUtils.validatePasswordStrength(userData.password);
       if (!passwordValidation.isValid) {
         throw new Error('Password does not meet security requirements');
       }
 
       // Hash password
-      const hashedPassword = await passwordUtils.hashPassword(userData.passwordHash);
+      const hashedPassword = await passwordUtils.hashPassword(userData.password);
       
       // Create user
       const user = await User.create({
-        ...userData,
-        passwordHash: hashedPassword
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        passwordHash: hashedPassword,
+        role: userData.role || 'analyst'
       });
 
       // Generate tokens

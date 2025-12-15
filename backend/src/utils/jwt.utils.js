@@ -40,7 +40,10 @@ class JWTUtils {
    */
   async verifyAccessToken(token) {
     try {
-      const decoded = await verifyAsync(token, process.env.JWT_SECRET || 'fallback_secret_key');
+      const decoded = await verifyAsync(token, process.env.JWT_SECRET || 'fallback_secret_key', {
+        audience: 'regiq-frontend',
+        issuer: 'regiq-backend'
+      });
       return decoded;
     } catch (error) {
       throw new Error('Invalid or expired access token');
@@ -54,7 +57,10 @@ class JWTUtils {
    */
   async verifyRefreshToken(token) {
     try {
-      const decoded = await verifyAsync(token, process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret_key');
+      const decoded = await verifyAsync(token, process.env.JWT_REFRESH_SECRET || 'fallback_refresh_secret_key', {
+        audience: 'regiq-frontend',
+        issuer: 'regiq-backend'
+      });
       return decoded;
     } catch (error) {
       throw new Error('Invalid or expired refresh token');

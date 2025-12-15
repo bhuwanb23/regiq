@@ -484,6 +484,69 @@ class NotificationService {
       return true;
     }
   }
+  /**
+   * Send scheduled notifications
+   * @returns {Promise<void>}
+   */
+  async sendScheduledNotifications() {
+    try {
+      const now = new Date();
+      
+      // Find pending notifications that are scheduled for now or earlier
+      const notifications = await Notification.findAll({
+        where: {
+          status: 'PENDING',
+          scheduledAt: {
+            [Op.lte]: now
+          }
+        }
+      });
+      
+      // Send each notification
+      for (const notification of notifications) {
+        try {
+          // Update notification status to SENT
+          await notification.update({
+            status: 'SENT',
+            sentAt: new Date()
+          });
+          
+          // Broadcast notification via WebSocket
+          this.broadcastNotification(notification);
+          
+          this.logger.info('Scheduled notification sent', { notificationId: notification.id });
+        } catch (error) {
+          // Update notification status to FAILED
+          await notification.update({
+            status: 'FAILED'
+          });
+          
+          this.logger.error('Failed to send scheduled notification', { 
+            error: error.message, 
+            notificationId: notification.id 
+          });
+        }
+      }
+    } catch (error) {
+      this.logger.error('Failed to process scheduled notifications', { error: error.message });
+      throw error;
+    }
+  }
+  
+  /**
+   * Broadcast notification via WebSocket
+   * @param {Object} notification - Notification to broadcast
+   */
+  broadcastNotification(notification) {
+    try {
+      websocketService.broadcastToUser(notification.userId, 'notification', notification);
+    } catch (error) {
+      this.logger.error('Failed to broadcast notification', { 
+        error: error.message, 
+        notificationId: notification.id 
+      });
+    }
+  }
 }
 
 module.exports = new NotificationService();
