@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modelInfoSubtitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
     marginTop: 2,
   },
@@ -502,27 +502,29 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   modelInfoTitle: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
   },
   modelInfoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginHorizontal: -SPACING.xs,
   },
   modelInfoItem: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '50%',
     marginBottom: SPACING.xs,
+    paddingHorizontal: SPACING.xs,
   },
   modelInfoLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginLeft: 4,
   },
   modelInfoValue: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginLeft: 4,
@@ -552,13 +554,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   quickMetricValue: {
-    fontSize: TYPOGRAPHY.fontSize.xl,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
   quickMetricLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     textAlign: 'center',
     marginBottom: SPACING.xs,
@@ -568,7 +570,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   trendText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginLeft: SPACING.xs,
   },
@@ -596,13 +598,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   activityTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   activityTime: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   metricsGrid: {

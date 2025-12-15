@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
   },
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   changeButtonText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.secondary,
   },
@@ -175,12 +175,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scenarioTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginBottom: SPACING.xs,
   },
   scenarioDescription: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
   },
   riskBadge: {
     alignSelf: 'flex-start',
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   detailText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     marginLeft: SPACING.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
   },
   impactTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   impactText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     flex: 1,
   },

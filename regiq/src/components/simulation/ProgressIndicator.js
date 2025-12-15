@@ -67,12 +67,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
   },
   stepText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   progressBarContainer: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   stepLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     textAlign: 'center',
   },
   stepLabelCompleted: {

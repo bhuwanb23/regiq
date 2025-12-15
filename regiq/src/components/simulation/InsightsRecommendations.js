@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
   },
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   insightTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     flex: 1,
   },
@@ -302,8 +302,8 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   insightDescription: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    lineHeight: 18,
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    lineHeight: 16,
   },
   actionContainer: {
     flexDirection: 'row',
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   quickActionsTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     marginHorizontal: SPACING.xs,
   },
   actionButtonText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginLeft: SPACING.xs,
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.success,
     marginBottom: 2,

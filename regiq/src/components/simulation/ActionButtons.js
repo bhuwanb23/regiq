@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonText: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: SPACING.sm,
   },
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   badgeText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.white,
   },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   quickActionText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     textAlign: 'center',
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.accent,
   },
   footerButtonText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textSecondary,
     marginLeft: SPACING.xs,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs,
   },
   statusText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
   },

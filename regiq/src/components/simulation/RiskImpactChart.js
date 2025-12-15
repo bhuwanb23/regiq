@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
   },
   timeframeButtonText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   chartTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   axisLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   chartArea: {
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dataPointValue: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.white,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   heatmapHeaderText: {
     flex: 1,
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textSecondary,
     textAlign: 'center',
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   heatmapRowLabel: {
     width: 50,
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textSecondary,
   },
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   heatmapCellText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.white,
   },
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs,
   },
   legendText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
 });
