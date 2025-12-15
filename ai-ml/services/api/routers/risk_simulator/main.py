@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/api/v1/risk-simulator",
     tags=["Risk Simulation"],
-    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 

@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 # Create router
 router = APIRouter(
     tags=["Data Ingestion"],
-    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 

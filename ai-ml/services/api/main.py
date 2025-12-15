@@ -10,6 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
 
+# Import API key authentication middleware
+from services.api.middleware.api_key_auth import api_key_auth_middleware
+
 # Import routers
 from services.api.routers import health, auth
 from services.api.routers.regulatory_intelligence import main as regulatory_intelligence_router
@@ -55,6 +58,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add API key authentication middleware for service-to-service communication
+app.middleware("http")(api_key_auth_middleware)
 
 # Include routers
 app.include_router(health.router)

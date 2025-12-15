@@ -1,14 +1,26 @@
 {
   "development": {
-    "dialect": "sqlite",
-    "storage": "./database.sqlite"
+    "username": "regiq_user",
+    "password": "regiq_password",
+    "database": "regiq_backend",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 5432
   },
   "test": {
-    "dialect": "sqlite",
-    "storage": ":memory:"
+    "username": "regiq_user",
+    "password": "regiq_password",
+    "database": "regiq_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 5432
   },
   "production": {
-    "dialect": "sqlite",
-    "storage": "./database.sqlite"
+    "username": "regiq_user",
+    "password": "regiq_password",
+    "database": "regiq_backend",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 5432
   }
 }

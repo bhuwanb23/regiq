@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter(
     prefix="/api/v1/regulatory-intelligence",
     tags=["Regulatory Intelligence"],
-    dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
