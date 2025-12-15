@@ -43,7 +43,7 @@ const ReportsStatsCard = () => {
         {stats.map((stat, index) => (
           <View key={index} style={styles.statCard}>
             <View style={[styles.iconContainer, { backgroundColor: stat.backgroundColor }]}>
-              <Ionicons name={stat.icon} size={20} color={stat.color} />
+              <Ionicons name={stat.icon} size={16} color={stat.color} />
             </View>
             
             <Text style={[styles.statValue, { color: stat.color }]}>
@@ -57,12 +57,12 @@ const ReportsStatsCard = () => {
       {/* Additional Info */}
       <View style={styles.additionalInfo}>
         <View style={styles.infoItem}>
-          <Ionicons name="calendar" size={14} color={COLORS.textSecondary} />
+          <Ionicons name="calendar" size={12} color={COLORS.textSecondary} />
           <Text style={styles.infoText}>Last generated: Oct 19, 2024</Text>
         </View>
         
         <View style={styles.infoItem}>
-          <Ionicons name="trending-up" size={14} color={COLORS.success} />
+          <Ionicons name="trending-up" size={12} color={COLORS.success} />
           <Text style={styles.infoText}>75% completion rate</Text>
         </View>
       </View>
@@ -73,38 +73,38 @@ const ReportsStatsCard = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.md,
+    marginHorizontal: SPACING.sm,
+    marginBottom: SPACING.sm,
     ...SHADOWS.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     textAlign: 'center',
   },
   statsGrid: {
     flexDirection: 'row',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   statCard: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.xs,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.xs,
   },
   statValue: {
-    fontSize: TYPOGRAPHY.fontSize.xl,
+    fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 2,
   },
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   additionalInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: SPACING.sm,
+    paddingTop: SPACING.xs,
     borderTopWidth: 1,
     borderTopColor: COLORS.gray200,
   },
@@ -125,10 +125,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: TYPOGRAPHY.fontSize.xs, // Using existing xs size
     color: COLORS.textSecondary,
     marginLeft: SPACING.xs,
   },
 });
 
-export default ReportsStatsCard;
+export default ReportsStatsCard; // Added missing export statement

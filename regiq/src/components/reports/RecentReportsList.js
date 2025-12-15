@@ -34,7 +34,7 @@ const RecentReportItem = ({
             style={styles.actionButton}
             onPress={onShare}
           >
-            <Ionicons name="share" size={12} color={COLORS.secondary} />
+            <Ionicons name="share" size={10} color={COLORS.secondary} />
             <Text style={styles.actionText}>Share</Text>
           </TouchableOpacity>
           
@@ -42,7 +42,7 @@ const RecentReportItem = ({
             style={styles.actionButton}
             onPress={onDownload}
           >
-            <Ionicons name="download" size={12} color={COLORS.primary} />
+            <Ionicons name="download" size={10} color={COLORS.primary} />
             <Text style={styles.actionText}>Download</Text>
           </TouchableOpacity>
         </View>
@@ -155,29 +155,29 @@ const RecentReportsList = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
   },
   viewAllButton: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.secondary,
   },
   reportItem: {
     backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    marginBottom: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.sm,
+    marginBottom: SPACING.xs,
     borderWidth: 1,
     borderColor: COLORS.gray200,
     ...SHADOWS.sm,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   reportTitleContainer: {
     flexDirection: 'row',
@@ -194,13 +194,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: SPACING.sm,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: SPACING.xs,
   },
   reportTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
   },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   reportActions: {
     flexDirection: 'row',
-    gap: SPACING.sm,
+    gap: SPACING.xs,
   },
   actionButton: {
     flexDirection: 'row',

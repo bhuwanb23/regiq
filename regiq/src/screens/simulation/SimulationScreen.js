@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// Removed SafeAreaView import since it's handled by AppLayout
 import { COLORS, TYPOGRAPHY } from '../../constants/theme';
 
 const SimulationScreen = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    // Removed SafeAreaView wrapper since it's handled by AppLayout
+    <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Risk Simulation</Text>
         <Text style={styles.subtitle}>
@@ -15,7 +16,7 @@ const SimulationScreen = () => {
           🧪 Coming Soon: Synthetic data generation and compliance testing
         </Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -28,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],

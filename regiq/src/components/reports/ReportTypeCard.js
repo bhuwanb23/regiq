@@ -29,7 +29,7 @@ const ReportTypeCard = ({
         </View>
         
         <View style={[styles.iconContainer, { backgroundColor: iconBackground }]}>
-          <Ionicons name={icon} size={20} color={iconColor} />
+          <Ionicons name={icon} size={16} color={iconColor} />
         </View>
       </View>
 
@@ -54,7 +54,7 @@ const ReportTypeCard = ({
             style={[styles.exportButton, styles.pdfButton]}
             onPress={onExportPDF}
           >
-            <Ionicons name="document" size={12} color={COLORS.white} />
+            <Ionicons name="document" size={10} color={COLORS.white} />
             <Text style={styles.pdfButtonText}>PDF</Text>
           </TouchableOpacity>
           
@@ -62,7 +62,7 @@ const ReportTypeCard = ({
             style={[styles.exportButton, styles.csvButton]}
             onPress={onExportCSV}
           >
-            <Ionicons name="grid" size={12} color={COLORS.white} />
+            <Ionicons name="grid" size={10} color={COLORS.white} />
             <Text style={styles.csvButtonText}>CSV</Text>
           </TouchableOpacity>
         </View>
@@ -74,9 +74,9 @@ const ReportTypeCard = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.sm,
+    marginBottom: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.gray200,
     ...SHADOWS.sm,
@@ -85,40 +85,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   titleContainer: {
     flex: 1,
-    marginRight: SPACING.sm,
+    marginRight: SPACING.xs,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   description: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
-    lineHeight: 18,
+    lineHeight: 16,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.lg,
+    width: 32,
+    height: 32,
+    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   statsGrid: {
     flexDirection: 'row',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 2,
   },
@@ -143,9 +143,9 @@ const styles = StyleSheet.create({
   exportButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
     paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.lg,
+    borderRadius: BORDER_RADIUS.md,
   },
   pdfButton: {
     backgroundColor: COLORS.primary,

@@ -32,7 +32,7 @@ const ReportTypesList = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.sm,
   },
 });
 

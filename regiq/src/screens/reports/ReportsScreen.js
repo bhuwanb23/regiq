@@ -6,7 +6,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// Removed SafeAreaView import since it's handled by AppLayout
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 // Import components
@@ -100,7 +100,8 @@ const ReportsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    // Removed SafeAreaView wrapper since it's handled by AppLayout
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       
       <ScrollView 
@@ -140,7 +141,7 @@ const ReportsScreen = () => {
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -154,9 +155,10 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: SPACING.lg,
+    paddingTop: SPACING.sm, // Reduced top padding
   },
   bottomSpacing: {
-    height: SPACING.xl,
+    height: SPACING.md, // Reduced bottom spacing
   },
 });
 

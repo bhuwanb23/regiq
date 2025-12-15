@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // Added missing React import
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
@@ -16,13 +16,13 @@ const QuickActionsBanner = ({ onNewReport }) => {
             onPress={onNewReport}
             activeOpacity={0.8}
           >
-            <Ionicons name="add" size={16} color={COLORS.primary} />
+            <Ionicons name="add" size={14} color={COLORS.primary} />
             <Text style={styles.buttonText}>New Report</Text>
           </TouchableOpacity>
         </View>
         
         <View style={styles.iconContainer}>
-          <Ionicons name="document-text" size={32} color={`${COLORS.white}80`} />
+          <Ionicons name="document-text" size={24} color={`${COLORS.white}80`} />
         </View>
       </View>
     </View>
@@ -31,50 +31,50 @@ const QuickActionsBanner = ({ onNewReport }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.md,
   },
   banner: {
     backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS['2xl'],
-    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...SHADOWS.md,
+    ...SHADOWS.sm,
   },
   content: {
     flex: 1,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.white,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: `${COLORS.white}CC`,
-    marginBottom: SPACING.md,
-    lineHeight: 18,
+    marginBottom: SPACING.sm,
+    lineHeight: 16,
   },
   actionButton: {
     backgroundColor: COLORS.white,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.lg,
     alignSelf: 'flex-start',
   },
   buttonText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
     marginLeft: SPACING.xs,
   },
   iconContainer: {
-    marginLeft: SPACING.md,
+    marginLeft: SPACING.sm,
   },
 });
 

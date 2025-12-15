@@ -32,7 +32,7 @@ const ReportsTabNavigation = ({ activeTab, onTabChange }) => {
           >
             <Ionicons 
               name={tab.icon} 
-              size={16} 
+              size={14} 
               color={activeTab === tab.id ? COLORS.white : COLORS.textSecondary} 
             />
             <Text style={[
@@ -50,8 +50,8 @@ const ReportsTabNavigation = ({ activeTab, onTabChange }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    marginBottom: SPACING.sm,
   },
   tabContainer: {
     flexDirection: 'row',
@@ -64,15 +64,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.sm,
   },
   activeTab: {
     backgroundColor: COLORS.primary,
   },
   tabText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textSecondary,
     marginLeft: SPACING.xs,
