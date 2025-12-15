@@ -1,5 +1,11 @@
 const express = require('express');
 const regulatoryController = require('../controllers/regulatory.controller');
+const {
+  validateRegulationQuery,
+  validateRegulationSearch,
+  validateDeadlinesQuery,
+  validateRegulationId
+} = require('../middleware/regulatoryValidation.middleware');
 
 const router = express.Router();
 
@@ -11,6 +17,13 @@ router.get('/documents/:id/status', regulatoryController.getDocumentProcessingSt
 // Regulatory document search and filtering
 router.get('/documents', regulatoryController.searchDocuments);
 router.get('/documents/:id', regulatoryController.getDocumentById);
+
+// New regulatory intelligence endpoints
+router.get('/regulations/search', validateRegulationSearch, regulatoryController.searchRegulations);
+router.get('/regulations/categories', regulatoryController.getRegulationCategories);
+router.get('/regulations/deadlines', validateDeadlinesQuery, regulatoryController.getUpcomingDeadlines);
+router.get('/regulations', validateRegulationQuery, regulatoryController.getRegulations);
+router.get('/regulations/:id', validateRegulationId, regulatoryController.getRegulationById);
 
 // Compliance checking endpoints
 router.post('/compliance/check', regulatoryController.checkCompliance);

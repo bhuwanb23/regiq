@@ -8,7 +8,207 @@ const {
   AnalysisResult 
 } = require('../models');
 
+const { Sequelize } = require('sequelize');
+const sequelize = require('../config/database');
+
 class RegulatoryService {
+  /**
+   * New regulatory intelligence endpoints
+   */
+  async getRegulations(filters = {}) {
+    try {
+      const whereClause = {};
+      const orderClause = [['createdAt', 'DESC']];
+      
+      // Apply filters
+      if (filters.jurisdiction) {
+        whereClause.jurisdiction = filters.jurisdiction;
+      }
+      
+      if (filters.documentType) {
+        whereClause.documentType = filters.documentType;
+      }
+      
+      if (filters.status) {
+        whereClause.status = filters.status;
+      }
+      
+      if (filters.category) {
+        whereClause.tags = {
+          [Sequelize.Op.contains]: [filters.category]
+        };
+      }
+      
+      // Pagination
+      const page = parseInt(filters.page) || 1;
+      const limit = parseInt(filters.limit) || 20;
+      const offset = (page - 1) * limit;
+      
+      const { count, rows } = await RegulatoryDocument.findAndCountAll({
+        where: whereClause,
+        order: orderClause,
+        limit,
+        offset
+      });
+      
+      return {
+        regulations: rows,
+        pagination: {
+          page,
+          limit,
+          totalCount: count,
+          totalPages: Math.ceil(count / limit)
+        }
+      };
+    } catch (error) {
+      throw new Error(`Failed to get regulations: ${error.message}`);
+    }
+  }
+
+  async getRegulationById(id) {
+    try {
+      const regulation = await RegulatoryDocument.findByPk(id);
+      if (!regulation) {
+        throw new Error('Regulation not found');
+      }
+      return regulation;
+    } catch (error) {
+      throw new Error(`Failed to get regulation: ${error.message}`);
+    }
+  }
+
+  async searchRegulations(filters = {}) {
+    try {
+      const whereClause = {};
+      
+      // Text search - use case-insensitive LIKE for SQLite
+      if (filters.q) {
+        whereClause[Sequelize.Op.or] = [
+          { title: { [Sequelize.Op.like]: `%${filters.q}%` } },
+          { content: { [Sequelize.Op.like]: `%${filters.q}%` } }
+        ];
+      }
+      
+      // Apply other filters
+      if (filters.jurisdiction) {
+        whereClause.jurisdiction = filters.jurisdiction;
+      }
+      
+      if (filters.documentType) {
+        whereClause.documentType = filters.documentType;
+      }
+      
+      if (filters.category) {
+        whereClause.tags = {
+          [Sequelize.Op.contains]: [filters.category]
+        };
+      }
+      
+      // Date range filtering
+      if (filters.dateFrom || filters.dateTo) {
+        whereClause.effectiveDate = {};
+        if (filters.dateFrom) {
+          whereClause.effectiveDate[Sequelize.Op.gte] = new Date(filters.dateFrom);
+        }
+        if (filters.dateTo) {
+          whereClause.effectiveDate[Sequelize.Op.lte] = new Date(filters.dateTo);
+        }
+      }
+      
+      // Pagination
+      const page = parseInt(filters.page) || 1;
+      const limit = parseInt(filters.limit) || 20;
+      const offset = (page - 1) * limit;
+      
+      const { count, rows } = await RegulatoryDocument.findAndCountAll({
+        where: whereClause,
+        order: [['effectiveDate', 'DESC']],
+        limit,
+        offset
+      });
+      
+      return {
+        results: rows,
+        pagination: {
+          page,
+          limit,
+          totalCount: count,
+          totalPages: Math.ceil(count / limit)
+        }
+      };
+    } catch (error) {
+      throw new Error(`Failed to search regulations: ${error.message}`);
+    }
+  }
+
+  async getRegulationCategories() {
+    try {
+      // Get all unique tags from regulatory documents
+      const categories = await RegulatoryDocument.aggregate('tags', 'DISTINCT', {
+        plain: false
+      });
+      
+      // Flatten the array of arrays
+      const flatCategories = categories.reduce((acc, curr) => {
+        if (Array.isArray(curr.DISTINCT)) {
+          return acc.concat(curr.DISTINCT);
+        }
+        return acc;
+      }, []);
+      
+      // Get unique categories
+      const uniqueCategories = [...new Set(flatCategories)];
+      
+      return uniqueCategories;
+    } catch (error) {
+      throw new Error(`Failed to get regulation categories: ${error.message}`);
+    }
+  }
+
+  async getUpcomingDeadlines(filters = {}) {
+    try {
+      const whereClause = {
+        effectiveDate: {
+          [Sequelize.Op.gte]: new Date(),
+          [Sequelize.Op.lte]: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // Next 90 days
+        }
+      };
+      
+      // Apply filters
+      if (filters.jurisdiction) {
+        whereClause.jurisdiction = filters.jurisdiction;
+      }
+      
+      if (filters.documentType) {
+        whereClause.documentType = filters.documentType;
+      }
+      
+      // Pagination
+      const page = parseInt(filters.page) || 1;
+      const limit = parseInt(filters.limit) || 20;
+      const offset = (page - 1) * limit;
+      
+      const { count, rows } = await RegulatoryDocument.findAndCountAll({
+        where: whereClause,
+        order: [['effectiveDate', 'ASC']],
+        limit,
+        offset
+      });
+      
+      return {
+        deadlines: rows,
+        pagination: {
+          page,
+          limit,
+          totalCount: count,
+          totalPages: Math.ceil(count / limit)
+        }
+      };
+    } catch (error) {
+      throw new Error(`Failed to get upcoming deadlines: ${error.message}`);
+    }
+  }
+
   /**
    * Document upload and processing
    */
@@ -66,7 +266,7 @@ class RegulatoryService {
       
       if (filters.title) {
         whereClause.title = {
-          [sequelize.Op.iLike]: `%${filters.title}%`
+          [Sequelize.Op.like]: `%${filters.title}%`
         };
       }
       
@@ -80,7 +280,7 @@ class RegulatoryService {
       
       if (filters.tags && filters.tags.length > 0) {
         whereClause.tags = {
-          [sequelize.Op.contains]: filters.tags
+          [Sequelize.Op.contains]: filters.tags
         };
       }
       
@@ -199,14 +399,12 @@ class RegulatoryService {
       if (!alert) {
         throw new Error('Alert not found');
       }
-
-      const updateData = { status };
-      if (status === 'resolved') {
-        updateData.resolvedAt = new Date();
-        updateData.assignedTo = userId;
-      }
-
-      await alert.update(updateData);
+      
+      await alert.update({
+        status,
+        updatedAt: new Date()
+      });
+      
       return alert;
     } catch (error) {
       throw new Error(`Failed to update alert status: ${error.message}`);
@@ -218,29 +416,12 @@ class RegulatoryService {
    */
   async createDocumentVersion(documentId, versionData, userId) {
     try {
-      const document = await RegulatoryDocument.findByPk(documentId);
-      if (!document) {
-        throw new Error('Document not found');
-      }
-
-      // Get the latest version number
-      const latestVersion = await DocumentVersion.findOne({
-        where: { documentId },
-        order: [['versionNumber', 'DESC']]
-      });
-
-      const versionNumber = latestVersion ? latestVersion.versionNumber + 1 : 1;
-
       const version = await DocumentVersion.create({
         documentId,
-        versionNumber,
-        title: versionData.title,
-        content: versionData.content,
-        changes: versionData.changes,
+        ...versionData,
         createdBy: userId,
         createdAt: new Date()
       });
-
       return version;
     } catch (error) {
       throw new Error(`Failed to create document version: ${error.message}`);
@@ -251,7 +432,7 @@ class RegulatoryService {
     try {
       const versions = await DocumentVersion.findAll({
         where: { documentId },
-        order: [['versionNumber', 'ASC']]
+        order: [['createdAt', 'DESC']]
       });
       return versions;
     } catch (error) {
@@ -264,16 +445,20 @@ class RegulatoryService {
    */
   async updateDocumentMetadata(documentId, metadata) {
     try {
-      const [docMetadata, created] = await DocumentMetadata.findOrCreate({
-        where: { documentId },
-        defaults: { documentId, ...metadata }
+      const docMetadata = await DocumentMetadata.findOne({
+        where: { documentId }
       });
-
-      if (!created) {
+      
+      if (docMetadata) {
         await docMetadata.update(metadata);
+        return docMetadata;
+      } else {
+        const newMetadata = await DocumentMetadata.create({
+          documentId,
+          ...metadata
+        });
+        return newMetadata;
       }
-
-      return docMetadata;
     } catch (error) {
       throw new Error(`Failed to update document metadata: ${error.message}`);
     }
@@ -284,6 +469,9 @@ class RegulatoryService {
       const metadata = await DocumentMetadata.findOne({
         where: { documentId }
       });
+      if (!metadata) {
+        throw new Error('Document metadata not found');
+      }
       return metadata;
     } catch (error) {
       throw new Error(`Failed to get document metadata: ${error.message}`);
@@ -297,9 +485,10 @@ class RegulatoryService {
     try {
       const share = await DocumentShare.create({
         documentId,
-        sharedBy: userId,
         sharedWith,
-        permissionLevel
+        permissionLevel,
+        sharedBy: userId,
+        sharedAt: new Date()
       });
       return share;
     } catch (error) {
@@ -310,10 +499,7 @@ class RegulatoryService {
   async getSharedDocuments(userId) {
     try {
       const shares = await DocumentShare.findAll({
-        where: { 
-          sharedWith: userId,
-          isActive: true
-        },
+        where: { sharedWith: userId },
         include: [{
           model: RegulatoryDocument,
           as: 'document'
@@ -328,13 +514,12 @@ class RegulatoryService {
   /**
    * Analysis result storage
    */
-  async storeAnalysisResult(analysisData, userId) {
+  async storeAnalysisResult(resultData, userId) {
     try {
       const result = await AnalysisResult.create({
-        ...analysisData,
-        performedBy: userId,
-        performedAt: new Date(),
-        status: 'completed'
+        ...resultData,
+        analyzedBy: userId,
+        analyzedAt: new Date()
       });
       return result;
     } catch (error) {
@@ -358,7 +543,7 @@ class RegulatoryService {
     try {
       const results = await AnalysisResult.findAll({
         where: { documentId },
-        order: [['performedAt', 'DESC']]
+        order: [['analyzedAt', 'DESC']]
       });
       return results;
     } catch (error) {

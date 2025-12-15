@@ -31,13 +31,6 @@ This document summarizes the status of Phase 1 integration work between the Node
   - Password: `regiq_password`
   - URL: `redis://regiq_password@localhost:6379`
 
-### 4. Google API Keys for AI/ML Services
-✅ **Completed**
-- **Node.js Backend**: Google API Key configured
-  - Key: `AIzaSyDRY0Ox2LRJexWQMgCWeiUf32ila_4yUFY`
-- **FastAPI AI/ML Service**: Gemini API Key configured
-  - Key: `AIzaSyDRY0Ox2LRJexWQMgCWeiUf32ila_4yUFY`
-
 ### 5. JWT Secret Keys for Authentication
 ✅ **Completed**
 - **Node.js Backend**: JWT configuration

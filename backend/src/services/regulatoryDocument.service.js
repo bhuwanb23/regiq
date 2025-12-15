@@ -1,4 +1,5 @@
 const { RegulatoryDocument } = require('../models');
+const { Op } = require('sequelize');
 
 class RegulatoryDocumentService {
   // Create a new regulatory document
@@ -66,9 +67,9 @@ class RegulatoryDocumentService {
     try {
       const documents = await RegulatoryDocument.findAll({
         where: {
-          [sequelize.Op.or]: [
-            { title: { [sequelize.Op.iLike]: `%${query}%` } },
-            { content: { [sequelize.Op.iLike]: `%${query}%` } }
+          [Op.or]: [
+            { title: { [Op.like]: `%${query}%` } },
+            { content: { [Op.like]: `%${query}%` } }
           ]
         }
       });

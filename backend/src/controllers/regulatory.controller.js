@@ -55,6 +55,85 @@ class RegulatoryController {
   }
 
   /**
+   * New regulatory intelligence endpoints
+   */
+  async getRegulations(req, res) {
+    try {
+      const regulations = await regulatoryService.getRegulations(req.query);
+      res.status(200).json({
+        success: true,
+        data: regulations
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getRegulationById(req, res) {
+    try {
+      const { id } = req.params;
+      const regulation = await regulatoryService.getRegulationById(id);
+      res.status(200).json({
+        success: true,
+        data: regulation
+      });
+    } catch (error) {
+      res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async searchRegulations(req, res) {
+    try {
+      const results = await regulatoryService.searchRegulations(req.query);
+      res.status(200).json({
+        success: true,
+        data: results
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getRegulationCategories(req, res) {
+    try {
+      const categories = await regulatoryService.getRegulationCategories();
+      res.status(200).json({
+        success: true,
+        data: categories
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  async getUpcomingDeadlines(req, res) {
+    try {
+      const deadlines = await regulatoryService.getUpcomingDeadlines(req.query);
+      res.status(200).json({
+        success: true,
+        data: deadlines
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
    * Regulatory document search and filtering
    */
   async searchDocuments(req, res) {
