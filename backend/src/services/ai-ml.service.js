@@ -123,9 +123,19 @@ class AIClient {
    */
   async assessRisk(data) {
     try {
-      const endpoint = models.riskAssessment.endpoint;
-      const response = await this.makeRequest('POST', endpoint, data);
-      return response;
+      // First, set up the simulation
+      const setupEndpoint = models.riskAssessment.endpoint;
+      const setupResponse = await this.makeRequest('POST', setupEndpoint, data);
+      
+      // Then, run the simulation using the simulation ID from setup
+      const simulationId = setupResponse.simulation_id;
+      const runEndpoint = `/api/v1/risk-simulator/run/${simulationId}`;
+      const runResponse = await this.makeRequest('POST', runEndpoint, { simulation_id: simulationId });
+      
+      return {
+        setup: setupResponse,
+        execution: runResponse
+      };
     } catch (error) {
       this.logger.error('Risk assessment failed', { error: error.message });
       throw new Error(`Risk assessment failed: ${error.message}`);

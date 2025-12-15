@@ -17,28 +17,28 @@ module.exports = {
     complianceAnalysis: {
       name: process.env.COMPLIANCE_MODEL_NAME || 'regulatory-compliance-analyzer',
       version: process.env.COMPLIANCE_MODEL_VERSION || 'v1',
-      endpoint: process.env.COMPLIANCE_MODEL_ENDPOINT || '/analyze/compliance',
+      endpoint: process.env.COMPLIANCE_MODEL_ENDPOINT || '/api/v1/regulatory-intelligence/documents/analyze',
     },
     
     // Risk Assessment Model
     riskAssessment: {
       name: process.env.RISK_MODEL_NAME || 'financial-risk-assessor',
       version: process.env.RISK_MODEL_VERSION || 'v1',
-      endpoint: process.env.RISK_MODEL_ENDPOINT || '/analyze/risk',
+      endpoint: process.env.RISK_MODEL_ENDPOINT || '/api/v1/risk-simulator/setup',
     },
     
     // Market Sentiment Analysis Model
     sentimentAnalysis: {
       name: process.env.SENTIMENT_MODEL_NAME || 'market-sentiment-analyzer',
       version: process.env.SENTIMENT_MODEL_VERSION || 'v1',
-      endpoint: process.env.SENTIMENT_MODEL_ENDPOINT || '/analyze/sentiment',
+      endpoint: process.env.SENTIMENT_MODEL_ENDPOINT || '/api/v1/regulatory-intelligence/qa',
     },
     
     // Data Anomaly Detection Model
     anomalyDetection: {
       name: process.env.ANOMALY_MODEL_NAME || 'data-anomaly-detector',
       version: process.env.ANOMALY_MODEL_VERSION || 'v1',
-      endpoint: process.env.ANOMALY_MODEL_ENDPOINT || '/detect/anomalies',
+      endpoint: process.env.ANOMALY_MODEL_ENDPOINT || '/api/v1/regulatory-intelligence/search',
     },
   },
 
