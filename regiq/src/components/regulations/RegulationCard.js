@@ -259,12 +259,12 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs,
   },
   priorityText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textTransform: 'capitalize',
   },
   regionText: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.gray500,
     marginTop: 2,
   },
@@ -274,16 +274,16 @@ const styles = StyleSheet.create({
     marginRight: -SPACING.xs,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   description: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
-    lineHeight: 18,
+    lineHeight: 16,
     marginBottom: SPACING.sm,
   },
   footer: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.md,
   },
   categoryText: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.gray500,
     marginLeft: 4,
   },
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dateText: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.gray500,
     marginLeft: 4,
   },
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: `${COLORS.primary}10`,
   },
   readMoreText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 11,
     color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginRight: 4,
@@ -338,15 +338,15 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.sm,
   },
   expandedTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   expandedText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 11,
     color: COLORS.textSecondary,
-    lineHeight: 16,
+    lineHeight: 14,
     marginBottom: SPACING.sm,
   },
   tagsContainer: {
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tagText: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },

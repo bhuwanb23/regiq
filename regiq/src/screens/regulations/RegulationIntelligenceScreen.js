@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import SearchFilters from '../../components/regulations/SearchFilters';
 import RegulationCard from '../../components/regulations/RegulationCard';
 import UpcomingDeadlines from '../../components/regulations/UpcomingDeadlines';
+import RegulationDetailModal from '../../components/regulations/RegulationDetailModal'; // Added import
 import useRegulationData from '../../hooks/useRegulationData';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
@@ -33,11 +34,14 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
 
   const [bookmarkedRegulations, setBookmarkedRegulations] = useState(new Set());
   const [showTimelineView, setShowTimelineView] = useState(false);
+  const [selectedRegulation, setSelectedRegulation] = useState(null); // Added state for selected regulation
+  const [modalVisible, setModalVisible] = useState(false); // Added state for modal visibility
 
   const handleRegulationPress = (regulation) => {
     console.log('Regulation pressed:', regulation.id);
-    // Show regulation details modal or navigate
-    // navigation.navigate('RegulationDetails', { regulationId: regulation.id });
+    // Set the selected regulation and show the modal
+    setSelectedRegulation(regulation);
+    setModalVisible(true);
   };
 
   const handleReadMore = (regulation) => {
@@ -73,6 +77,11 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
     setViewMode(mode);
     setShowTimelineView(mode === 'timeline');
     console.log('View mode changed to:', mode);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedRegulation(null);
   };
 
   const renderRegulationItem = ({ item, index }) => {
@@ -233,6 +242,13 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
         )}
         ListEmptyComponent={renderEmptyState}
         extraData={bookmarkedRegulations} // Re-render when bookmarks change
+      />
+
+      {/* Regulation Detail Modal */}
+      <RegulationDetailModal
+        visible={modalVisible}
+        regulation={selectedRegulation}
+        onClose={closeModal}
       />
     </View>
   );
