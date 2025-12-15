@@ -11,7 +11,7 @@ EXPECTED_API_KEY = os.getenv("SERVICE_API_KEY", "regiq_service_api_key_here_chan
 async def api_key_auth_middleware(request: Request, call_next):
     """
     Middleware to validate API key for service-to-service communication.
-    Allows JWT authentication to proceed if API key is not present.
+    Rejects requests with invalid API keys.
     Skips authentication for health check and documentation endpoints.
     """
     # Skip authentication for certain endpoints
@@ -23,10 +23,14 @@ async def api_key_auth_middleware(request: Request, call_next):
     # Get the authorization header
     auth_header = request.headers.get("Authorization")
     
-    # If no auth header, let JWT authentication handle it
+    # If no auth header, reject the request
     if not auth_header:
-        response = await call_next(request)
-        return response
+        logger.warning(f"Missing Authorization header for {request.url.path}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing Authorization header",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     # If it's a Bearer token, check if it's an API key
     if auth_header.startswith("Bearer "):
@@ -39,10 +43,18 @@ async def api_key_auth_middleware(request: Request, call_next):
             response = await call_next(request)
             return response
         
-        # If it doesn't match our API key, let JWT authentication handle it
-        response = await call_next(request)
-        return response
+        # If it doesn't match our API key, reject the request
+        logger.warning(f"Invalid API key for {request.url.path}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API key",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
-    # For other auth types, let JWT authentication handle it
-    response = await call_next(request)
-    return response
+    # For other auth types, reject the request
+    logger.warning(f"Unsupported authentication type for {request.url.path}")
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Unsupported authentication type",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
