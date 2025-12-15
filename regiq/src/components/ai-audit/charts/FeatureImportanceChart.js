@@ -119,13 +119,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   featureName: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     flex: 1,
@@ -184,12 +184,12 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   percentage: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
   },
   importance: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
@@ -205,13 +205,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   summaryValue: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.primary,
     marginBottom: 2,
   },
   summaryLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },

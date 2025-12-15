@@ -254,13 +254,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
@@ -273,13 +273,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   sectionTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginLeft: SPACING.xs,
   },
   sectionDescription: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.sm,
   },
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   featureName: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
   },
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   impactText: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   shapContent: {
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   shapValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: SPACING.xs,
   },
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   confidenceText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginRight: SPACING.xs,
     minWidth: 80,
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   shapDescription: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     fontStyle: 'italic',
   },
@@ -378,24 +378,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   limeTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   limeDescription: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   limeScore: {
     alignItems: 'flex-end',
   },
   scoreValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
   statusText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   progressContainer: {
@@ -430,12 +430,13 @@ const styles = StyleSheet.create({
     backgroundColor: `${COLORS.secondary}15`,
   },
   actionText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.primary,
     marginLeft: SPACING.xs,
   },
   secondaryText: {
+    fontSize: 9,
     color: COLORS.secondary,
   },
   summaryContainer: {
@@ -458,13 +459,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   summaryValue: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.primary,
     marginBottom: 2,
   },
   summaryLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.textSecondary,
   },
 });

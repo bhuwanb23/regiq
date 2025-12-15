@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   overallRiskTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   riskScore: {
-    fontSize: TYPOGRAPHY.fontSize['2xl'],
+    fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginRight: SPACING.sm,
   },
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
   },
   riskLevelText: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
   },
   riskMeter: {
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   categoryName: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: 4,
@@ -363,19 +363,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   categoryLevel: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginRight: SPACING.md,
   },
   categoryScore: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
   },
   scoreContainer: {
     alignItems: 'center',
   },
   scoreValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
   factorsContainer: {
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   factorName: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginBottom: 4,
@@ -408,11 +408,11 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs,
   },
   severityText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   factorValue: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   factorProgress: {
@@ -437,11 +437,11 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   recommendationText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textPrimary,
     marginLeft: SPACING.sm,
     flex: 1,
-    lineHeight: 18,
+    lineHeight: 16,
   },
   actionItemsContainer: {
     backgroundColor: COLORS.surfaceSecondary,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
   },
   actionItemsTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
+    fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.sm,
@@ -472,13 +472,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionTitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   actionDescription: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   actionButton: {
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   actionButtonText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.white,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },

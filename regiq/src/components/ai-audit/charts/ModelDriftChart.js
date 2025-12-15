@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.white,
   },
   dotValue: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.white,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     textShadowColor: 'rgba(0,0,0,0.5)',
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   xAxisLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     textAlign: 'center',
     flex: 1,
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginLeft: SPACING.xs,
@@ -284,13 +284,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metricValue: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   metricLabel: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   legendText: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.textSecondary,
   },
 });

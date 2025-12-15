@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.md,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   headerText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textSecondary,
     textAlign: 'center',
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   rowHeaderText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textSecondary,
     textAlign: 'center',
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   cellValue: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.white,
     textShadowColor: 'rgba(0,0,0,0.3)',
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.gray200,
   },
   legendTitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   legendText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 8,
     color: COLORS.textSecondary,
   },
 });

@@ -214,13 +214,13 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
   },
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     marginLeft: SPACING.xs,
   },
   metricName: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   metricValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
   },
@@ -288,10 +288,10 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   description: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.sm,
-    lineHeight: 16,
+    lineHeight: 14,
   },
   progressContainer: {
     marginTop: SPACING.xs,
@@ -326,13 +326,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   summaryValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.primary,
     marginBottom: 2,
   },
   summaryLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.textSecondary,
   },
   summaryDivider: {

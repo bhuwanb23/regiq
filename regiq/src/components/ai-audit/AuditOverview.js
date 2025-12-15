@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xs,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     color: COLORS.textSecondary,
   },
   statsGrid: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   statTitle: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.textTertiary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textTransform: 'uppercase',
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statValue: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statSubtitle: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   metricsRow: {
@@ -214,12 +214,12 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   metricValue: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
   },
   metricLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.textSecondary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textAlign: 'center',

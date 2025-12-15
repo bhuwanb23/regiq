@@ -204,13 +204,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modelName: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   modelType: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   statusBadge: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.full,
   },
   statusText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textTransform: 'capitalize',
   },
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   metricLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: COLORS.textTertiary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textTransform: 'uppercase',
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   metricValue: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.textPrimary,
   },
@@ -261,11 +261,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   lastAuditText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
   biasScoreText: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontSize: 9,
     color: COLORS.textSecondary,
   },
 });
