@@ -68,6 +68,10 @@ app.use('/api/risk', apiRiskRoutes);
 const reportGenerationRoutes = require('./routes/reportGeneration.routes');
 app.use('/reports', reportGenerationRoutes);
 
+// API Report Generation routes
+const apiReportsRoutes = require('./routes/api/reports.routes');
+app.use('/api/reports', apiReportsRoutes);
+
 // Data Ingestion routes
 const dataIngestionRoutes = require('./routes/dataIngestion.routes');
 app.use('/data', dataIngestionRoutes);

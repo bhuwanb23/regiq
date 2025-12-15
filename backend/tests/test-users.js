@@ -1,4 +1,4 @@
-const { User } = require('./src/models');
+const { User } = require('../src/models');
 
 async function listUsers() {
   try {
