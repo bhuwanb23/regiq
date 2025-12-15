@@ -60,6 +60,10 @@ app.use('/api/bias', apiBiasRoutes);
 const riskSimulationRoutes = require('./routes/riskSimulation.routes');
 app.use('/risk', riskSimulationRoutes);
 
+// API Risk Simulation routes
+const apiRiskRoutes = require('./routes/api/risk.routes');
+app.use('/api/risk', apiRiskRoutes);
+
 // Report Generation routes
 const reportGenerationRoutes = require('./routes/reportGeneration.routes');
 app.use('/reports', reportGenerationRoutes);
