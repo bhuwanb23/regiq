@@ -52,6 +52,10 @@ app.use('/regulatory', regulatoryRoutes);
 const biasAnalysisRoutes = require('./routes/biasAnalysis.routes');
 app.use('/bias', biasAnalysisRoutes);
 
+// API Bias Analysis routes
+const apiBiasRoutes = require('./routes/api/bias.routes');
+app.use('/api/bias', apiBiasRoutes);
+
 // Risk Simulation routes
 const riskSimulationRoutes = require('./routes/riskSimulation.routes');
 app.use('/risk', riskSimulationRoutes);
