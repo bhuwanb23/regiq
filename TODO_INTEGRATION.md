@@ -159,13 +159,12 @@ The integration will be completed in phases to ensure proper sequencing and test
 - [x] Add predictive analytics
 
 ### Task 3.5: Report Generation Screen Integration
-- [ ] Connect reports to backend API
-- [ ] Implement report generation triggers
-- [ ] Add report viewing capabilities
-- [ ] Connect report export functionality
-- [ ] Implement report scheduling
-- [ ] Add report template selection
-
+- [x] Connect reports to backend API
+- [x] Implement report generation triggers
+- [x] Add report viewing capabilities
+- [x] Connect report export functionality
+- [x] Implement report scheduling
+- [x] Add report template selection
 ### Task 3.6: User Profile Integration
 - [ ] Connect user profile to backend API
 - [ ] Implement profile editing

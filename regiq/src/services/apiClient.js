@@ -264,6 +264,54 @@ export const scheduleReport = async (data) => {
   }
 };
 
+/**
+ * Export report as PDF
+ * @param {string} id - Report ID
+ * @returns {Promise<Blob>} PDF blob
+ */
+export const exportReportPdf = async (id) => {
+  try {
+    const response = await apiClient.get(`/api/reports/${id}/export/pdf`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error exporting report ${id} as PDF:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Export report as CSV
+ * @param {string} id - Report ID
+ * @returns {Promise<Blob>} CSV blob
+ */
+export const exportReportCsv = async (id) => {
+  try {
+    const response = await apiClient.get(`/api/reports/${id}/export/csv`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error exporting report ${id} as CSV:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Export report as JSON
+ * @param {string} id - Report ID
+ * @returns {Promise<Object>} JSON data
+ */
+export const exportReportJson = async (id) => {
+  try {
+    const response = await apiClient.get(`/api/reports/${id}/export/json`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error exporting report ${id} as JSON:`, error);
+    throw error;
+  }
+};
 // ---------- USER MANAGEMENT ----------
 /**
  * Get users
@@ -435,7 +483,9 @@ export default {
   getReportById,
   generateReport,
   scheduleReport,
-  
+  exportReportPdf,
+  exportReportCsv,
+  exportReportJson,  
   // User Management
   getUsers,
   getUserById,

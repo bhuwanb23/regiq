@@ -43,9 +43,8 @@ const RecentReportItem = ({
             onPress={onDownload}
           >
             <Ionicons name="download" size={10} color={COLORS.primary} />
-            <Text style={styles.actionText}>Download</Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={styles.actionText}>Export</Text>
+          </TouchableOpacity>        </View>
       </View>
     </TouchableOpacity>
   );
