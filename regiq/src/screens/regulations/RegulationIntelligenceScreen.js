@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import SearchFilters from '../../components/regulations/SearchFilters';
 import RegulationCard from '../../components/regulations/RegulationCard';
 import UpcomingDeadlines from '../../components/regulations/UpcomingDeadlines';
-import RegulationDetailModal from '../../components/regulations/RegulationDetailModal'; // Added import
+import RegulationDetailModal from '../../components/regulations/RegulationDetailModal';
 import useRegulationData from '../../hooks/useRegulationData';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
@@ -30,19 +30,32 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
     handleSearch,
     handleFilterChange,
     setViewMode,
+    fetchRegulationById,
   } = useRegulationData();
 
   const [bookmarkedRegulations, setBookmarkedRegulations] = useState(new Set());
   const [showTimelineView, setShowTimelineView] = useState(false);
-  const [selectedRegulation, setSelectedRegulation] = useState(null); // Added state for selected regulation
-  const [modalVisible, setModalVisible] = useState(false); // Added state for modal visibility
+  const [selectedRegulation, setSelectedRegulation] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
 
-  const handleRegulationPress = (regulation) => {
+  const handleRegulationPress = useCallback(async (regulation) => {
     console.log('Regulation pressed:', regulation.id);
-    // Set the selected regulation and show the modal
-    setSelectedRegulation(regulation);
-    setModalVisible(true);
-  };
+    setDetailLoading(true);
+    try {
+      // Fetch full regulation details from API
+      const fullRegulation = await fetchRegulationById(regulation.id);
+      setSelectedRegulation(fullRegulation);
+      setModalVisible(true);
+    } catch (error) {
+      console.error('Error fetching regulation details:', error);
+      // Fallback to the partial regulation data we already have
+      setSelectedRegulation(regulation);
+      setModalVisible(true);
+    } finally {
+      setDetailLoading(false);
+    }
+  }, [fetchRegulationById]);
 
   const handleReadMore = (regulation) => {
     console.log('Read more pressed:', regulation.id);
@@ -249,6 +262,7 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
         visible={modalVisible}
         regulation={selectedRegulation}
         onClose={closeModal}
+        loading={detailLoading}
       />
     </View>
   );

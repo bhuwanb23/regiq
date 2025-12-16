@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Modal,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
@@ -13,10 +14,9 @@ import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../const
 const RegulationDetailModal = ({ 
   visible, 
   regulation, 
-  onClose 
+  onClose,
+  loading = false
 }) => {
-  if (!regulation) return null;
-
   // Get priority color function
   const getPriorityColor = (priority) => {
     switch (priority?.toLowerCase()) {
@@ -75,78 +75,95 @@ const RegulationDetailModal = ({
             style={styles.modalContent}
             showsVerticalScrollIndicator={false}
           >
-            {/* Regulation Title */}
-            <Text style={styles.regulationTitle}>{regulation.title}</Text>
-            
-            {/* Regulation Metadata */}
-            <View style={styles.metadataContainer}>
-              <View style={styles.metadataItem}>
-                <Text style={styles.metadataLabel}>Region</Text>
-                <Text style={styles.metadataValue}>{regulation.region}</Text>
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text style={styles.loadingText}>Loading regulation details...</Text>
               </View>
-              
-              <View style={styles.metadataItem}>
-                <Text style={styles.metadataLabel}>Category</Text>
-                <View style={styles.categoryContainer}>
-                  <Ionicons 
-                    name={getCategoryIcon(regulation.category)} 
-                    size={12} 
-                    color={COLORS.gray500} 
-                  />
-                  <Text style={styles.metadataValue}>{regulation.category}</Text>
-                </View>
-              </View>
-              
-              <View style={styles.metadataItem}>
-                <Text style={styles.metadataLabel}>Effective Date</Text>
-                <Text style={styles.metadataValue}>{regulation.effectiveDate}</Text>
-              </View>
-              
-              <View style={styles.metadataItem}>
-                <Text style={styles.metadataLabel}>Priority</Text>
-                <View style={styles.priorityContainer}>
-                  <View style={[
-                    styles.priorityDot, 
-                    { backgroundColor: getPriorityColor(regulation.priority) }
-                  ]} />
-                  <Text style={[styles.metadataValue, { color: getPriorityColor(regulation.priority) }]}>
-                    {regulation.priority}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Description */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Description</Text>
-              <Text style={styles.description}>{regulation.description}</Text>
-            </View>
-
-            {/* Key Requirements */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Key Requirements</Text>
-              <Text style={styles.requirementsText}>{regulation.fullDetails}</Text>
-            </View>
-
-            {/* Tags */}
-            {regulation.tags && regulation.tags.length > 0 && (
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Tags</Text>
-                <View style={styles.tagsContainer}>
-                  {regulation.tags.map((tag, index) => (
-                    <View key={index} style={styles.tag}>
-                      <Text style={styles.tagText}>{tag}</Text>
+            ) : regulation ? (
+              <>
+                {/* Regulation Title */}
+                <Text style={styles.regulationTitle}>{regulation.title}</Text>
+                
+                {/* Regulation Metadata */}
+                <View style={styles.metadataContainer}>
+                  <View style={styles.metadataItem}>
+                    <Text style={styles.metadataLabel}>Region</Text>
+                    <Text style={styles.metadataValue}>{regulation.region}</Text>
+                  </View>
+                  
+                  <View style={styles.metadataItem}>
+                    <Text style={styles.metadataLabel}>Category</Text>
+                    <View style={styles.categoryContainer}>
+                      <Ionicons 
+                        name={getCategoryIcon(regulation.category)} 
+                        size={12} 
+                        color={COLORS.gray500} 
+                      />
+                      <Text style={styles.metadataValue}>{regulation.category}</Text>
                     </View>
-                  ))}
+                  </View>
+                  
+                  <View style={styles.metadataItem}>
+                    <Text style={styles.metadataLabel}>Effective Date</Text>
+                    <Text style={styles.metadataValue}>{regulation.effectiveDate}</Text>
+                  </View>
+                  
+                  <View style={styles.metadataItem}>
+                    <Text style={styles.metadataLabel}>Priority</Text>
+                    <View style={styles.priorityContainer}>
+                      <View style={[
+                        styles.priorityDot, 
+                        { backgroundColor: getPriorityColor(regulation.priority) }
+                      ]} />
+                      <Text style={[styles.metadataValue, { color: getPriorityColor(regulation.priority) }]}>
+                        {regulation.priority}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
+
+                {/* Description */}
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Description</Text>
+                  <Text style={styles.description}>{regulation.description}</Text>
+                </View>
+
+                {/* Key Requirements */}
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Key Requirements</Text>
+                  <Text style={styles.requirementsText}>{regulation.fullDetails}</Text>
+                </View>
+
+                {/* Tags */}
+                {regulation.tags && regulation.tags.length > 0 && (
+                  <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Tags</Text>
+                    <View style={styles.tagsContainer}>
+                      {regulation.tags.map((tag, index) => (
+                        <View key={index} style={styles.tag}>
+                          <Text style={styles.tagText}>{tag}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {/* Action Button */}
+                <TouchableOpacity style={styles.actionButton}>
+                  <Ionicons name="document-text" size={16} color={COLORS.white} />
+                  <Text style={styles.actionButtonText}>View Full Regulation Document</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="document-text-outline" size={48} color={COLORS.gray400} />
+                <Text style={styles.emptyStateTitle}>No Data Available</Text>
+                <Text style={styles.emptyStateText}>
+                  Regulation details could not be loaded
+                </Text>
               </View>
             )}
-
-            {/* Action Button */}
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="document-text" size={16} color={COLORS.white} />
-              <Text style={styles.actionButtonText}>View Full Regulation Document</Text>
-            </TouchableOpacity>
           </ScrollView>
         </View>
       </View>
@@ -190,6 +207,18 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     padding: SPACING.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING['3xl'],
+  },
+  loadingText: {
+    marginTop: SPACING.md,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   regulationTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
@@ -281,6 +310,24 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: SPACING.sm,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING['3xl'],
+  },
+  emptyStateTitle: {
+    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    color: COLORS.textPrimary,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.xs,
+  },
+  emptyStateText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.xl,
   },
 });
 

@@ -11,7 +11,7 @@ import apiClient from './api';
  */
 export const getRegulations = async (params = {}) => {
   try {
-    const response = await apiClient.get('/regulations', { params });
+    const response = await apiClient.get('/regulatory/regulations', { params });
     return response;
   } catch (error) {
     console.error('Error fetching regulations:', error);
@@ -26,7 +26,7 @@ export const getRegulations = async (params = {}) => {
  */
 export const getRegulationById = async (id) => {
   try {
-    const response = await apiClient.get(`/regulations/${id}`);
+    const response = await apiClient.get(`/regulatory/regulations/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching regulation ${id}:`, error);
@@ -42,7 +42,7 @@ export const getRegulationById = async (id) => {
  */
 export const searchRegulations = async (query, params = {}) => {
   try {
-    const response = await apiClient.get('/regulations/search', { 
+    const response = await apiClient.get('/regulatory/regulations/search', { 
       params: { q: query, ...params } 
     });
     return response;
@@ -58,7 +58,7 @@ export const searchRegulations = async (query, params = {}) => {
  */
 export const getRegulationCategories = async () => {
   try {
-    const response = await apiClient.get('/regulations/categories');
+    const response = await apiClient.get('/regulatory/regulations/categories');
     return response;
   } catch (error) {
     console.error('Error fetching regulation categories:', error);
@@ -73,7 +73,7 @@ export const getRegulationCategories = async () => {
  */
 export const getRegulationDeadlines = async (params = {}) => {
   try {
-    const response = await apiClient.get('/regulations/deadlines', { params });
+    const response = await apiClient.get('/regulatory/regulations/deadlines', { params });
     return response;
   } catch (error) {
     console.error('Error fetching regulation deadlines:', error);
@@ -89,7 +89,7 @@ export const getRegulationDeadlines = async (params = {}) => {
  */
 export const getBiasReports = async (params = {}) => {
   try {
-    const response = await apiClient.get('/bias/reports', { params });
+    const response = await apiClient.get('/api/bias/reports', { params });
     return response;
   } catch (error) {
     console.error('Error fetching bias reports:', error);
@@ -104,7 +104,7 @@ export const getBiasReports = async (params = {}) => {
  */
 export const getBiasReportById = async (id) => {
   try {
-    const response = await apiClient.get(`/bias/reports/${id}`);
+    const response = await apiClient.get(`/api/bias/reports/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching bias report ${id}:`, error);
@@ -119,7 +119,7 @@ export const getBiasReportById = async (id) => {
  */
 export const createBiasAnalysis = async (data) => {
   try {
-    const response = await apiClient.post('/bias/analysis', data);
+    const response = await apiClient.post('/api/bias/analysis', data);
     return response;
   } catch (error) {
     console.error('Error creating bias analysis:', error);
@@ -134,7 +134,7 @@ export const createBiasAnalysis = async (data) => {
  */
 export const getBiasMitigation = async (modelId) => {
   try {
-    const response = await apiClient.get(`/bias/mitigation/${modelId}`);
+    const response = await apiClient.get(`/api/bias/mitigation/${modelId}`);
     return response;
   } catch (error) {
     console.error(`Error fetching bias mitigation for model ${modelId}:`, error);
@@ -150,7 +150,7 @@ export const getBiasMitigation = async (modelId) => {
  */
 export const getRiskSimulations = async (params = {}) => {
   try {
-    const response = await apiClient.get('/risk/simulations', { params });
+    const response = await apiClient.get('/api/risk/simulations', { params });
     return response;
   } catch (error) {
     console.error('Error fetching risk simulations:', error);
@@ -165,7 +165,7 @@ export const getRiskSimulations = async (params = {}) => {
  */
 export const getRiskSimulationById = async (id) => {
   try {
-    const response = await apiClient.get(`/risk/simulations/${id}`);
+    const response = await apiClient.get(`/api/risk/simulations/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching risk simulation ${id}:`, error);
@@ -180,7 +180,7 @@ export const getRiskSimulationById = async (id) => {
  */
 export const createRiskSimulation = async (data) => {
   try {
-    const response = await apiClient.post('/risk/simulations', data);
+    const response = await apiClient.post('/api/risk/simulations', data);
     return response;
   } catch (error) {
     console.error('Error creating risk simulation:', error);
@@ -195,7 +195,7 @@ export const createRiskSimulation = async (data) => {
  */
 export const getRiskScenarios = async (params = {}) => {
   try {
-    const response = await apiClient.get('/risk/scenarios', { params });
+    const response = await apiClient.get('/api/risk/scenarios', { params });
     return response;
   } catch (error) {
     console.error('Error fetching risk scenarios:', error);
@@ -211,7 +211,7 @@ export const getRiskScenarios = async (params = {}) => {
  */
 export const getReports = async (params = {}) => {
   try {
-    const response = await apiClient.get('/reports', { params });
+    const response = await apiClient.get('/api/reports', { params });
     return response;
   } catch (error) {
     console.error('Error fetching reports:', error);
@@ -226,7 +226,7 @@ export const getReports = async (params = {}) => {
  */
 export const getReportById = async (id) => {
   try {
-    const response = await apiClient.get(`/reports/${id}`);
+    const response = await apiClient.get(`/api/reports/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching report ${id}:`, error);
@@ -241,7 +241,7 @@ export const getReportById = async (id) => {
  */
 export const generateReport = async (data) => {
   try {
-    const response = await apiClient.post('/reports/generate', data);
+    const response = await apiClient.post('/api/reports/generate', data);
     return response;
   } catch (error) {
     console.error('Error generating report:', error);
@@ -256,7 +256,7 @@ export const generateReport = async (data) => {
  */
 export const scheduleReport = async (data) => {
   try {
-    const response = await apiClient.post('/reports/schedule', data);
+    const response = await apiClient.post('/api/reports/schedule', data);
     return response;
   } catch (error) {
     console.error('Error scheduling report:', error);
@@ -272,7 +272,7 @@ export const scheduleReport = async (data) => {
  */
 export const getUsers = async (params = {}) => {
   try {
-    const response = await apiClient.get('/users', { params });
+    const response = await apiClient.get('/api/users', { params });
     return response;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -287,7 +287,7 @@ export const getUsers = async (params = {}) => {
  */
 export const getUserById = async (id) => {
   try {
-    const response = await apiClient.get(`/users/${id}`);
+    const response = await apiClient.get(`/api/users/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching user ${id}:`, error);
@@ -303,7 +303,7 @@ export const getUserById = async (id) => {
  */
 export const getNotifications = async (params = {}) => {
   try {
-    const response = await apiClient.get('/notifications', { params });
+    const response = await apiClient.get('/api/notifications', { params });
     return response;
   } catch (error) {
     console.error('Error fetching notifications:', error);
@@ -318,7 +318,7 @@ export const getNotifications = async (params = {}) => {
  */
 export const getNotificationById = async (id) => {
   try {
-    const response = await apiClient.get(`/notifications/${id}`);
+    const response = await apiClient.get(`/api/notifications/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching notification ${id}:`, error);

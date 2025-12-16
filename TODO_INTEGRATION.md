@@ -135,12 +135,12 @@ The integration will be completed in phases to ensure proper sequencing and test
 - [x] Implement retry mechanisms for failed requests
 
 ### Task 3.2: Regulatory Intelligence Screen Integration
-- [ ] Connect regulations list to backend API
-- [ ] Implement search functionality
-- [ ] Add filtering capabilities
-- [ ] Connect regulation detail view
-- [ ] Implement deadline tracking
-- [ ] Add regulation categorization
+- [x] Connect regulations list to backend API
+- [x] Implement search functionality
+- [x] Add filtering capabilities
+- [x] Connect regulation detail view
+- [x] Implement deadline tracking
+- [x] Add regulation categorization
 
 ### Task 3.3: Bias Analysis Screen Integration
 - [ ] Connect bias reports to backend API
