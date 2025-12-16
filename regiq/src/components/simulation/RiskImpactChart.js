@@ -1,27 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const RiskImpactChart = ({ 
-  chartData = [],
+  data = [],
   timeframe = '7D',
   onTimeframeChange 
 }) => {
   const [activeTimeframe, setActiveTimeframe] = useState(timeframe);
+  const [loading, setLoading] = useState(false);
 
-  // Mock data for the chart
-  const mockData = [
-    { day: 'Mon', value: 65, risk: 'medium' },
-    { day: 'Tue', value: 72, risk: 'medium' },
-    { day: 'Wed', value: 68, risk: 'medium' },
-    { day: 'Thu', value: 85, risk: 'high' },
-    { day: 'Fri', value: 78, risk: 'high' },
-    { day: 'Sat', value: 92, risk: 'high' },
-    { day: 'Sun', value: 87, risk: 'high' },
-  ];
+  // Process real data or use mock data
+  const processData = () => {
+    if (data && data.length > 0) {
+      // Use real data from props
+      return data.map((item, index) => ({
+        day: item.date || item.day || `Day ${index + 1}`,
+        value: item.riskScore || item.value || Math.floor(Math.random() * 100),
+        risk: item.riskLevel || item.risk || getRiskLevel(item.riskScore || item.value || 0)
+      }));
+    } else {
+      // Mock data for demonstration
+      return [
+        { day: 'Mon', value: 65, risk: 'medium' },
+        { day: 'Tue', value: 72, risk: 'medium' },
+        { day: 'Wed', value: 68, risk: 'medium' },
+        { day: 'Thu', value: 85, risk: 'high' },
+        { day: 'Fri', value: 78, risk: 'high' },
+        { day: 'Sat', value: 92, risk: 'high' },
+        { day: 'Sun', value: 87, risk: 'high' },
+      ];
+    }
+  };
 
-  // Heatmap data for risk categories
+  const processedData = processData();
+  const maxValue = Math.max(...processedData.map(d => d.value));
+
+  // Heatmap data for risk categories (using real or mock data)
   const heatmapData = [
     { category: 'Credit', low: 10, medium: 19, high: 8 },
     { category: 'Fraud', low: 24, medium: 67, high: 92 },
@@ -30,8 +46,11 @@ const RiskImpactChart = ({
     { category: 'Risk', low: 28, medium: 38, high: 85 },
   ];
 
-  const data = chartData.length > 0 ? chartData : mockData;
-  const maxValue = Math.max(...data.map(d => d.value));
+  const getRiskLevel = (value) => {
+    if (value <= 40) return 'low';
+    if (value <= 70) return 'medium';
+    return 'high';
+  };
 
   const getRiskColor = (risk) => {
     switch (risk) {
@@ -49,9 +68,23 @@ const RiskImpactChart = ({
   };
 
   const handleTimeframePress = (newTimeframe) => {
+    setLoading(true);
     setActiveTimeframe(newTimeframe);
     onTimeframeChange?.(newTimeframe);
+    // Simulate loading delay
+    setTimeout(() => setLoading(false), 500);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading risk data...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -104,13 +137,13 @@ const RiskImpactChart = ({
 
             {/* Data points */}
             <View style={styles.dataPoints}>
-              {data.map((point, index) => (
+              {processedData.map((point, index) => (
                 <View key={index} style={styles.dataColumn}>
                   <View
                     style={[
                       styles.dataBar,
                       {
-                        height: `${(point.value / maxValue) * 80}%`,
+                        height: `${maxValue > 0 ? (point.value / maxValue) * 80 : 0}%`,
                         backgroundColor: getRiskColor(point.risk),
                       }
                     ]}
@@ -121,16 +154,10 @@ const RiskImpactChart = ({
                   ]}>
                     <Text style={styles.dataPointValue}>{point.value}</Text>
                   </View>
+                  <Text style={styles.xAxisLabel} numberOfLines={1}>
+                    {point.day.substring(0, 3)}
+                  </Text>
                 </View>
-              ))}
-            </View>
-
-            {/* X-axis labels */}
-            <View style={styles.xAxisLabels}>
-              {data.map((point, index) => (
-                <Text key={index} style={styles.axisLabel}>
-                  {point.day}
-                </Text>
               ))}
             </View>
           </View>
@@ -205,6 +232,17 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray200,
     marginBottom: SPACING.md,
     ...SHADOWS.sm,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.xl,
+  },
+  loadingText: {
+    marginLeft: SPACING.sm,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -304,10 +342,9 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
-  xAxisLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.xs,
+  xAxisLabel: {
+    fontSize: 9,
+    color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },
   heatmapContainer: {

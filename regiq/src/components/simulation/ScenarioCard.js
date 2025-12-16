@@ -1,17 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const ScenarioCard = ({ 
-  scenarioTitle = 'EU AI Act Implementation',
-  scenarioDescription = 'New regulation effective Q2 2024',
-  scenarioType = 'Compliance Scenario',
-  riskLevel = 'medium',
+  scenarios = [],
+  selectedScenario = null,
   onChangeScenario 
 }) => {
-  const getRiskColor = () => {
-    switch (riskLevel) {
+  const [modalVisible, setModalVisible] = React.useState(false);
+
+  const getRiskColor = (riskLevel) => {
+    switch (riskLevel?.toLowerCase()) {
       case 'low': return COLORS.success;
       case 'medium': return COLORS.warning;
       case 'high': return COLORS.error;
@@ -19,8 +19,8 @@ const ScenarioCard = ({
     }
   };
 
-  const getRiskBackground = () => {
-    switch (riskLevel) {
+  const getRiskBackground = (riskLevel) => {
+    switch (riskLevel?.toLowerCase()) {
       case 'low': return `${COLORS.success}15`;
       case 'medium': return `${COLORS.warning}15`;
       case 'high': return `${COLORS.error}15`;
@@ -28,8 +28,8 @@ const ScenarioCard = ({
     }
   };
 
-  const getRiskIcon = () => {
-    switch (riskLevel) {
+  const getRiskIcon = (riskLevel) => {
+    switch (riskLevel?.toLowerCase()) {
       case 'low': return 'checkmark-circle';
       case 'medium': return 'warning';
       case 'high': return 'alert-circle';
@@ -37,40 +37,81 @@ const ScenarioCard = ({
     }
   };
 
+  const handleScenarioSelect = (scenario) => {
+    onChangeScenario(scenario);
+    setModalVisible(false);
+  };
+
+  const renderScenarioOption = ({ item: scenario }) => (
+    <TouchableOpacity 
+      style={styles.scenarioOption}
+      onPress={() => handleScenarioSelect(scenario)}
+    >
+      <View style={styles.optionHeader}>
+        <Ionicons 
+          name={getRiskIcon(scenario.scenarioType || 'warning')} 
+          size={16} 
+          color={getRiskColor(scenario.scenarioType)} 
+          style={styles.optionIcon}
+        />
+        <View style={styles.optionInfo}>
+          <Text style={styles.optionTitle}>{scenario.name}</Text>
+          <Text style={styles.optionDescription} numberOfLines={2}>
+            {scenario.description}
+          </Text>
+        </View>
+      </View>
+      <View style={[styles.optionRiskBadge, { backgroundColor: getRiskColor(scenario.scenarioType) }]}>
+        <Text style={styles.optionRiskText}>
+          {scenario.scenarioType ? scenario.scenarioType.charAt(0).toUpperCase() + scenario.scenarioType.slice(1) : 'Medium'} Risk
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const currentScenario = selectedScenario || scenarios[0] || {
+    name: 'Select Scenario',
+    description: 'Choose a risk scenario to simulate',
+    scenarioType: 'medium'
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{scenarioType}</Text>
-        <TouchableOpacity onPress={onChangeScenario} style={styles.changeButton}>
+        <Text style={styles.title}>Risk Scenario</Text>
+        <TouchableOpacity 
+          onPress={() => setModalVisible(true)} 
+          style={styles.changeButton}
+        >
           <Text style={styles.changeButtonText}>Change</Text>
         </TouchableOpacity>
       </View>
 
       {/* Scenario Content */}
-      <View style={[styles.scenarioContainer, { backgroundColor: getRiskBackground() }]}>
+      <View style={[styles.scenarioContainer, { backgroundColor: getRiskBackground(currentScenario.scenarioType) }]}>
         <View style={styles.scenarioContent}>
           <View style={styles.scenarioHeader}>
             <Ionicons 
-              name={getRiskIcon()} 
+              name={getRiskIcon(currentScenario.scenarioType)} 
               size={18} 
-              color={getRiskColor()} 
+              color={getRiskColor(currentScenario.scenarioType)} 
               style={styles.scenarioIcon}
             />
             <View style={styles.scenarioInfo}>
-              <Text style={[styles.scenarioTitle, { color: getRiskColor() }]}>
-                {scenarioTitle}
+              <Text style={[styles.scenarioTitle, { color: getRiskColor(currentScenario.scenarioType) }]}>
+                {currentScenario.name}
               </Text>
-              <Text style={[styles.scenarioDescription, { color: getRiskColor() }]}>
-                {scenarioDescription}
+              <Text style={[styles.scenarioDescription, { color: getRiskColor(currentScenario.scenarioType) }]} numberOfLines={2}>
+                {currentScenario.description}
               </Text>
             </View>
           </View>
 
           {/* Risk Level Badge */}
-          <View style={[styles.riskBadge, { backgroundColor: getRiskColor() }]}>
+          <View style={[styles.riskBadge, { backgroundColor: getRiskColor(currentScenario.scenarioType) }]}>
             <Text style={styles.riskBadgeText}>
-              {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} Risk
+              {currentScenario.scenarioType ? currentScenario.scenarioType.charAt(0).toUpperCase() + currentScenario.scenarioType.slice(1) : 'Medium'} Risk
             </Text>
           </View>
         </View>
@@ -78,23 +119,23 @@ const ScenarioCard = ({
         {/* Scenario Details */}
         <View style={styles.detailsContainer}>
           <View style={styles.detailItem}>
-            <Ionicons name="calendar" size={14} color={getRiskColor()} />
-            <Text style={[styles.detailText, { color: getRiskColor() }]}>
-              Effective Q2 2024
+            <Ionicons name="calendar" size={14} color={getRiskColor(currentScenario.scenarioType)} />
+            <Text style={[styles.detailText, { color: getRiskColor(currentScenario.scenarioType) }]}>
+              {currentScenario.effectiveDate || 'Effective Date N/A'}
             </Text>
           </View>
           
           <View style={styles.detailItem}>
-            <Ionicons name="globe" size={14} color={getRiskColor()} />
-            <Text style={[styles.detailText, { color: getRiskColor() }]}>
-              European Union
+            <Ionicons name="globe" size={14} color={getRiskColor(currentScenario.scenarioType)} />
+            <Text style={[styles.detailText, { color: getRiskColor(currentScenario.scenarioType) }]}>
+              {currentScenario.region || 'Global'}
             </Text>
           </View>
           
           <View style={styles.detailItem}>
-            <Ionicons name="shield-checkmark" size={14} color={getRiskColor()} />
-            <Text style={[styles.detailText, { color: getRiskColor() }]}>
-              High-Risk AI Systems
+            <Ionicons name="shield-checkmark" size={14} color={getRiskColor(currentScenario.scenarioType)} />
+            <Text style={[styles.detailText, { color: getRiskColor(currentScenario.scenarioType) }]}>
+              {currentScenario.systemType || 'AI Systems'}
             </Text>
           </View>
         </View>
@@ -106,18 +147,45 @@ const ScenarioCard = ({
         <View style={styles.impactItems}>
           <View style={styles.impactItem}>
             <View style={styles.impactDot} />
-            <Text style={styles.impactText}>Enhanced bias detection requirements</Text>
+            <Text style={styles.impactText}>{currentScenario.impact1 || 'Potential regulatory compliance changes'}</Text>
           </View>
           <View style={styles.impactItem}>
             <View style={styles.impactDot} />
-            <Text style={styles.impactText}>Mandatory algorithmic auditing</Text>
+            <Text style={styles.impactText}>{currentScenario.impact2 || 'Updated model validation requirements'}</Text>
           </View>
           <View style={styles.impactItem}>
             <View style={styles.impactDot} />
-            <Text style={styles.impactText}>Increased documentation standards</Text>
+            <Text style={styles.impactText}>{currentScenario.impact3 || 'Enhanced documentation standards'}</Text>
           </View>
         </View>
       </View>
+
+      {/* Scenario Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Risk Scenario</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            
+            <FlatList
+              data={scenarios}
+              renderItem={renderScenarioOption}
+              keyExtractor={(item) => item.id}
+              style={styles.scenarioList}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -238,6 +306,74 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: COLORS.textSecondary,
     flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray200,
+  },
+  modalTitle: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    color: COLORS.textPrimary,
+  },
+  scenarioList: {
+    padding: SPACING.sm,
+  },
+  scenarioOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: SPACING.md,
+    backgroundColor: COLORS.surfaceSecondary,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.sm,
+  },
+  optionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  optionIcon: {
+    marginTop: 2,
+    marginRight: SPACING.sm,
+  },
+  optionInfo: {
+    flex: 1,
+  },
+  optionTitle: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+  optionDescription: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    color: COLORS.textSecondary,
+  },
+  optionRiskBadge: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.full,
+  },
+  optionRiskText: {
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    color: COLORS.white,
   },
 });
 

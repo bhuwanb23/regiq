@@ -151,12 +151,12 @@ The integration will be completed in phases to ensure proper sequencing and test
 - [x] Add historical bias tracking
 
 ### Task 3.4: Risk Simulation Screen Integration
-- [ ] Connect risk simulations to backend API
-- [ ] Implement scenario selection
-- [ ] Add risk visualization components
-- [ ] Connect stress testing results
-- [ ] Implement risk scoring display
-- [ ] Add predictive analytics
+- [x] Connect risk simulations to backend API
+- [x] Implement scenario selection
+- [x] Add risk visualization components
+- [x] Connect stress testing results
+- [x] Implement risk scoring display
+- [x] Add predictive analytics
 
 ### Task 3.5: Report Generation Screen Integration
 - [ ] Connect reports to backend API
