@@ -1,21 +1,39 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../../constants/theme';
 
-const ModelDriftChart = ({ data }) => {
-  const driftData = [
-    { period: 'Week 1', value: 0.02, status: 'stable' },
-    { period: 'Week 2', value: 0.04, status: 'stable' },
-    { period: 'Week 3', value: 0.03, status: 'stable' },
-    { period: 'Week 4', value: 0.05, status: 'warning' },
-    { period: 'Week 5', value: 0.07, status: 'warning' },
-    { period: 'Week 6', value: 0.06, status: 'warning' },
-    { period: 'Week 7', value: 0.04, status: 'stable' },
-    { period: 'Week 8', value: 0.03, status: 'stable' },
-  ];
+const ModelDriftChart = ({ data, loading = false }) => {
+  // Extract drift data from the report
+  const driftTrendData = data?.driftTrend || data?.modelDrift || [];
+  
+  // Process drift data
+  const driftData = [];
+  
+  if (driftTrendData.length > 0) {
+    // Use actual drift data
+    driftTrendData.slice(0, 8).forEach((point, index) => {
+      driftData.push({
+        period: point.period || point.date || `Period ${index + 1}`,
+        value: point.value || point.driftScore || 0,
+        status: getDriftStatus(point.value || point.driftScore || 0)
+      });
+    });
+  } else if (!loading) {
+    // Default sample data if no real data available
+    driftData.push(
+      { period: 'Week 1', value: 0.02, status: 'stable' },
+      { period: 'Week 2', value: 0.04, status: 'stable' },
+      { period: 'Week 3', value: 0.03, status: 'stable' },
+      { period: 'Week 4', value: 0.05, status: 'warning' },
+      { period: 'Week 5', value: 0.07, status: 'warning' },
+      { period: 'Week 6', value: 0.06, status: 'warning' },
+      { period: 'Week 7', value: 0.04, status: 'stable' },
+      { period: 'Week 8', value: 0.03, status: 'stable' }
+    );
+  }
 
-  const maxValue = Math.max(...driftData.map(d => d.value));
+  const maxValue = driftData.length > 0 ? Math.max(...driftData.map(d => d.value)) : 0.1;
   const warningThreshold = 0.05;
   const criticalThreshold = 0.08;
 
@@ -36,6 +54,26 @@ const ModelDriftChart = ({ data }) => {
     if (value >= warningThreshold) return 'warning';
     return 'checkmark-circle';
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Model Drift Detection</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading drift data...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Calculate metrics
+  const peakDrift = driftData.length > 0 ? Math.max(...driftData.map(d => d.value)) : 0;
+  const averageDrift = driftData.length > 0 ? 
+    driftData.reduce((sum, d) => sum + d.value, 0) / driftData.length : 0;
+  
+  const recentChange = driftData.length >= 2 ? 
+    ((driftData[driftData.length - 1].value - driftData[driftData.length - 2].value) * 100) : 0;
 
   return (
     <View style={styles.container}>
@@ -64,7 +102,7 @@ const ModelDriftChart = ({ data }) => {
                 style={[
                   styles.bar,
                   {
-                    height: `${(point.value / maxValue) * 80}%`,
+                    height: `${maxValue > 0 ? (point.value / maxValue) * 80 : 0}%`,
                     backgroundColor: getDriftColor(point.value),
                   }
                 ]}
@@ -92,18 +130,22 @@ const ModelDriftChart = ({ data }) => {
       {/* Current Status */}
       <View style={styles.statusContainer}>
         <View style={styles.currentStatus}>
-          <Ionicons 
-            name={getStatusIcon(driftData[driftData.length - 1].value)} 
-            size={16} 
-            color={getDriftColor(driftData[driftData.length - 1].value)} 
-          />
+          {driftData.length > 0 && (
+            <Ionicons 
+              name={getStatusIcon(driftData[driftData.length - 1].value)} 
+              size={16} 
+              color={getDriftColor(driftData[driftData.length - 1].value)} 
+            />
+          )}
           <Text style={styles.statusText}>
-            Current Status: {getDriftStatus(driftData[driftData.length - 1].value)}
+            {driftData.length > 0 ? 
+              `Current Status: ${getDriftStatus(driftData[driftData.length - 1].value)}` : 
+              'No data available'}
           </Text>
         </View>
         
         <Text style={styles.currentValue}>
-          {driftData[driftData.length - 1].value.toFixed(3)}
+          {driftData.length > 0 ? driftData[driftData.length - 1].value.toFixed(3) : '0.000'}
         </Text>
       </View>
 
@@ -111,7 +153,7 @@ const ModelDriftChart = ({ data }) => {
       <View style={styles.metricsContainer}>
         <View style={styles.metricItem}>
           <Text style={styles.metricValue}>
-            {Math.max(...driftData.map(d => d.value)).toFixed(3)}
+            {peakDrift.toFixed(3)}
           </Text>
           <Text style={styles.metricLabel}>Peak Drift</Text>
         </View>
@@ -120,7 +162,7 @@ const ModelDriftChart = ({ data }) => {
         
         <View style={styles.metricItem}>
           <Text style={styles.metricValue}>
-            {(driftData.reduce((sum, d) => sum + d.value, 0) / driftData.length).toFixed(3)}
+            {averageDrift.toFixed(3)}
           </Text>
           <Text style={styles.metricLabel}>Average</Text>
         </View>
@@ -130,10 +172,9 @@ const ModelDriftChart = ({ data }) => {
         <View style={styles.metricItem}>
           <Text style={[
             styles.metricValue,
-            { color: driftData[driftData.length - 1].value > driftData[driftData.length - 2].value ? COLORS.error : COLORS.success }
+            { color: recentChange > 0 ? COLORS.error : COLORS.success }
           ]}>
-            {driftData[driftData.length - 1].value > driftData[driftData.length - 2].value ? '+' : ''}
-            {((driftData[driftData.length - 1].value - driftData[driftData.length - 2].value) * 100).toFixed(1)}%
+            {recentChange > 0 ? '+' : ''}{recentChange.toFixed(1)}%
           </Text>
           <Text style={styles.metricLabel}>Week Change</Text>
         </View>
@@ -176,6 +217,17 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.xl,
+  },
+  loadingText: {
+    marginLeft: SPACING.sm,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
   },
   chartContainer: {
     height: 140,

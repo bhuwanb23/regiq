@@ -1,19 +1,49 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../../constants/theme';
 
-const FeatureImportanceChart = ({ data }) => {
-  const features = [
-    { name: 'Income Level', value: 0.35, icon: 'cash', trend: 'up' },
-    { name: 'Credit History', value: 0.32, icon: 'card', trend: 'up' },
-    { name: 'Age', value: 0.15, icon: 'person', trend: 'down' },
-    { name: 'Employment Status', value: 0.12, icon: 'briefcase', trend: 'up' },
-    { name: 'Debt-to-Income Ratio', value: 0.06, icon: 'trending-down', trend: 'down' },
-    { name: 'Geographic Location', value: 0.04, icon: 'location', trend: 'stable' },
-    { name: 'Education Level', value: 0.03, icon: 'school', trend: 'up' },
-    { name: 'Account History', value: 0.02, icon: 'time', trend: 'stable' },
-  ];
+const FeatureImportanceChart = ({ data, loading = false }) => {
+  // Extract feature importance data from the report
+  const featureImportanceData = data?.featureImportance || data?.featureImportanceBias || [];
+  
+  // Process feature data
+  const features = [];
+  
+  if (featureImportanceData.length > 0) {
+    // Use actual feature importance data
+    featureImportanceData.slice(0, 8).forEach((feature, index) => {
+      features.push({
+        name: feature.feature || feature.name || `Feature ${index + 1}`,
+        value: feature.importance || feature.value || 0,
+        icon: getFeatureIcon(index),
+        trend: getFeatureTrend(feature.importance || feature.value || 0)
+      });
+    });
+  } else if (!loading) {
+    // Default sample data if no real data available
+    features.push(
+      { name: 'Income Level', value: 0.35, icon: 'cash', trend: 'up' },
+      { name: 'Credit History', value: 0.32, icon: 'card', trend: 'up' },
+      { name: 'Age', value: 0.15, icon: 'person', trend: 'down' },
+      { name: 'Employment Status', value: 0.12, icon: 'briefcase', trend: 'up' },
+      { name: 'Debt-to-Income Ratio', value: 0.06, icon: 'trending-down', trend: 'down' },
+      { name: 'Geographic Location', value: 0.04, icon: 'location', trend: 'stable' },
+      { name: 'Education Level', value: 0.03, icon: 'school', trend: 'up' },
+      { name: 'Account History', value: 0.02, icon: 'time', trend: 'stable' }
+    );
+  }
+
+  const getFeatureIcon = (index) => {
+    const icons = ['cash', 'card', 'person', 'briefcase', 'trending-down', 'location', 'school', 'time'];
+    return icons[index % icons.length] || 'information-circle';
+  };
+
+  const getFeatureTrend = (value) => {
+    if (value >= 0.3) return 'up';
+    if (value >= 0.15) return 'stable';
+    return 'down';
+  };
 
   const getBarColor = (value) => {
     if (value >= 0.3) return COLORS.primary;
@@ -37,6 +67,23 @@ const FeatureImportanceChart = ({ data }) => {
       default: return COLORS.gray400;
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Feature Importance Analysis</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading feature data...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Calculate summary statistics
+  const highImpactFeatures = features.filter(f => f.value >= 0.15).length;
+  const top3Percentage = features.slice(0, 3).reduce((sum, f) => sum + f.value, 0) * 100;
+  const trendingUpFeatures = features.filter(f => f.trend === 'up').length;
 
   return (
     <View style={styles.container}>
@@ -87,21 +134,21 @@ const FeatureImportanceChart = ({ data }) => {
       <View style={styles.summaryContainer}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>
-            {features.filter(f => f.value >= 0.15).length}
+            {highImpactFeatures}
           </Text>
           <Text style={styles.summaryLabel}>High Impact</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>
-            {(features.slice(0, 3).reduce((sum, f) => sum + f.value, 0) * 100).toFixed(0)}%
+            {top3Percentage.toFixed(0)}%
           </Text>
           <Text style={styles.summaryLabel}>Top 3 Features</Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>
-            {features.filter(f => f.trend === 'up').length}
+            {trendingUpFeatures}
           </Text>
           <Text style={styles.summaryLabel}>Trending Up</Text>
         </View>
@@ -128,6 +175,17 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: COLORS.textSecondary,
     marginBottom: SPACING.md,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.xl,
+  },
+  loadingText: {
+    marginLeft: SPACING.sm,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
   },
   chartContainer: {
     marginBottom: SPACING.md,
