@@ -9,8 +9,21 @@ class UserController {
    */
   async getAllUsers(req, res) {
     try {
-      // Temporarily allow all users to get all users for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can get all users
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const users = await userService.getAllUsers();
       
@@ -35,8 +48,21 @@ class UserController {
     try {
       const { id } = req.params;
       
-      // Temporarily allow access to any user profile for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only get their own profile or admins can get any profile
+      if (req.user.id != id && req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const user = await userService.getUserById(id);
       
@@ -59,8 +85,21 @@ class UserController {
    */
   async createUser(req, res) {
     try {
-      // Temporarily allow all users to create users for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can create users
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const user = await userService.createUser(req.body);
       
@@ -86,8 +125,21 @@ class UserController {
     try {
       const { id } = req.params;
       
-      // Temporarily allow updating any user profile for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only update their own profile or admins can update any profile
+      if (req.user.id != id && req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const user = await userService.updateUser(id, req.body);
       
@@ -113,8 +165,21 @@ class UserController {
     try {
       const { id } = req.params;
       
-      // Temporarily allow all users to delete users for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can delete users
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       await userService.deleteUser(id);
       
@@ -139,8 +204,21 @@ class UserController {
     try {
       const { id } = req.params;
       
-      // Temporarily allow access to any user preferences for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only get their own preferences or admins can get any preferences
+      if (req.user.id != id && req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const preferences = await userService.getUserPreferences(id);
       
@@ -165,8 +243,21 @@ class UserController {
     try {
       const { id } = req.params;
       
-      // Temporarily allow updating any user preferences for testing
-      // Authorization will be added back later
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only update their own preferences or admins can update any preferences
+      if (req.user.id != id && req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
 
       const preferences = await userService.updateUserPreferences(id, req.body);
       
@@ -174,6 +265,47 @@ class UserController {
         success: true,
         message: 'Preferences updated successfully',
         data: preferences
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Update user role
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updateUserRole(req, res) {
+    try {
+      const { id } = req.params;
+      
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can update user roles
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
+      const { role } = req.body;
+      const user = await userService.updateUserRole(id, role);
+      
+      res.status(200).json({
+        success: true,
+        message: 'User role updated successfully',
+        data: user
       });
     } catch (error) {
       res.status(400).json({
@@ -208,34 +340,6 @@ class UserController {
       });
     } catch (error) {
       res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
-  }
-
-  /**
-   * Update user role
-   * @param {Object} req - Express request object
-   * @param {Object} res - Express response object
-   */
-  async updateUserRole(req, res) {
-    try {
-      const { id } = req.params;
-      
-      // Temporarily allow all users to update roles for testing
-      // Authorization will be added back later
-
-      const { role } = req.body;
-      const user = await userService.updateUserRole(id, role);
-      
-      res.status(200).json({
-        success: true,
-        message: 'User role updated successfully',
-        data: user
-      });
-    } catch (error) {
-      res.status(400).json({
         success: false,
         message: error.message
       });
@@ -333,6 +437,95 @@ class UserController {
       res.status(200).json({
         success: true,
         data: validation
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get authenticated user's profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getAuthenticatedUserProfile(req, res) {
+    try {
+      const user = await userService.getAuthenticatedUserProfile(req.user.id);
+      
+      res.status(200).json({
+        success: true,
+        data: user
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Update authenticated user's profile
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updateAuthenticatedUserProfile(req, res) {
+    try {
+      // Prevent users from changing their role or admin status
+      const { role, isAdmin, ...updateData } = req.body;
+      
+      const user = await userService.updateAuthenticatedUserProfile(req.user.id, updateData);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: user
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get authenticated user's preferences
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getAuthenticatedUserPreferences(req, res) {
+    try {
+      const preferences = await userService.getUserPreferences(req.user.id);
+      
+      res.status(200).json({
+        success: true,
+        data: preferences
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Update authenticated user's preferences
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updateAuthenticatedUserPreferences(req, res) {
+    try {
+      const preferences = await userService.updateUserPreferences(req.user.id, req.body);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Preferences updated successfully',
+        data: preferences
       });
     } catch (error) {
       res.status(400).json({

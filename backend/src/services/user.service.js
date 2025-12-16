@@ -331,6 +331,56 @@ class UserService {
   }
 
   /**
+   * Get authenticated user's profile
+   * @param {string} userId - Authenticated user ID
+   * @returns {Object} User profile data
+   */
+  async getAuthenticatedUserProfile(userId) {
+    try {
+      const user = await User.findByPk(userId, {
+        attributes: { exclude: ['passwordHash'] }
+      });
+      
+      if (!user || user.isDeleted) {
+        throw new Error('User not found');
+      }
+      
+      return user;
+    } catch (error) {
+      throw new Error(`Failed to fetch user profile: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update authenticated user's profile
+   * @param {string} userId - Authenticated user ID
+   * @param {Object} userData - User data to update
+   * @returns {Object} Updated user profile
+   */
+  async updateAuthenticatedUserProfile(userId, userData) {
+    try {
+      const user = await User.findByPk(userId);
+      
+      if (!user || user.isDeleted) {
+        throw new Error('User not found');
+      }
+
+      // Prevent users from changing their role
+      if (userData.role) {
+        delete userData.role;
+      }
+
+      await user.update(userData);
+      
+      const userResponse = user.toJSON();
+      delete userResponse.passwordHash;
+      return userResponse;
+    } catch (error) {
+      throw new Error(`Failed to update user profile: ${error.message}`);
+    }
+  }
+
+  /**
    * Validate user data
    * @param {Object} userData - User data to validate
    * @returns {Object} Validation result
@@ -400,3 +450,5 @@ class UserService {
 }
 
 module.exports = new UserService();
+
+
