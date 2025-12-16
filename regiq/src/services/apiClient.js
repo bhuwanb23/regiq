@@ -343,7 +343,63 @@ export const getUserById = async (id) => {
   }
 };
 
-// ---------- NOTIFICATIONS ----------
+/**
+ * Get authenticated user's profile
+ * @returns {Promise<Object>} User profile data
+ */
+export const getUserProfile = async () => {
+  try {
+    const response = await apiClient.get('/api/users/profile');
+    return response;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update authenticated user's profile
+ * @param {Object} userData - User data to update
+ * @returns {Promise<Object>} Updated user profile
+ */
+export const updateUserProfile = async (userData) => {
+  try {
+    const response = await apiClient.put('/api/users/profile', userData);
+    return response;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get authenticated user's preferences
+ * @returns {Promise<Object>} User preferences
+ */
+export const getUserPreferences = async () => {
+  try {
+    const response = await apiClient.get('/api/users/preferences');
+    return response;
+  } catch (error) {
+    console.error('Error fetching user preferences:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update authenticated user's preferences
+ * @param {Object} preferences - Preferences to update
+ * @returns {Promise<Object>} Updated preferences
+ */
+export const updateUserPreferences = async (preferences) => {
+  try {
+    const response = await apiClient.put('/api/users/preferences', preferences);
+    return response;
+  } catch (error) {
+    console.error('Error updating user preferences:', error);
+    throw error;
+  }
+};// ---------- NOTIFICATIONS ----------
 /**
  * Get notifications
  * @param {Object} params - Query parameters
@@ -374,6 +430,34 @@ export const getNotificationById = async (id) => {
   }
 };
 
+/**
+ * Get user notification preferences
+ * @returns {Promise<Object>} User notification preferences
+ */
+export const getNotificationPreferences = async () => {
+  try {
+    const response = await apiClient.get('/api/notifications/preferences');
+    return response;
+  } catch (error) {
+    console.error('Error fetching notification preferences:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update user notification preferences
+ * @param {Object} preferences - Notification preferences to update
+ * @returns {Promise<Object>} Updated preferences
+ */
+export const updateNotificationPreferences = async (preferences) => {
+  try {
+    const response = await apiClient.put('/api/notifications/preferences', { preferences });
+    return response;
+  } catch (error) {
+    console.error('Error updating notification preferences:', error);
+    throw error;
+  }
+};
 // ---------- HELPER FUNCTIONS ----------
 /**
  * Handle API errors with user-friendly messages
@@ -489,11 +573,16 @@ export default {
   // User Management
   getUsers,
   getUserById,
+  getUserProfile,
+  updateUserProfile,
+  getUserPreferences,
+  updateUserPreferences,
   
   // Notifications
   getNotifications,
   getNotificationById,
-  
+  getNotificationPreferences,
+  updateNotificationPreferences,
   // Helpers
   handleApiError,
   withLoading,

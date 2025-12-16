@@ -166,12 +166,11 @@ The integration will be completed in phases to ensure proper sequencing and test
 - [x] Implement report scheduling
 - [x] Add report template selection
 ### Task 3.6: User Profile Integration
-- [ ] Connect user profile to backend API
-- [ ] Implement profile editing
-- [ ] Add preference management
-- [ ] Connect notification settings
-- [ ] Implement role-based UI elements
-
+- [x] Connect user profile to backend API
+- [x] Implement profile editing
+- [x] Add preference management
+- [x] Connect notification settings
+- [x] Implement role-based UI elements
 ## Phase 4: Authentication & Security
 
 ### Task 4.1: JWT Implementation

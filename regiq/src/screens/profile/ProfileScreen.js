@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,29 @@ import {
   StatusBar,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, TYPOGRAPHY, BORDER_RADIUS } from '../../constants/theme';
+import useUserProfile from '../../hooks/useUserProfile';
+import useNotificationPreferences from '../../hooks/useNotificationPreferences';
+import EditProfileForm from '../../components/profile/EditProfileForm';
+import PreferencesManager from '../../components/profile/PreferencesManager';
+import NotificationSettings from '../../components/profile/NotificationSettings';
 
 const ProfileScreen = ({ navigation }) => {
+  const [activeTab, setActiveTab] = useState('profile'); // profile, preferences, notifications
+  const [isEditing, setIsEditing] = useState(false);
+  const { profile, preferences, loading, error, fetchProfile, fetchPreferences, updateProfile, updatePreferences } = useUserProfile();
+  const { preferences: notificationPrefs, fetchPreferences: fetchNotificationPrefs, updatePreferences: updateNotificationPrefs } = useNotificationPreferences();
+
+  useEffect(() => {
+    fetchProfile();
+    fetchPreferences();
+    fetchNotificationPrefs();
+  }, []);
+
   const handleBack = () => {
     if (navigation?.goBack) {
       navigation.goBack();
@@ -21,70 +38,166 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
-  const handleProfileInfo = () => {
-    Alert.alert(
-      'Profile Information',
-      'Edit your personal details including name, email, and phone number.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Edit Profile', onPress: () => console.log('Edit Profile') },
-      ]
+  const handleSaveProfile = async (profileData) => {
+    try {
+      await updateProfile(profileData);
+      setIsEditing(false);
+      Alert.alert('Success', 'Profile updated successfully');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update profile: ' + err.message);
+    }
+  };
+
+  const handleSavePreferences = async (preferencesData) => {
+    try {
+      await updatePreferences(preferencesData);
+      Alert.alert('Success', 'Preferences saved successfully');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to save preferences: ' + err.message);
+    }
+  };
+
+  const handleSaveNotifications = async (notificationData) => {
+    try {
+      await updateNotificationPrefs(notificationData);
+      Alert.alert('Success', 'Notification settings saved successfully');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to save notification settings: ' + err.message);
+    }
+  };
+
+  // Role-based UI elements
+  const isAdmin = profile?.role === 'admin';
+  const isComplianceOfficer = profile?.role === 'compliance_officer';
+
+  const renderProfileContent = () => {
+    if (isEditing) {
+      return (
+        <EditProfileForm
+          profile={profile}
+          onSave={handleSaveProfile}
+          onCancel={() => setIsEditing(false)}
+          loading={loading}
+        />
+      );
+    }
+
+    return (
+      <ScrollView 
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Profile Section */}
+        <View style={styles.profileSection}>
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Ionicons name="person" size={32} color={COLORS.primary} />
+            </View>
+          </View>
+          
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{profile?.firstName} {profile?.lastName}</Text>
+            <Text style={styles.userRole}>{profile?.role ? profile.role.replace('_', ' ') : 'User'}</Text>
+            <Text style={styles.userEmail}>{profile?.email}</Text>
+            
+            {/* Role badge for admin users */}
+            {isAdmin && (
+              <View style={styles.adminBadge}>
+                <Text style={styles.adminBadgeText}>ADMIN</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Profile Details */}
+        <View style={styles.detailsSection}>
+          <View style={styles.detailItem}>
+            <Ionicons name="call" size={20} color={COLORS.textSecondary} />
+            <Text style={styles.detailText}>{profile?.phone || 'Not provided'}</Text>
+          </View>
+          
+          <View style={styles.detailItem}>
+            <Ionicons name="business" size={20} color={COLORS.textSecondary} />
+            <Text style={styles.detailText}>{profile?.department || 'Not provided'}</Text>
+          </View>
+          
+          <View style={styles.detailItem}>
+            <Ionicons name="briefcase" size={20} color={COLORS.textSecondary} />
+            <Text style={styles.detailText}>{profile?.position || 'Not provided'}</Text>
+          </View>
+        </View>
+
+        {/* Admin-specific features */}
+        {isAdmin && (
+          <View style={styles.adminSection}>
+            <Text style={styles.sectionTitle}>Administrator Features</Text>
+            <TouchableOpacity style={styles.adminFeatureItem}>
+              <Ionicons name="people" size={20} color={COLORS.primary} />
+              <Text style={styles.adminFeatureText}>User Management</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.adminFeatureItem}>
+              <Ionicons name="settings" size={20} color={COLORS.primary} />
+              <Text style={styles.adminFeatureText}>System Configuration</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.adminFeatureItem}>
+              <Ionicons name="bar-chart" size={20} color={COLORS.primary} />
+              <Text style={styles.adminFeatureText}>System Analytics</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Compliance Officer features */}
+        {isComplianceOfficer && (
+          <View style={styles.complianceSection}>
+            <Text style={styles.sectionTitle}>Compliance Features</Text>
+            <TouchableOpacity style={styles.complianceFeatureItem}>
+              <Ionicons name="document-text" size={20} color={COLORS.secondary} />
+              <Text style={styles.complianceFeatureText}>Audit Trail</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.complianceFeatureItem}>
+              <Ionicons name="checkmark-circle" size={20} color={COLORS.secondary} />
+              <Text style={styles.complianceFeatureText}>Compliance Reports</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Edit Button */}
+        <TouchableOpacity 
+          style={styles.editButton}
+          onPress={() => setIsEditing(true)}
+        >
+          <Ionicons name="create" size={20} color={COLORS.white} />
+          <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+      </ScrollView>
     );
   };
 
-  const handleCompanyInfo = () => {
-    Alert.alert(
-      'Company Information',
-      'Update your company details, industry, and region.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Edit Company', onPress: () => console.log('Edit Company') },
-      ]
+  const renderPreferencesContent = () => {
+    return (
+      <PreferencesManager
+        preferences={preferences}
+        onSave={handleSavePreferences}
+        loading={loading}
+      />
     );
   };
 
-  const handleAIModels = () => {
-    Alert.alert(
-      'AI Models',
-      'Manage your connected AI models and configurations.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Manage Models', onPress: () => console.log('Manage AI Models') },
-      ]
-    );
-  };
-
-  const handleNotifications = () => {
-    Alert.alert(
-      'Notifications',
-      'Configure your notification preferences for different types of alerts.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Configure', onPress: () => console.log('Configure Notifications') },
-      ]
-    );
-  };
-
-  const handleSecurity = () => {
-    Alert.alert(
-      'Security Settings',
-      'Manage your security settings, sessions, and authentication methods.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Security Settings', onPress: () => console.log('Security Settings') },
-      ]
-    );
-  };
-
-  const handleEditAvatar = () => {
-    Alert.alert(
-      'Change Profile Picture',
-      'Choose how you want to update your profile picture',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Camera', onPress: () => console.log('Open camera') },
-        { text: 'Gallery', onPress: () => console.log('Open gallery') },
-      ]
+  const renderNotificationsContent = () => {
+    return (
+      <NotificationSettings
+        notifications={notificationPrefs}
+        onSave={handleSaveNotifications}
+      />
     );
   };
 
@@ -102,122 +215,44 @@ const ProfileScreen = ({ navigation }) => {
           >
             <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={styles.headerTitle}>My Profile</Text>
         </View>
+      </View>
+
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'profile' && styles.activeTab]}
+          onPress={() => setActiveTab('profile')}
+        >
+          <Text style={[styles.tabText, activeTab === 'profile' && styles.activeTabText]}>
+            Profile
+          </Text>
+        </TouchableOpacity>
         
-        <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={20} color={COLORS.textSecondary} />
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'preferences' && styles.activeTab]}
+          onPress={() => setActiveTab('preferences')}
+        >
+          <Text style={[styles.tabText, activeTab === 'preferences' && styles.activeTabText]}>
+            Preferences
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.tab, activeTab === 'notifications' && styles.activeTab]}
+          onPress={() => setActiveTab('notifications')}
+        >
+          <Text style={[styles.tabText, activeTab === 'notifications' && styles.activeTabText]}>
+            Notifications
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Content */}
-      <ScrollView 
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Ionicons name="person" size={32} color={COLORS.primary} />
-            </View>
-            <TouchableOpacity 
-              style={styles.editButton}
-              onPress={handleEditAvatar}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="camera" size={12} color={COLORS.white} />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>John Anderson</Text>
-            <Text style={styles.userRole}>Compliance Manager</Text>
-          </View>
-        </View>
-
-        {/* Settings Options */}
-        <View style={styles.settingsSection}>
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleProfileInfo}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingIcon}>
-              <Ionicons name="person" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>Profile Information</Text>
-              <Text style={styles.settingSubtitle}>Manage your personal details</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleCompanyInfo}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingIcon}>
-              <Ionicons name="business" size={20} color={COLORS.secondary} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>Company Information</Text>
-              <Text style={styles.settingSubtitle}>Update company details</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleAIModels}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingIcon}>
-              <Ionicons name="hardware-chip" size={20} color={COLORS.accent} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>AI Models</Text>
-              <Text style={styles.settingSubtitle}>Manage connected AI models</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleNotifications}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingIcon}>
-              <Ionicons name="notifications" size={20} color={COLORS.warning} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>Notifications</Text>
-              <Text style={styles.settingSubtitle}>Configure notification preferences</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleSecurity}
-            activeOpacity={0.7}
-          >
-            <View style={styles.settingIcon}>
-              <Ionicons name="shield-checkmark" size={20} color={COLORS.success} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={styles.settingTitle}>Security</Text>
-              <Text style={styles.settingSubtitle}>Security settings and sessions</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+      {activeTab === 'profile' && renderProfileContent()}
+      {activeTab === 'preferences' && renderPreferencesContent()}
+      {activeTab === 'notifications' && renderNotificationsContent()}
     </SafeAreaView>
   );
 };
@@ -251,8 +286,28 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     color: COLORS.primary,
   },
-  moreButton: {
-    padding: SPACING.xs,
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray200,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.primary,
+  },
+  tabText: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    color: COLORS.textSecondary,
+  },
+  activeTabText: {
+    color: COLORS.primary,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   content: {
     flex: 1,
@@ -280,19 +335,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  editButton: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    backgroundColor: COLORS.secondary,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.white,
-  },
   userInfo: {
     flex: 1,
   },
@@ -305,43 +347,102 @@ const styles = StyleSheet.create({
   userRole: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     color: COLORS.textSecondary,
+    marginBottom: 4,
+    textTransform: 'capitalize',
   },
-  settingsSection: {
-    backgroundColor: COLORS.white,
-    marginTop: SPACING.sm,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray200,
-  },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.surfaceSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SPACING.sm,
-  },
-  settingContent: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: TYPOGRAPHY.fontSize.base,
-    fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.textPrimary,
-    marginBottom: 2,
-  },
-  settingSubtitle: {
+  userEmail: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     color: COLORS.textSecondary,
   },
-  bottomSpacing: {
-    height: SPACING.xl,
+  adminBadge: {
+    backgroundColor: COLORS.danger,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.sm,
+    alignSelf: 'flex-start',
+    marginTop: SPACING.xs,
+  },
+  adminBadgeText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.fontSize.xs,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+  },
+  detailsSection: {
+    backgroundColor: COLORS.white,
+    marginTop: SPACING.sm,
+    padding: SPACING.lg,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  detailText: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.md,
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    color: COLORS.primary,
+    marginBottom: SPACING.md,
+  },
+  adminSection: {
+    backgroundColor: COLORS.white,
+    marginTop: SPACING.sm,
+    padding: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.gray200,
+  },
+  adminFeatureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray100,
+  },
+  adminFeatureText: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.md,
+    flex: 1,
+  },
+  complianceSection: {
+    backgroundColor: COLORS.white,
+    marginTop: SPACING.sm,
+    padding: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.gray200,
+  },
+  complianceFeatureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray100,
+  },
+  complianceFeatureText: {
+    fontSize: TYPOGRAPHY.fontSize.base,
+    color: COLORS.textPrimary,
+    marginLeft: SPACING.md,
+    flex: 1,
+  },
+  editButton: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primary,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: SPACING.lg,
+  },
+  editButtonText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    marginLeft: SPACING.xs,
   },
 });
 
