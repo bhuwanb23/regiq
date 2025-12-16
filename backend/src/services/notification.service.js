@@ -395,16 +395,13 @@ class NotificationService {
   broadcastNotification(notification) {
     try {
       // Broadcast notification to user via WebSocket
-      websocketService.broadcastJobUpdate(`user_${notification.userId}`, {
-        type: 'NOTIFICATION',
-        notification: {
-          id: notification.id,
-          type: notification.type,
-          title: notification.title,
-          message: notification.message,
-          priority: notification.priority,
-          createdAt: notification.createdAt
-        }
+      websocketService.broadcastToUser(notification.userId, 'notification', {
+        id: notification.id,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        priority: notification.priority,
+        createdAt: notification.createdAt
       });
     } catch (error) {
       this.logger.error('Failed to broadcast notification', { error: error.message, notificationId: notification.id });
@@ -429,24 +426,36 @@ class NotificationService {
       });
 
       for (const notification of dueNotifications) {
-        // Check user preferences before sending
-        const canSend = await this.canSendNotification(
-          notification.userId, 
-          notification.type, 
-          notification.channel
-        );
+        try {
+          // Check user preferences before sending
+          const canSend = await this.canSendNotification(
+            notification.userId, 
+            notification.type, 
+            notification.channel
+          );
 
-        if (canSend) {
-          // In a real implementation, this would send the notification
-          // through the appropriate channel (email, push, etc.)
-          
-          // Update notification status
+          if (canSend) {
+            // In a real implementation, this would send the notification
+            // through the appropriate channel (email, push, etc.)
+            
+            // Update notification status
+            await notification.update({
+              status: 'SENT',
+              sentAt: now
+            });
+
+            this.logger.info('Scheduled notification sent', { notificationId: notification.id });
+          }
+        } catch (error) {
+          // Update notification status to FAILED
           await notification.update({
-            status: 'SENT',
-            sentAt: now
+            status: 'FAILED'
           });
-
-          this.logger.info('Scheduled notification sent', { notificationId: notification.id });
+          
+          this.logger.error('Failed to send scheduled notification', { 
+            error: error.message, 
+            notificationId: notification.id 
+          });
         }
       }
     } catch (error) {
@@ -482,69 +491,6 @@ class NotificationService {
       });
       // Default to allowing notification if we can't check preferences
       return true;
-    }
-  }
-  /**
-   * Send scheduled notifications
-   * @returns {Promise<void>}
-   */
-  async sendScheduledNotifications() {
-    try {
-      const now = new Date();
-      
-      // Find pending notifications that are scheduled for now or earlier
-      const notifications = await Notification.findAll({
-        where: {
-          status: 'PENDING',
-          scheduledAt: {
-            [Op.lte]: now
-          }
-        }
-      });
-      
-      // Send each notification
-      for (const notification of notifications) {
-        try {
-          // Update notification status to SENT
-          await notification.update({
-            status: 'SENT',
-            sentAt: new Date()
-          });
-          
-          // Broadcast notification via WebSocket
-          this.broadcastNotification(notification);
-          
-          this.logger.info('Scheduled notification sent', { notificationId: notification.id });
-        } catch (error) {
-          // Update notification status to FAILED
-          await notification.update({
-            status: 'FAILED'
-          });
-          
-          this.logger.error('Failed to send scheduled notification', { 
-            error: error.message, 
-            notificationId: notification.id 
-          });
-        }
-      }
-    } catch (error) {
-      this.logger.error('Failed to process scheduled notifications', { error: error.message });
-      throw error;
-    }
-  }
-  
-  /**
-   * Broadcast notification via WebSocket
-   * @param {Object} notification - Notification to broadcast
-   */
-  broadcastNotification(notification) {
-    try {
-      websocketService.broadcastToUser(notification.userId, 'notification', notification);
-    } catch (error) {
-      this.logger.error('Failed to broadcast notification', { 
-        error: error.message, 
-        notificationId: notification.id 
-      });
     }
   }
 }

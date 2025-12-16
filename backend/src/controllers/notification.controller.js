@@ -8,8 +8,18 @@ class NotificationController {
    */
   async getAllNotifications(req, res) {
     try {
+      // Users can only get their own notifications unless they are admin
       const { page, limit, type, status, priority } = req.query;
       const filters = {};
+      
+      // Non-admin users can only see their own notifications
+      if (req.user.role !== 'admin') {
+        filters.userId = req.user.id;
+      } else if (req.query.userId) {
+        // Admins can filter by userId
+        filters.userId = req.query.userId;
+      }
+      
       if (type) filters.type = type;
       if (status) filters.status = status;
       if (priority) filters.priority = priority;
@@ -45,6 +55,22 @@ class NotificationController {
    */
   async createNotification(req, res) {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can create notifications
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const notificationData = req.body;
       const notification = await notificationService.createNotification(notificationData);
       res.status(201).json({
@@ -67,7 +93,25 @@ class NotificationController {
   async getNotificationById(req, res) {
     try {
       const { notificationId } = req.params;
+      
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
       const notification = await notificationService.getNotificationById(notificationId);
+      
+      // Non-admin users can only access their own notifications
+      if (req.user.role !== 'admin' && notification.userId !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+      
       res.json({
         success: true,
         data: notification
@@ -88,6 +132,23 @@ class NotificationController {
   async updateNotification(req, res) {
     try {
       const { notificationId } = req.params;
+      
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can update notifications
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const updateData = req.body;
       const notification = await notificationService.updateNotification(notificationId, updateData);
       res.json({
@@ -111,6 +172,23 @@ class NotificationController {
   async deleteNotification(req, res) {
     try {
       const { notificationId } = req.params;
+      
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can delete notifications
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       await notificationService.deleteNotification(notificationId);
       res.json({
         success: true,
@@ -132,10 +210,29 @@ class NotificationController {
   async markAsRead(req, res) {
     try {
       const { notificationId } = req.params;
-      const notification = await notificationService.markAsRead(notificationId);
+      
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      const notification = await notificationService.getNotificationById(notificationId);
+      
+      // Users can only mark their own notifications as read
+      if (req.user.role !== 'admin' && notification.userId !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
+      const updatedNotification = await notificationService.markAsRead(notificationId);
       res.json({
         success: true,
-        data: notification,
+        data: updatedNotification,
         message: 'Notification marked as read'
       });
     } catch (error) {
@@ -153,6 +250,7 @@ class NotificationController {
    */
   async getAllTemplates(req, res) {
     try {
+      // Anyone can get templates
       const { page, limit, type, isActive } = req.query;
       const filters = {};
       if (type) filters.type = type;
@@ -189,6 +287,22 @@ class NotificationController {
    */
   async createTemplate(req, res) {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can create templates
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const templateData = req.body;
       const template = await notificationService.createTemplate(templateData);
       res.status(201).json({
@@ -210,6 +324,7 @@ class NotificationController {
    */
   async getTemplateById(req, res) {
     try {
+      // Anyone can get a template by ID
       const { templateId } = req.params;
       const template = await notificationService.getTemplateById(templateId);
       res.json({
@@ -231,6 +346,22 @@ class NotificationController {
    */
   async updateTemplate(req, res) {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can update templates
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const { templateId } = req.params;
       const updateData = req.body;
       const template = await notificationService.updateTemplate(templateId, updateData);
@@ -254,6 +385,22 @@ class NotificationController {
    */
   async deleteTemplate(req, res) {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can delete templates
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const { templateId } = req.params;
       await notificationService.deleteTemplate(templateId);
       res.json({
@@ -275,8 +422,16 @@ class NotificationController {
    */
   async getUserPreferences(req, res) {
     try {
-      // In a real implementation, you would get the user ID from the authenticated user
-      const userId = req.user?.id || req.query.userId;
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only get their own preferences
+      const userId = req.user.id;
       const preferences = await notificationService.getUserPreferences(userId);
       res.json({
         success: true,
@@ -297,9 +452,17 @@ class NotificationController {
    */
   async updateUserPreferences(req, res) {
     try {
-      // In a real implementation, you would get the user ID from the authenticated user
-      const userId = req.user?.id || req.body.userId;
-      const preferences = req.body.preferences;
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Users can only update their own preferences
+      const userId = req.user.id;
+      const preferences = req.body.preferences || req.body;
       const updatedPreferences = await notificationService.updateUserPreferences(userId, preferences);
       res.json({
         success: true,
@@ -321,6 +484,22 @@ class NotificationController {
    */
   async getAnalytics(req, res) {
     try {
+      // Check if user is authenticated
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Authentication required'
+        });
+      }
+
+      // Only admins can access analytics
+      if (req.user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Insufficient permissions'
+        });
+      }
+
       const { page, limit, notificationId } = req.query;
       const filters = {};
       if (notificationId) filters.notificationId = notificationId;

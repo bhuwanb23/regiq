@@ -42,7 +42,17 @@ class WebSocketService {
       // Store client connection
       this.clients.set(socket.id, {
         socket,
+        userId: null,
         subscriptions: new Set()
+      });
+
+      // Handle client authentication
+      socket.on('authenticate', (userId) => {
+        this.logger.info('Client authenticated', { clientId: socket.id, userId });
+        const client = this.clients.get(socket.id);
+        if (client) {
+          client.userId = userId;
+        }
       });
 
       // Handle client subscription to job updates
@@ -90,6 +100,27 @@ class WebSocketService {
           ...statusUpdate
         });
         this.logger.debug('Job status update sent to client', { clientId, jobId });
+      }
+    });
+  }
+
+  /**
+   * Broadcast notification to a specific user
+   * @param {string} userId - User ID
+   * @param {string} eventType - Event type
+   * @param {Object} data - Notification data
+   */
+  broadcastToUser(userId, eventType, data) {
+    if (!this.io) {
+      this.logger.warn('WebSocket server not initialized');
+      return;
+    }
+
+    // Send notification to all clients connected for this user
+    this.clients.forEach((client, clientId) => {
+      if (client.userId === userId) {
+        client.socket.emit(eventType, data);
+        this.logger.debug('Notification sent to user', { clientId, userId, eventType });
       }
     });
   }

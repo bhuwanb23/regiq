@@ -100,6 +100,10 @@ app.use('/search', searchRoutes);
 const notificationRoutes = require('./routes/notification.routes');
 app.use('/notifications', notificationRoutes);
 
+// API Notification routes
+const apiNotificationRoutes = require('./routes/api/notification.routes');
+app.use('/api/notifications', apiNotificationRoutes);
+
 // Audit routes
 const auditRoutes = require('./routes/audit.routes');
 app.use('/audit', auditRoutes);
