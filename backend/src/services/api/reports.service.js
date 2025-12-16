@@ -3,6 +3,17 @@ const {
   ReportTemplate,
   ReportSchedule
 } = require('../../models');
+const puppeteer = require('puppeteer');
+const Handlebars = require('handlebars');
+
+// Register Handlebars helpers
+Handlebars.registerHelper('json', function(context) {
+  return JSON.stringify(context, null, 2);
+});
+
+Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+  return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
 
 class ReportService {
   /**
@@ -100,12 +111,12 @@ class ReportService {
    */
   async generateReport(generationData) {
     try {
-      // Simulate report generation
-      const reportContent = {
+      // Use the content directly from generationData or create a default structure
+      const reportContent = generationData.content || {
         title: generationData.title || 'Generated Report',
         generatedAt: new Date(),
-        data: generationData.data || {},
-        summary: generationData.summary || {},
+        data: {},
+        summary: {},
         metadata: {
           generatedBy: 'system',
           version: '1.0'
@@ -114,7 +125,7 @@ class ReportService {
       
       const report = await Report.create({
         reportType: generationData.reportType || 'generic',
-        title: reportContent.title,
+        title: generationData.title || reportContent.title || 'Generated Report',
         content: reportContent,
         status: 'completed',
         format: generationData.format || 'pdf',
@@ -135,21 +146,131 @@ class ReportService {
     try {
       const report = await this.getReport(reportId);
       
-      // Simulate PDF generation
-      const pdfContent = `
-        Report Title: ${report.title}
-        Report Type: ${report.reportType}
-        Generated At: ${report.createdAt}
-        
-        Content:
-        ${JSON.stringify(report.content, null, 2)}
-      `;
+      // Debug: Log report data
+      console.log('DEBUG: Report data:', JSON.stringify(report, null, 2));
       
-      // In a real implementation, we would use a library like pdfkit or puppeteer
-      // For now, we'll return a Buffer with the text content
-      return Buffer.from(pdfContent, 'utf-8');
+      // Get the template for this report type
+      const template = await ReportTemplate.findOne({
+        where: { 
+          templateType: report.reportType,
+          isActive: true,
+          contentType: 'html'
+        },
+        order: [['createdAt', 'DESC']]
+      });
+      
+      // Debug: Log template info
+      if (template) {
+        console.log('DEBUG: Using template:', template.name, 'ID:', template.id);
+      } else {
+        console.log('DEBUG: No template found, using fallback');
+      }
+      
+      let htmlContent;
+      
+      if (template) {
+        const templateData = {
+          title: report.title,
+          reportType: report.reportType,
+          generatedAt: report.createdAt,
+          content: report.content,
+          reportId: report.id
+        };
+        
+        // Debug: Log template data
+        console.log('DEBUG: Template data:', JSON.stringify(templateData, null, 2));
+        
+        // Render the HTML template with report data
+        htmlContent = this.renderHtmlTemplate(template.content, templateData);
+      } else {
+        // Fallback to simple HTML if no template found
+        htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>${report.title}</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              h1 { color: #333; }
+              .meta { color: #666; margin-bottom: 20px; }
+              pre { background: #f5f5f5; padding: 15px; overflow-x: auto; }
+            </style>
+          </head>
+          <body>
+            <h1>${report.title}</h1>
+            <div class="meta">
+              <p><strong>Report Type:</strong> ${report.reportType}</p>
+              <p><strong>Generated At:</strong> ${report.createdAt}</p>
+              <p><strong>Report ID:</strong> ${report.id}</p>
+            </div>
+            <pre>${JSON.stringify(report.content, null, 2)}</pre>
+          </body>
+          </html>
+        `;
+      }
+      
+      // Debug: Log generated HTML (first 1000 chars)
+      console.log('DEBUG: Generated HTML (first 1000 chars):', htmlContent.substring(0, 1000));
+      
+      // Convert HTML to PDF using Puppeteer
+      const pdfBuffer = await this.htmlToPdf(htmlContent);
+      return pdfBuffer;
     } catch (error) {
+      console.error('ERROR in exportReportPdf:', error);
       throw new Error(`Failed to export report as PDF: ${error.message}`);
+    }
+  }
+  
+  /**
+   * Render HTML template with Handlebars
+   */
+  renderHtmlTemplate(templateContent, data) {
+    try {
+      // Ensure data is properly formatted
+      const formattedData = {
+        ...data,
+        // Format dates properly
+        generatedAt: data.generatedAt instanceof Date ? data.generatedAt.toString() : data.generatedAt,
+        // Ensure content is properly structured
+        content: data.content || {}
+      };
+      
+      const template = Handlebars.compile(templateContent);
+      return template(formattedData);
+    } catch (error) {
+      throw new Error(`Failed to render HTML template: ${error.message}`);
+    }
+  }
+  
+  /**
+   * Convert HTML to PDF using Puppeteer
+   */
+  async htmlToPdf(htmlContent) {
+    try {
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+      
+      const pdf = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20px',
+          bottom: '20px',
+          left: '20px',
+          right: '20px'
+        }
+      });
+      
+      await browser.close();
+      return pdf;
+    } catch (error) {
+      throw new Error(`Failed to convert HTML to PDF: ${error.message}`);
     }
   }
 
@@ -157,25 +278,19 @@ class ReportService {
     try {
       const report = await this.getReport(reportId);
       
-      // Simulate CSV generation
-      let csvContent = 'Title,Report Type,Generated At,Status\n';
-      csvContent += `"${report.title}","${report.reportType}","${report.createdAt}","${report.status}"\n`;
+      // Create CSV header
+      let csvContent = 'Title,Report Type,Generated At,Status,Total Regulations,Compliant,Non-Compliant,Pending\n';
       
-      // Add data rows if available
-      if (report.content && report.content.data) {
-        csvContent += '\nData:\n';
-        const data = report.content.data;
-        if (Array.isArray(data)) {
-          // If data is an array, create CSV rows
-          data.forEach((item, index) => {
-            csvContent += `${index},${JSON.stringify(item)}\n`;
-          });
-        } else {
-          // If data is an object, flatten it
-          Object.entries(data).forEach(([key, value]) => {
-            csvContent += `"${key}","${value}"\n`;
-          });
-        }
+      // Add summary row
+      const summary = report.content?.summary || {};
+      csvContent += `"${report.title}","${report.reportType}","${report.createdAt}","${report.status}","${summary.totalRegulations || 0}","${summary.compliant || 0}","${summary.nonCompliant || 0}","${summary.pending || 0}"\n`;
+      
+      // Add detailed data rows if available
+      if (report.content && report.content.data && Array.isArray(report.content.data)) {
+        csvContent += '\nJurisdiction,Regulation,Status,Action Required\n';
+        report.content.data.forEach(item => {
+          csvContent += `"${item.jurisdiction || ''}","${item.regulation || ''}","${item.status || ''}","${item.action || ''}"\n`;
+        });
       }
       
       return csvContent;

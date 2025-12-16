@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    contentType: {
+      type: DataTypes.ENUM('text', 'html'),
+      defaultValue: 'html',
+      field: 'content_type'
+    },
     content: {
       type: DataTypes.TEXT
     },
