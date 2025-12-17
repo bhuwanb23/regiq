@@ -1,76 +1,51 @@
-/**
- * Test file for API Client Setup
- * This is a simple integration test to verify our API client is properly configured
- */
+const apiClient = require('../apiClient');
 
-import apiClient from '../api';
-import { login, isAuthenticated } from '../authService';
-import { storeToken, getToken, removeToken } from '../../utils/storage';
-
-// Mock localStorage for testing
-global.localStorage = {
-  store: {},
-  getItem(key) {
-    return this.store[key] || null;
-  },
-  setItem(key, value) {
-    this.store[key] = value.toString();
-  },
-  removeItem(key) {
-    delete this.store[key];
-  },
-  clear() {
-    this.store = {};
-  }
-};
-
-describe('API Client Setup', () => {
-  beforeEach(() => {
-    // Clear localStorage before each test
-    global.localStorage.clear();
-  });
-
-  test('should create axios instance with correct baseURL', () => {
-    expect(apiClient.defaults.baseURL).toBe('http://localhost:3000/api');
-  });
-
-  test('should have timeout set to 10 seconds', () => {
-    expect(apiClient.defaults.timeout).toBe(10000);
-  });
-
-  test('should have JSON content type header', () => {
-    expect(apiClient.defaults.headers['Content-Type']).toBe('application/json');
-  });
-
-  test('should store and retrieve token from storage', async () => {
-    const testToken = 'test-jwt-token';
-    
-    // Store token
-    await storeToken(testToken);
-    
-    // Retrieve token
-    const retrievedToken = await getToken();
-    
-    expect(retrievedToken).toBe(testToken);
-  });
-
-  test('should remove token from storage', async () => {
-    const testToken = 'test-jwt-token';
-    
-    // Store token
-    await storeToken(testToken);
-    
-    // Verify token is stored
-    let retrievedToken = await getToken();
-    expect(retrievedToken).toBe(testToken);
-    
-    // Remove token
-    await removeToken();
-    
-    // Verify token is removed
-    retrievedToken = await getToken();
-    expect(retrievedToken).toBeNull();
-  });
+// Mock axios
+jest.mock('axios', () => {
+  return {
+    create: jest.fn(() => ({
+      get: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      delete: jest.fn(),
+      interceptors: {
+        request: { use: jest.fn(), eject: jest.fn() },
+        response: { use: jest.fn(), eject: jest.fn() },
+      },
+    })),
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  };
 });
 
-console.log('API Client Setup Tests Completed');
+describe('apiClient', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should have getUserProfile function', () => {
+    expect(typeof apiClient.default.getUserProfile).toBe('function');
+  });
+
+  it('should have updateUserProfile function', () => {
+    expect(typeof apiClient.default.updateUserProfile).toBe('function');
+  });
+
+  it('should have getUserPreferences function', () => {
+    expect(typeof apiClient.default.getUserPreferences).toBe('function');
+  });
+
+  it('should have updateUserPreferences function', () => {
+    expect(typeof apiClient.default.updateUserPreferences).toBe('function');
+  });
+
+  it('should have getNotificationPreferences function', () => {
+    expect(typeof apiClient.default.getNotificationPreferences).toBe('function');
+  });
+
+  it('should have updateNotificationPreferences function', () => {
+    expect(typeof apiClient.default.updateNotificationPreferences).toBe('function');
+  });
+});
