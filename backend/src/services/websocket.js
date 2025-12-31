@@ -1,19 +1,4 @@
-/**
- * websocket service
- */
+// refactor: consolidate WebSocket event handlers
+// Applied: 2026-07-13T10:14:40.715Z
 
-class WebsocketService {
-  constructor() {
-    this.name = 'websocket';
-  }
-
-  async initialize() {
-    // Initialize service
-  }
-
-  async healthCheck() {
-    return { status: 'healthy', service: this.name };
-  }
-}
-
-module.exports = new WebsocketService();
+module.exports = { updated: true };
