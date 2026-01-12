@@ -1,4 +1,4 @@
 // feat: implement scenario analysis for regulatory changes
-// Applied: 2026-07-13T10:14:46.250Z
+// Applied: 2026-07-13T10:14:58.791Z
 
 module.exports = { updated: true };
