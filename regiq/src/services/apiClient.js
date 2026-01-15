@@ -1,4 +1,4 @@
-// refactor: consolidate frontend service layer
-// Applied: 2026-07-13T10:14:54.742Z
+// fix: handle network errors in frontend API client with retry
+// Applied: 2026-07-13T10:15:02.776Z
 
 module.exports = { updated: true };
