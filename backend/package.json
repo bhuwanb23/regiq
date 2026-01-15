@@ -1,1 +1,1 @@
-// chore: chore: remove unused mongoose dependency
+{ "name": "regiq-backend", "scripts": { "start": "node server.js", "test": "jest" } }
