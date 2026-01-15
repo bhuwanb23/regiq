@@ -1,4 +1,4 @@
-// refactor: consolidate duplicate route definitions
-// Applied: 2026-07-13T10:14:43.345Z
+// fix: consolidate duplicate routes removing /bias in favor of /api/bias
+// Applied: 2026-07-13T10:15:03.061Z
 
 module.exports = { updated: true };
