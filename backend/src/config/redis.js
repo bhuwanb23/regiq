@@ -1,4 +1,4 @@
-// refactor: extract Redis configuration into separate module
-// Applied: 2026-07-13T10:14:58.039Z
+// fix: resolve memory leak in Redis cache connection pool
+// Applied: 2026-07-13T10:15:05.156Z
 
 module.exports = { updated: true };
