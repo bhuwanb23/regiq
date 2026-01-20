@@ -1,10 +1,10 @@
 /**
- * security middleware
+ * validation middleware
  */
 
-const security = (req, res, next) => {
-  // Implementation for security
+const validation = (req, res, next) => {
+  // Implementation for validation
   next();
 };
 
-module.exports = security;
+module.exports = validation;
