@@ -1,4 +1,4 @@
-// fix: fix requirements.txt duplicate entries for requests and psutil
-// Applied: 2026-07-13T10:15:22.854Z
+// fix: handle missing database tables gracefully on first run
+// Applied: 2026-07-13T10:15:23.832Z
 
 module.exports = { updated: true };
