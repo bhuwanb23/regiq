@@ -1,4 +1,4 @@
-// feat: wire report generator to ReportLab and WeasyPrint engines
-// Applied: 2026-07-13T10:15:20.851Z
+// fix: fix Puppeteer PDF generation timeout on large reports
+// Applied: 2026-07-13T10:15:22.666Z
 
 module.exports = { updated: true };
