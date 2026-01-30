@@ -1,4 +1,4 @@
 // fix: fix Puppeteer PDF generation timeout on large reports
-// Applied: 2026-07-13T10:15:22.666Z
+// Applied: 2026-07-13T10:15:27.293Z
 
 module.exports = { updated: true };
