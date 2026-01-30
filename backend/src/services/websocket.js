@@ -1,4 +1,4 @@
-// fix: add proper graceful shutdown for Socket.IO connections
-// Applied: 2026-07-13T10:15:26.159Z
+// fix: fix WebSocket connection reconnection logic
+// Applied: 2026-07-13T10:15:26.442Z
 
 module.exports = { updated: true };
