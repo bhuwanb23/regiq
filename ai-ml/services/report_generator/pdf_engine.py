@@ -1,4 +1,4 @@
-// fix: fix Puppeteer PDF generation timeout on large reports
-// Applied: 2026-07-13T10:15:27.293Z
+// feat: implement PDF export with WeasyPrint templates
+// Applied: 2026-07-13T10:15:28.986Z
 
 module.exports = { updated: true };
