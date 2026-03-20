@@ -1,4 +1,4 @@
 // feat: add annotation system for regulation highlights
-// Applied: 2026-07-13T10:16:11.072Z
+// Applied: 2026-07-13T10:16:33.944Z
 
 module.exports = { updated: true };
