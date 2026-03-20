@@ -18,7 +18,7 @@ import hashlib
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass, asdict
 import pickle
 import joblib
@@ -74,11 +74,24 @@ class ModelPersistence:
         (self.base_dir / "metadata").mkdir(exist_ok=True)
     
     def _calculate_checksum(self, file_path: Path) -> str:
-        """Calculate SHA256 checksum of a file."""
+        """Calculate SHA256 checksum of a file or directory."""
         sha256_hash = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(chunk)
+        
+        if file_path.is_dir():
+            # For directories (like spaCy models), hash all files
+            for root, dirs, files in sorted(os.walk(file_path)):
+                for filename in sorted(files):
+                    filepath = Path(root) / filename
+                    with open(filepath, "rb") as f:
+                        sha256_hash.update(filename.encode())
+                        for chunk in iter(lambda: f.read(4096), b""):
+                            sha256_hash.update(chunk)
+        else:
+            # For single files
+            with open(file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(chunk)
+        
         return sha256_hash.hexdigest()
     
     def _get_model_path(self, model_name: str, model_type: str) -> Path:

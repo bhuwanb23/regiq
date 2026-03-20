@@ -136,9 +136,12 @@ class RegulatoryTextClassifierTrainer:
         """
         self.logger.info(f"Preparing data for task: {task_name}")
         
-        # Split data
+        # Split data - use larger test size for small datasets
+        test_size = 0.33 if len(texts) < 20 else 0.2
+        
         X_train, X_test, y_train, y_test = train_test_split(
-            texts, labels, test_size=0.2, random_state=42, stratify=labels if len(set(labels)) > 1 else None
+            texts, labels, test_size=test_size, random_state=42, 
+            stratify=labels if len(set(labels)) > 1 else None
         )
         
         self.logger.info(f"Train samples: {len(X_train)}, Test samples: {len(X_test)}")
@@ -173,7 +176,14 @@ class RegulatoryTextClassifierTrainer:
         self.logger.info(f"Training {classifier_type} classifier for '{task_name}'...")
         
         # Create pipeline
-        vectorizer = self.vectorizer_configs.get(vectorizer_type).clone()
+        vectorizer_config = self.vectorizer_configs.get(vectorizer_type)
+        vectorizer = TfidfVectorizer(
+            max_features=vectorizer_config.max_features,
+            ngram_range=vectorizer_config.ngram_range,
+            min_df=vectorizer_config.min_df,
+            max_df=vectorizer_config.max_df,
+            sublinear_tf=vectorizer_config.sublinear_tf
+        ) if hasattr(vectorizer_config, 'clone') else vectorizer_config
         classifier = self.classifiers.get(classifier_type)
         
         if classifier is None:
@@ -383,22 +393,34 @@ def create_sample_training_data() -> Dict[str, Tuple[List[str], List[str]]]:
     """
     data = {}
     
-    # Task 1: Regulation Type Classification
+    # Task 1: Regulation Type Classification - Balanced classes
     regulation_texts = [
         "New SEC filing requirements for public companies",
+        "SEC announces enforcement action against insider trading",
+        "SEC requires ESG climate disclosures from corporations",
         "Basel III capital adequacy framework implementation",
+        "Federal Reserve banking supervision stress tests",
+        "FDIC deposit insurance coverage limits updated",
         "GDPR data protection and privacy compliance guidelines",
-        "AML/KYC anti-money laundering procedures",
-        "Dodd-Frank financial reform provisions",
-        "SOX internal controls and audit requirements",
-        "MiFID II investor protection rules",
-        "CCPA consumer privacy rights enforcement",
-        "FDIC deposit insurance regulations",
-        "CFTC derivatives trading oversight"
+        "CCPA consumer privacy rights enforcement California",
+        "Data breach notification requirements under privacy laws",
+        "AML/KYC anti-money laundering procedures banks",
+        "FinCEN suspicious activity reporting requirements SAR",
+        "Bank Secrecy Act BSA compliance obligations",
+        "Dodd-Frank financial reform provisions implementation",
+        "Consumer Financial Protection Bureau CFPB regulations",
+        "Systematically important financial institutions SIFI rules",
+        "MiFID II investor protection rules European markets",
+        "Market abuse regulation MAR insider dealing disclosure",
+        "Best execution requirements for investment firms"
     ]
     regulation_labels = [
-        "SECURITIES", "BANKING", "PRIVACY", "AML", "FINANCIAL_REFORM",
-        "AUDIT", "MARKETS", "PRIVACY", "BANKING", "DERIVATIVES"
+        "SECURITIES", "SECURITIES", "SECURITIES",
+        "BANKING", "BANKING", "BANKING",
+        "PRIVACY", "PRIVACY", "PRIVACY",
+        "AML", "AML", "AML",
+        "FINANCIAL_REFORM", "FINANCIAL_REFORM", "FINANCIAL_REFORM",
+        "MARKETS", "MARKETS", "MARKETS"
     ]
     data['regulation_type'] = (regulation_texts, regulation_labels)
     

@@ -86,20 +86,19 @@ class RegulatoryNERTrainer:
             self.nlp = spacy.load(self.base_model)
             self.logger.info(f"✅ Loaded base model: {self.base_model}")
             
-            # Get NER component
+            # Check if NER exists
             if "ner" not in self.nlp.pipe_names:
-                self.logger.warning("NER component not found, creating new one")
-                self.ner = spacy.create_pipe("ner")
-                self.nlp.add_pipe("ner")
+                # Add NER component with our labels
+                ner = self.nlp.add_pipe("ner")
+                for label in self.entity_types:
+                    ner.add_label(label)
             else:
-                self.ner = self.nlp.get_pipe("ner")
-                # Clear existing labels
-                self.ner.labels = []
+                # Use existing NER and add new labels
+                ner = self.nlp.get_pipe("ner")
+                for label in self.entity_types:
+                    ner.add_label(label)
             
-            # Add our custom labels
-            for label in self.entity_types:
-                self.ner.add_label(label)
-            
+            self.ner = ner
             self.logger.info(f"✅ Added {len(self.entity_types)} regulatory entity labels")
             
         except OSError:
@@ -155,9 +154,16 @@ class RegulatoryNERTrainer:
         
         self.logger.info(f"Starting training for {n_epochs} epochs...")
         
-        # Initialize optimizer
-        optimizer = self.nlp.begin_training()
-        optimizer.learning_rate = learning_rate
+        # Initialize with a simple get_examples function
+        def get_examples():
+            return training_data
+        
+        # Initialize the pipeline
+        self.nlp.initialize(get_examples=get_examples)
+        
+        # Get optimizer
+        optimizer = self.nlp.resume_training()
+        optimizer.learn_rate = learning_rate
         
         # Disable other pipes during training
         pipe_exceptions = ["ner", "trf_wordpiecer"]
