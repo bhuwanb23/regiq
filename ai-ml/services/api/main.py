@@ -4,6 +4,11 @@ REGIQ AI/ML - FastAPI Main Application
 Main entry point for the FastAPI application.
 """
 
+# Load environment variables FIRST (before any other imports)
+from dotenv import load_dotenv
+import os
+load_dotenv()  # Loads .env file into environment
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

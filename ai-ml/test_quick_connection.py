@@ -68,7 +68,7 @@ def main():
         ("POST", "/api/v1/regulatory-intelligence/documents/analyze", {"document_text": "GDPR test", "document_type": "policy"}, 200),
         
         # Report Generator
-        ("POST", "/api/v1/report-generator/generate", {"report_type": "fairness", "data": {}}, 200),
+        ("POST", "/api/v1/reports/generate", {"report_type": "fairness", "data": {}}, 200),
     ]
     
     results = []

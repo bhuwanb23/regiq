@@ -49,10 +49,10 @@ module.exports = {
 
     // Report Generator Service  →  ai-ml/services/report_generator/
     reports: {
-      generate:    process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/report-generator/generate',
-      export:      '/api/v1/report-generator/export',
-      glossary:    '/api/v1/report-generator/glossary',
-      templates:   '/api/v1/report-generator/templates',
+      generate:    process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/reports/generate',
+      export:      '/api/v1/reports/export',
+      glossary:    '/api/v1/reports/glossary',
+      templates:   '/api/v1/reports/templates',
     },
   },
 
