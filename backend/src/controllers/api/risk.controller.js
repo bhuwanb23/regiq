@@ -205,6 +205,43 @@ class RiskController {
       });
     }
   }
+
+  /**
+   * Bayesian Simulation Endpoint
+   */
+  async runBayesianSimulation(req, res) {
+    try {
+      const result = await riskService.runBayesianSimulation(req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Bayesian simulation completed successfully',
+        data: result
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Regulatory Frameworks Endpoint
+   */
+  async getFrameworks(req, res) {
+    try {
+      const frameworks = await riskService.getFrameworks();
+      res.status(200).json({
+        success: true,
+        data: frameworks
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new RiskController();
