@@ -10,7 +10,7 @@ Provides document embedding, storage, and retrieval:
 
 from .vector_database import VectorDatabaseManager, VectorDBConfig, EmbeddingPipeline
 from .document_embeddings import DocumentEmbeddingService, DocumentMetadata
-from .retrieval_system import RetrievalSystem
+from .retrieval_system import ContextRetriever, RAGSystem
 from .embedding_cache import EmbeddingPersistence
 
 __all__ = [
@@ -19,6 +19,7 @@ __all__ = [
     'EmbeddingPipeline',
     'DocumentEmbeddingService',
     'DocumentMetadata',
-    'RetrievalSystem',
+    'ContextRetriever',
+    'RAGSystem',
     'EmbeddingPersistence',
 ]
