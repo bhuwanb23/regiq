@@ -1,26 +1,57 @@
-const { 
+/**
+ * Bias Analysis Service (api layer)
+ * Bridges the Node.js backend to the Python bias_analysis AI/ML service.
+ *
+ * Every method that requires AI computation calls the Python FastAPI service.
+ * Database operations (CRUD) still hit Sequelize models directly.
+ */
+
+const {
   ModelAnalysis,
   DataBiasDetection,
   MitigationRecommendation,
   BiasResult,
   BiasTrend,
-  ComparisonReport
+  ComparisonReport,
 } = require('../../models');
 
+const aiMlClient  = require('../ai-ml.service');
+const { endpoints } = require('../../config/ai-ml.config');
+
 class BiasService {
+
+  // ── Bias Analysis ─────────────────────────────────────────────────── //
+
   /**
-   * Bias Analysis Methods
+   * Run bias analysis via Python AI/ML service, then persist results.
+   * @param {Object} analysisData - { modelFile, datasetFile, protectedAttributes, ... }
    */
   async analyzeBias(analysisData) {
     try {
-      // Create a new bias analysis record
+      // 1. Call Python bias_analysis service
+      const aiResult = await aiMlClient.makeRequest(
+        'POST',
+        endpoints.bias.analyze,
+        analysisData
+      );
+
+      // 2. Persist to DB
       const analysis = await ModelAnalysis.create({
-        ...analysisData,
-        status: 'completed',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        modelId:            analysisData.modelId,
+        datasetId:          analysisData.datasetId,
+        protectedAttributes: analysisData.protectedAttributes,
+        fairnessMetrics:    aiResult.fairness_metrics    || {},
+        overallBiasScore:   aiResult.overall_bias_score  || 0,
+        mitigationApplied:  aiResult.mitigation_applied  || null,
+        shapValues:         aiResult.shap_values          || {},
+        limeValues:         aiResult.lime_values          || {},
+        status:             'completed',
+        rawResult:          aiResult,
+        createdAt:          new Date(),
+        updatedAt:          new Date(),
       });
-      return analysis;
+
+      return { ...analysis.toJSON(), aiResult };
     } catch (error) {
       throw new Error(`Failed to analyze bias: ${error.message}`);
     }
@@ -29,22 +60,14 @@ class BiasService {
   async listBiasAnalyses(filters = {}) {
     try {
       const whereClause = {};
-      
-      if (filters.modelId) {
-        whereClause.modelId = filters.modelId;
-      }
-      
-      if (filters.status) {
-        whereClause.status = filters.status;
-      }
-      
-      const analyses = await ModelAnalysis.findAll({
+      if (filters.modelId) whereClause.modelId = filters.modelId;
+      if (filters.status)  whereClause.status  = filters.status;
+
+      return await ModelAnalysis.findAll({
         where: whereClause,
         order: [['createdAt', 'DESC']],
-        limit: filters.limit || 50
+        limit: parseInt(filters.limit) || 50,
       });
-      
-      return analyses;
     } catch (error) {
       throw new Error(`Failed to list bias analyses: ${error.message}`);
     }
@@ -53,82 +76,105 @@ class BiasService {
   async getBiasAnalysis(analysisId) {
     try {
       const analysis = await ModelAnalysis.findByPk(analysisId);
-      if (!analysis) {
-        throw new Error('Bias analysis not found');
-      }
+      if (!analysis) throw new Error('Bias analysis not found');
       return analysis;
     } catch (error) {
       throw new Error(`Failed to get bias analysis: ${error.message}`);
     }
   }
 
+  // ── Bias Scoring ──────────────────────────────────────────────────── //
+
   /**
-   * Bias Reports Methods
+   * Fetch real bias scores from Python service.
+   * Falls back to last DB record if Python service is unavailable.
    */
-  async listBiasReports(filters = {}) {
+  async getBiasScores(filters = {}) {
     try {
-      const whereClause = {};
-      
-      if (filters.modelId) {
-        whereClause.modelId = filters.modelId;
-      }
-      
-      const reports = await ComparisonReport.findAll({
-        where: whereClause,
+      // Try Python service first
+      const aiResult = await aiMlClient.makeRequest(
+        'POST',
+        endpoints.bias.score,
+        filters
+      );
+
+      return {
+        demographicParity:  aiResult.demographic_parity  ?? aiResult.fairness_metrics?.demographic_parity,
+        equalOpportunity:   aiResult.equalized_odds       ?? aiResult.fairness_metrics?.equalized_odds,
+        disparateImpact:    aiResult.disparate_impact     ?? aiResult.fairness_metrics?.disparate_impact,
+        statisticalParity:  aiResult.statistical_parity  ?? null,
+        calibration:        aiResult.calibration          ?? aiResult.fairness_metrics?.calibration,
+        consistencyScore:   aiResult.consistency_score   ?? null,
+        overallBias:        aiResult.overall_bias_score  ?? null,
+        source:             'python_ai_ml',
+      };
+    } catch (aiError) {
+      // Fallback: return latest DB record if Python service is down
+      const latest = await ModelAnalysis.findOne({
         order: [['createdAt', 'DESC']],
-        limit: filters.limit || 50
       });
-      
-      return reports;
-    } catch (error) {
-      throw new Error(`Failed to list bias reports: ${error.message}`);
-    }
-  }
-
-  async getBiasReport(reportId) {
-    try {
-      const report = await ComparisonReport.findByPk(reportId);
-      if (!report) {
-        throw new Error('Bias report not found');
+      if (latest && latest.fairnessMetrics) {
+        return { ...latest.fairnessMetrics, source: 'database_fallback' };
       }
-      return report;
-    } catch (error) {
-      throw new Error(`Failed to get bias report: ${error.message}`);
+      throw new Error(`Failed to get bias scores: ${aiError.message}`);
     }
   }
 
-  /**
-   * Bias Mitigation Methods
-   */
+  // ── Fairness Metrics ──────────────────────────────────────────────── //
+
+  async getFairnessMetrics(analysisId) {
+    try {
+      const aiResult = await aiMlClient.makeRequest(
+        'GET',
+        `${endpoints.bias.metrics}/${analysisId}`
+      );
+      return aiResult;
+    } catch (error) {
+      // Fall back to DB
+      const analysis = await ModelAnalysis.findByPk(analysisId);
+      if (!analysis) throw new Error('Analysis not found');
+      return analysis.fairnessMetrics || {};
+    }
+  }
+
+  // ── Mitigation ────────────────────────────────────────────────────── //
+
   async listMitigationStrategies(filters = {}) {
     try {
       const whereClause = {};
-      
-      if (filters.analysisId) {
-        whereClause.analysisId = filters.analysisId;
-      }
-      
-      const strategies = await MitigationRecommendation.findAll({
+      if (filters.analysisId) whereClause.analysisId = filters.analysisId;
+
+      return await MitigationRecommendation.findAll({
         where: whereClause,
         order: [['priority', 'ASC']],
-        limit: filters.limit || 50
+        limit: parseInt(filters.limit) || 50,
       });
-      
-      return strategies;
     } catch (error) {
       throw new Error(`Failed to list mitigation strategies: ${error.message}`);
     }
   }
 
+  /**
+   * Apply a mitigation technique via Python service (reweighting, threshold adjustment, etc.)
+   */
   async applyMitigation(mitigationData) {
     try {
-      // Simulate applying mitigation
-      const result = {
-        status: 'applied',
-        appliedAt: new Date(),
-        ...mitigationData
+      const aiResult = await aiMlClient.makeRequest(
+        'POST',
+        endpoints.bias.mitigation,
+        mitigationData
+      );
+
+      return {
+        status:          'applied',
+        technique:        mitigationData.technique       || 'unknown',
+        beforeMetrics:    aiResult.before_metrics        || {},
+        afterMetrics:     aiResult.after_metrics         || {},
+        improvement:      aiResult.improvement           || {},
+        modelPath:        aiResult.saved_model_path      || null,
+        appliedAt:        new Date(),
+        raw:              aiResult,
       };
-      return result;
     } catch (error) {
       throw new Error(`Failed to apply mitigation: ${error.message}`);
     }
@@ -137,116 +183,120 @@ class BiasService {
   async getMitiagationStrategy(strategyId) {
     try {
       const strategy = await MitigationRecommendation.findByPk(strategyId);
-      if (!strategy) {
-        throw new Error('Mitigation strategy not found');
-      }
+      if (!strategy) throw new Error('Mitigation strategy not found');
       return strategy;
     } catch (error) {
       throw new Error(`Failed to get mitigation strategy: ${error.message}`);
     }
   }
 
+  // ── Explainability ────────────────────────────────────────────────── //
+
+  async getExplanation(analysisId, explainerType = 'shap') {
+    try {
+      const aiResult = await aiMlClient.makeRequest(
+        'POST',
+        endpoints.bias.explain,
+        { analysis_id: analysisId, explainer_type: explainerType }
+      );
+      return aiResult;
+    } catch (error) {
+      throw new Error(`Failed to get explanation: ${error.message}`);
+    }
+  }
+
+  // ── Visualization ─────────────────────────────────────────────────── //
+
   /**
-   * Model Upload Method
+   * Get visualization data from Python BiasVisualizer.
+   * Returns base64 PNG charts or structured JSON for frontend rendering.
    */
+  async getVisualizationData(filters = {}) {
+    try {
+      const aiResult = await aiMlClient.makeRequest(
+        'POST',
+        endpoints.bias.visualize,
+        filters
+      );
+
+      return {
+        fairnessMetricsChart:    aiResult.fairness_metrics_chart    || null,
+        groupComparisonChart:    aiResult.group_comparison_chart    || null,
+        mitigationComparisonChart: aiResult.mitigation_comparison_chart || null,
+        featureImportanceChart:  aiResult.feature_importance_chart  || null,
+        summaryDashboard:        aiResult.summary_dashboard         || null,
+        source: 'python_ai_ml',
+      };
+    } catch (aiError) {
+      // Fallback: return structured placeholder data for frontend
+      return {
+        biasOverTime: [
+          { date: '2025-10-01', score: 0.72 },
+          { date: '2025-11-01', score: 0.78 },
+          { date: '2025-12-01', score: 0.82 },
+          { date: '2026-01-01', score: 0.85 },
+          { date: '2026-02-01', score: 0.87 },
+        ],
+        featureImportance: [
+          { feature: 'credit_score',     importance: 0.38 },
+          { feature: 'annual_income',    importance: 0.29 },
+          { feature: 'loan_amount',      importance: 0.18 },
+          { feature: 'employment_years', importance: 0.14 },
+          { feature: 'age',              importance: 0.11 },
+        ],
+        groupDisparities: [
+          { group: 'Male',   rate: 0.72 },
+          { group: 'Female', rate: 0.68 },
+        ],
+        source: 'fallback',
+        error: aiError.message,
+      };
+    }
+  }
+
+  // ── Model Upload ──────────────────────────────────────────────────── //
+
   async uploadModel(file, metadata) {
     try {
-      // Simulate model upload
-      const model = {
-        id: `model_${Date.now()}`,
-        fileName: file.filename,
+      return {
+        id:           `model_${Date.now()}`,
+        fileName:     file.filename,
         originalName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-        path: file.path,
+        mimeType:     file.mimetype,
+        size:         file.size,
+        path:         file.path,
         ...metadata,
-        uploadedAt: new Date()
+        uploadedAt:   new Date(),
       };
-      return model;
     } catch (error) {
       throw new Error(`Failed to upload model: ${error.message}`);
     }
   }
 
-  /**
-   * Bias Scoring Method
-   */
-  async getBiasScores(filters = {}) {
+  // ── Reports ───────────────────────────────────────────────────────── //
+
+  async listBiasReports(filters = {}) {
     try {
-      // Calculate bias scores based on actual analysis data
-      // In a real implementation, this would pull from the database
-      // For now, we'll simulate with more realistic values
-      
-      const scores = {
-        // Demographic Parity Difference (ideal: 0, acceptable: <0.1)
-        demographicParity: Math.abs(Math.random() * 0.3 - 0.15),
-        
-        // Equal Opportunity Difference (ideal: 0, acceptable: <0.1)
-        equalOpportunity: Math.abs(Math.random() * 0.25 - 0.125),
-        
-        // Disparate Impact Ratio (ideal: 1.0, fair: 0.8-1.2)
-        disparateImpact: 1.0 + (Math.random() * 0.4 - 0.2),
-        
-        // Statistical Parity Difference (ideal: 0, acceptable: <0.1)
-        statisticalParity: Math.abs(Math.random() * 0.3 - 0.15),
-        
-        // Consistency Score (ideal: 1.0, measures prediction stability)
-        consistencyScore: 0.7 + Math.random() * 0.3,
-        
-        // Overall bias score (composite metric)
-        overallBias: null
-      };
-      
-      // Calculate overall bias score as average of normalized metrics
-      const normalizedDemographicParity = 1 - Math.min(scores.demographicParity / 0.15, 1);
-      const normalizedEqualOpportunity = 1 - Math.min(scores.equalOpportunity / 0.125, 1);
-      const normalizedDisparateImpact = 1 - Math.min(Math.abs(scores.disparateImpact - 1.0) / 0.2, 1);
-      const normalizedStatisticalParity = 1 - Math.min(scores.statisticalParity / 0.15, 1);
-      
-      scores.overallBias = (
-        normalizedDemographicParity + 
-        normalizedEqualOpportunity + 
-        normalizedDisparateImpact + 
-        normalizedStatisticalParity + 
-        scores.consistencyScore
-      ) / 5;
-      
-      return scores;
+      const whereClause = {};
+      if (filters.modelId) whereClause.modelId = filters.modelId;
+
+      return await ComparisonReport.findAll({
+        where: whereClause,
+        order: [['createdAt', 'DESC']],
+        limit: parseInt(filters.limit) || 50,
+      });
     } catch (error) {
-      throw new Error(`Failed to calculate bias scores: ${error.message}`);
+      throw new Error(`Failed to list bias reports: ${error.message}`);
     }
   }
 
-  /**
-   * Visualization Data Method
-   */
-  async getVisualizationData(filters = {}) {
+  async getBiasReport(reportId) {
     try {
-      // Simulate visualization data
-      const data = {
-        biasOverTime: [
-          { date: '2023-01-01', score: 0.8 },
-          { date: '2023-02-01', score: 0.7 },
-          { date: '2023-03-01', score: 0.6 },
-          { date: '2023-04-01', score: 0.5 },
-          { date: '2023-05-01', score: 0.4 }
-        ],
-        featureImportance: [
-          { feature: 'age', importance: 0.3 },
-          { feature: 'gender', importance: 0.25 },
-          { feature: 'income', importance: 0.2 },
-          { feature: 'education', importance: 0.15 },
-          { feature: 'location', importance: 0.1 }
-        ],
-        groupDisparities: [
-          { group: 'Group A', disparity: 0.1 },
-          { group: 'Group B', disparity: 0.3 },
-          { group: 'Group C', disparity: 0.2 }
-        ]
-      };
-      return data;
+      const report = await ComparisonReport.findByPk(reportId);
+      if (!report) throw new Error('Bias report not found');
+      return report;
     } catch (error) {
-      throw new Error(`Failed to get visualization data: ${error.message}`);
+      throw new Error(`Failed to get bias report: ${error.message}`);
     }
   }
 }
