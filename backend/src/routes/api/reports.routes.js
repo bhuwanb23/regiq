@@ -15,6 +15,9 @@ router.get('/',      reportController.listReports);
 // ── Report Generation (AI/ML) ─────────────────────────────────────────
 router.post('/generate', reportController.generateReport);
 
+// ── Glossary (must be before /:id)
+router.get('/glossary',  reportController.getGlossary);
+
 // ── Report Templates ──────────────────────────────────────────────────
 router.post('/templates',      reportController.createTemplate);
 router.get('/templates',       reportController.listTemplates);
@@ -37,8 +40,5 @@ router.delete('/:id',           reportController.deleteReport);
 router.get('/:id/export/pdf',   reportController.exportReportPdf);
 router.get('/:id/export/csv',   reportController.exportReportCsv);
 router.get('/:id/export/json',  reportController.exportReportJson);
-
-// Glossary endpoint
-router.get('/glossary',         reportController.getGlossary);
 
 module.exports = router;

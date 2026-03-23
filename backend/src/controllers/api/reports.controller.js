@@ -344,7 +344,7 @@ class ReportController {
     try {
       // Call Python service to get glossary
       const aiMlClient = require('../../services/ai-ml.service');
-      const glossary = await aiMlClient.makeRequest('GET', '/api/v1/report-generator/glossary');
+      const glossary = await aiMlClient.makeRequest('GET', '/api/v1/reports/glossary');
       
       res.status(200).json({
         success: true,

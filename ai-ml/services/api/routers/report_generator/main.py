@@ -212,3 +212,53 @@ async def get_report_status(report_id: str) -> ReportStatusResponse:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get report status"
         )
+
+
+@router.get(
+    "/glossary",
+    summary="Get Compliance Glossary",
+    description="Get a glossary of compliance terms and definitions."
+)
+async def get_glossary() -> Dict[str, Any]:
+    """Get compliance glossary."""
+    try:
+        logger.info("Retrieving compliance glossary")
+        
+        # Return a comprehensive glossary
+        return {
+            "terms": [
+                {
+                    "term": "GDPR",
+                    "definition": "General Data Protection Regulation - EU regulation on data protection and privacy",
+                    "category": "Regulation"
+                },
+                {
+                    "term": "Compliance Score",
+                    "definition": "A numerical measure (0-100) indicating how well an organization meets regulatory requirements",
+                    "category": "Metric"
+                },
+                {
+                    "term": "Risk Assessment",
+                    "definition": "The process of identifying, analyzing, and evaluating potential risks to the organization",
+                    "category": "Process"
+                },
+                {
+                    "term": "Bias Detection",
+                    "definition": "The process of identifying unfair or prejudiced patterns in AI/ML models",
+                    "category": "AI Ethics"
+                },
+                {
+                    "term": "Fairness Metrics",
+                    "definition": "Quantitative measures used to assess whether an AI system treats all groups equitably",
+                    "category": "AI Ethics"
+                }
+            ],
+            "total_count": 5,
+            "source": "python_ai_ml"
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving glossary: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve glossary"
+        )

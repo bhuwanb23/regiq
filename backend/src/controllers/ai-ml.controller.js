@@ -38,17 +38,11 @@ class AiMlController {
         analysis_depth: req.body.analysis_depth || 'standard'
       });
       
-      // Transform result to internal format
-      const transformedResult = TransformerUtils.transformComplianceResults(result);
-      
-      // Cache result
-      cache.set(cacheKey, transformedResult, 300); // Cache for 5 minutes
-      
       performanceMonitor.endTiming('analyzeCompliance', startTime, true);
       
       res.status(200).json({
         success: true,
-        data: transformedResult,
+        data: result,
       });
     } catch (error) {
       performanceMonitor.recordError('analyzeCompliance', error);
@@ -440,7 +434,7 @@ class AiMlController {
       }
       
       // Call AI/ML service with summarize endpoint
-      const result = await aiMlService.makeRequest('POST', '/api/v1/regulatory-intelligence/documents/summarize', {
+      const result = await aiMlService.makeRequest('POST', '/api/v1/regulatory-intelligence/summarize', {
         text: text || document_text,
         summary_type: req.body.summary_type || 'executive',
         max_length: req.body.max_length || 500
