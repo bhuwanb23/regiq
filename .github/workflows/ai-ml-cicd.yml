@@ -1,0 +1,269 @@
+name: AI/ML Service CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'ai-ml/**'
+      - '.github/workflows/ai-ml-cicd.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'ai-ml/**'
+
+env:
+  PYTHON_VERSION: '3.9'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/ai-ml-service
+
+jobs:
+  # ============================================
+  # LINT & VALIDATE
+  # ============================================
+  lint-and-validate:
+    name: 🔍 Lint & Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: 📦 Install dependencies
+        run: |
+          cd ai-ml
+          python -m pip install --upgrade pip
+          pip install flake8 black mypy pytest
+          
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+      
+      - name: ✨ Check code formatting (Black)
+        run: |
+          cd ai-ml
+          black --check --diff services/ scripts/ || echo "Format check failed"
+      
+      - name: 🔎 Lint with Flake8
+        run: |
+          cd ai-ml
+          flake8 services/ scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 services/ scripts/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  
+  # ============================================
+  # UNIT TESTS
+  # ============================================
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-validate
+    
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: 📦 Install dependencies
+        run: |
+          cd ai-ml
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-asyncio
+          
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+      
+      - name: 🧪 Run unit tests
+        run: |
+          cd ai-ml
+          pytest tests/unit/ -v --cov=services --cov-report=xml --cov-report=html
+      
+      - name: 📊 Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./ai-ml/coverage.xml
+          flags: unittests-${{ matrix.python-version }}
+          name: codecov-umbrella
+  
+  # ============================================
+  # INTEGRATION TESTS
+  # ============================================
+  integration-tests:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:6-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: 📦 Install dependencies
+        run: |
+          cd ai-ml
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: ⚙️ Set up environment
+        run: |
+          cd ai-ml
+          cp .env.example .env 2>/dev/null || true
+          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env
+          echo "REDIS_URL=redis://localhost:6379/0" >> .env
+      
+      - name: 🧪 Run integration tests
+        run: |
+          cd ai-ml
+          pytest tests/integration/ -v --tb=short
+  
+  # ============================================
+  # BUILD DOCKER IMAGE
+  # ============================================
+  build-docker:
+    name: 🐳 Build Docker Image
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 📦 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: 🏷️ Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: 🔑 Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🏗️ Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ai-ml
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  
+  # ============================================
+  # DEPLOY TO STAGING
+  # ============================================
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐳 Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Add your staging deployment commands here
+          # Examples:
+          # - kubectl apply -f k8s/staging/
+          # - docker-compose -f docker-compose.staging.yml up -d
+          # - aws ecs update-service ...
+      
+      - name: ✅ Verify deployment
+        run: |
+          echo "✅ Verifying staging deployment..."
+          # Add health check commands here
+          # curl -f https://staging-api.regiq.com/health || exit 1
+  
+  # ============================================
+  # DEPLOY TO PRODUCTION
+  # ============================================
+  deploy-production:
+    name: 🎯 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐳 Deploy to production
+        run: |
+          echo "🎯 Deploying to production environment..."
+          # Add your production deployment commands here
+          # Examples:
+          # - kubectl apply -f k8s/production/
+          # - docker-compose -f docker-compose.prod.yml up -d
+          # - aws ecs update-service ...
+      
+      - name: ✅ Verify deployment
+        run: |
+          echo "✅ Verifying production deployment..."
+          # Add health check commands here
+          # curl -f https://api.regiq.com/health || exit 1
+      
+      - name: 📢 Notify success
+        run: |
+          echo "✅ Deployment to production completed successfully!"

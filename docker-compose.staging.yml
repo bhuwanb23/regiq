@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  ai-ml-service:
+    image: ghcr.io/regiq/ai-ml-service:staging
+    build:
+      context: ./ai-ml
+      dockerfile: Dockerfile
+      args:
+        - ENVIRONMENT=staging
+    container_name: regiq-ai-ml-staging
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=staging
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://regiq:regiq_password@postgres:5432/regiq_staging
+      - REDIS_URL=redis://redis:6379/1
+    env_file:
+      - ./ai-ml/.env.staging
+    volumes:
+      - ./ai-ml/logs:/app/logs
+      - ./ai-ml/data:/app/data
+    networks:
+      - regiq-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: regiq-postgres-staging
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: regiq
+      POSTGRES_PASSWORD: regiq_password
+      POSTGRES_DB: regiq_staging
+    volumes:
+      - postgres_data_staging:/var/lib/postgresql/data
+    networks:
+      - regiq-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U regiq"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6-alpine
+    container_name: regiq-redis-staging
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_staging:/data
+    networks:
+      - regiq-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  regiq-network:
+    driver: bridge
+
+volumes:
+  postgres_data_staging:
+  redis_data_staging:
