@@ -20,38 +20,23 @@ class AiMlController {
     try {
       const startTime = performanceMonitor.startTiming('analyzeCompliance');
       
-      // Validate input data
-      const validation = validateInputData(req.body, 'compliance');
-      if (!validation.isValid) {
+      // Validate input data - check for new or old format
+      const { document_text, text, content } = req.body;
+      if (!document_text && !text && !content) {
         return res.status(400).json({
           success: false,
           error: {
-            message: 'Invalid input data',
-            details: validation.errors,
+            message: 'Document text is required',
           },
         });
       }
       
-      // Transform data for AI/ML service
-      const transformedData = TransformerUtils.transformComplianceData(req.body);
-      
-      // Check cache first
-      const cacheKey = cache.createKey('compliance', {
-        documentId: transformedData.document_id,
+      // Call AI/ML service directly with the data in Python's expected format
+      const result = await aiMlService.makeRequest('POST', '/api/v1/regulatory-intelligence/documents/analyze', {
+        document_text: document_text || text || content,
+        document_type: req.body.document_type || 'regulation',
+        analysis_depth: req.body.analysis_depth || 'standard'
       });
-      
-      const cachedResult = cache.get(cacheKey);
-      if (cachedResult) {
-        performanceMonitor.endTiming('analyzeCompliance', startTime, true);
-        return res.status(200).json({
-          success: true,
-          data: cachedResult,
-          cached: true,
-        });
-      }
-      
-      // Call AI/ML service
-      const result = await aiMlService.analyzeCompliance(transformedData);
       
       // Transform result to internal format
       const transformedResult = TransformerUtils.transformComplianceResults(result);
@@ -423,6 +408,101 @@ class AiMlController {
       });
     } catch (error) {
       const errorResponse = errorHandler.handleAiMlError(error, 'getMetrics');
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: errorResponse.message,
+          code: errorResponse.errorType,
+        },
+      });
+    }
+  }
+
+  /**
+   * Summarize regulatory document
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async summarizeDocument(req, res) {
+    try {
+      const startTime = performanceMonitor.startTiming('summarizeDocument');
+      
+      // Validate input data - check for new or old format
+      const { text, document_text } = req.body;
+      if (!text && !document_text) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Document text is required',
+          },
+        });
+      }
+      
+      // Call AI/ML service with summarize endpoint
+      const result = await aiMlService.makeRequest('POST', '/api/v1/regulatory-intelligence/documents/summarize', {
+        text: text || document_text,
+        summary_type: req.body.summary_type || 'executive',
+        max_length: req.body.max_length || 500
+      });
+      
+      performanceMonitor.endTiming('summarizeDocument', startTime, true);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Document summarized successfully',
+        data: result
+      });
+    } catch (error) {
+      performanceMonitor.recordError('summarizeDocument', error);
+      const errorResponse = errorHandler.handleAiMlError(error, 'summarizeDocument', req.body);
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: errorResponse.message,
+          code: errorResponse.errorType,
+        },
+      });
+    }
+  }
+
+  /**
+   * Answer questions using RAG system
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async questionAnswer(req, res) {
+    try {
+      const startTime = performanceMonitor.startTiming('questionAnswer');
+      
+      const { question, query } = req.body;
+      
+      if (!question) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Question is required',
+          },
+        });
+      }
+      
+      // Call AI/ML service Q&A endpoint
+      const result = await aiMlService.makeRequest('POST', '/api/v1/regulatory-intelligence/qa', {
+        question: question,
+        context: query || 'regulatory compliance'
+      });
+      
+      performanceMonitor.endTiming('questionAnswer', startTime, true);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Question answered successfully',
+        data: result
+      });
+    } catch (error) {
+      performanceMonitor.recordError('questionAnswer', error);
+      const errorResponse = errorHandler.handleAiMlError(error, 'questionAnswer', req.body);
       
       res.status(500).json({
         success: false,

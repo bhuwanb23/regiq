@@ -38,4 +38,7 @@ router.get('/:id/export/pdf',   reportController.exportReportPdf);
 router.get('/:id/export/csv',   reportController.exportReportCsv);
 router.get('/:id/export/json',  reportController.exportReportJson);
 
+// Glossary endpoint
+router.get('/glossary',         reportController.getGlossary);
+
 module.exports = router;

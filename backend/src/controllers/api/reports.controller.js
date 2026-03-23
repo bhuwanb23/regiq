@@ -336,6 +336,28 @@ class ReportController {
       });
     }
   }
+
+  /**
+   * Get compliance glossary
+   */
+  async getGlossary(req, res) {
+    try {
+      // Call Python service to get glossary
+      const aiMlClient = require('../../services/ai-ml.service');
+      const glossary = await aiMlClient.makeRequest('GET', '/api/v1/report-generator/glossary');
+      
+      res.status(200).json({
+        success: true,
+        message: 'Compliance glossary retrieved successfully',
+        data: glossary
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
 }
 
 module.exports = new ReportController();

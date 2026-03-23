@@ -230,9 +230,11 @@ class RiskController {
    */
   async getFrameworks(req, res) {
     try {
+      // Get frameworks directly from Python service (no DB dependency)
       const frameworks = await riskService.getFrameworks();
       res.status(200).json({
         success: true,
+        message: 'Regulatory frameworks retrieved successfully',
         data: frameworks
       });
     } catch (error) {

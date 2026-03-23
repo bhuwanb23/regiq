@@ -168,9 +168,9 @@ async function runTests() {
     'POST', 
     '/ai-ml/compliance', 
     { 
-      id: 'doc_001',
-      content: 'GDPR requires organizations to protect personal data and privacy.',
-      type: 'policy'
+      document_text: 'GDPR requires organizations to protect personal data and privacy.',
+      document_type: 'regulation',
+      analysis_depth: 'standard'
     },
     'Analyze document compliance with Python NLP'
   );
@@ -179,9 +179,9 @@ async function runTests() {
     'POST', 
     '/ai-ml/summarize', 
     { 
-      document_id: 'doc_002',
-      content: 'Long regulatory text about GDPR compliance requirements...',
-      summary_type: 'executive'
+      text: 'The GDPR requires organizations to implement appropriate technical and organizational measures to ensure a level of security appropriate to the risk.',
+      summary_type: 'executive',
+      max_length: 300
     },
     'Summarize document with Python NLP'
   );

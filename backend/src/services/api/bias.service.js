@@ -214,9 +214,9 @@ class BiasService {
   async getVisualizationData(filters = {}) {
     try {
       const aiResult = await aiMlClient.makeRequest(
-        'POST',
+        'GET',
         endpoints.bias.visualize,
-        filters
+        null
       );
 
       return {

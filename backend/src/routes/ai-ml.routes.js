@@ -66,4 +66,18 @@ router.get('/health', aiMlController.getHealthStatus);
  */
 router.get('/metrics', aiMlController.getMetrics);
 
+/**
+ * @route POST /ai-ml/summarize
+ * @desc Summarize regulatory document
+ * @access Public
+ */
+router.post('/summarize', aiMlController.summarizeDocument);
+
+/**
+ * @route POST /ai-ml/qa
+ * @desc Answer questions using RAG system
+ * @access Public
+ */
+router.post('/qa', aiMlController.questionAnswer);
+
 module.exports = router;
