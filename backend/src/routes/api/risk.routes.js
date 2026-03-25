@@ -8,12 +8,21 @@ const riskController = require('../../controllers/api/risk.controller');
 const router = express.Router();
 
 // ── Risk Simulation CRUD ────────────────────────────────────────────── //
+// Note: These handle /api/risk/ (root)
 router.post('/',       riskController.createSimulation);
 router.get('/',        riskController.listSimulations);
 
 // ── Regulatory Frameworks (from Python registry) ────────────────────── //
 // MUST be before /:id or Express will match 'frameworks' as an ID
 router.get('/frameworks', riskController.getFrameworks);
+
+// ── Simulations ────────────────────────────────────────────────────────
+// MUST be before /:id or Express will match 'simulations' as an ID
+router.post('/simulations',     riskController.createSimulation);
+router.get('/simulations',      riskController.listSimulations);
+router.get('/simulations/:id',  riskController.getSimulation);
+router.put('/simulations/:id',  riskController.updateSimulation);
+router.delete('/simulations/:id', riskController.deleteSimulation);
 
 // ── Scenarios ─────────────────────────────────────────────────────────
 // MUST be before /:id or Express will match 'scenarios' as an ID
