@@ -4,10 +4,14 @@
 import axios from 'axios';
 import { getToken, removeToken } from '../utils/storage';
 
+// Configuration from environment variables
+const API_BASE_URL = process.env.REACT_NATIVE_API_BASE_URL || 'http://localhost:3000/api';
+const API_TIMEOUT = parseInt(process.env.REACT_NATIVE_API_TIMEOUT, 10) || 10000;
+
 // Create axios instance with default configuration
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000/api', // Default to Node.js API Gateway
-  timeout: 10000, // 10 seconds timeout
+  baseURL: API_BASE_URL,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },

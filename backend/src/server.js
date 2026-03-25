@@ -10,13 +10,73 @@ dotenv.config();
 // Create Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(cors()); // Cross-origin resource sharing
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(cookieParser()); // Parse cookies
+// CORS Configuration
+const corsOptions = {
+  // Allow specific origins based on environment
+  origin: function (origin, callback) {
+    // Allowed origins for different environments
+    const allowedOrigins = [
+      'http://localhost:19000', // Expo Go
+      'http://localhost:19002', // Expo Web
+      'http://localhost:8081',  // React Native
+      'http://localhost:3000',  // Web build
+      'http://192.168.1.*:*',   // Local network (for mobile testing)
+    ];
+    
+    // Add production origins from environment variable
+    if (process.env.ALLOWED_ORIGINS) {
+      const prodOrigins = process.env.ALLOWED_ORIGINS.split(',');
+      allowedOrigins.push(...prodOrigins);
+    }
+    
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is allowed
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        const regex = new RegExp(allowed.replace('*', '.*'));
+        return regex.test(origin);
+      }
+      return origin === allowed;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked: ${origin} is not in allowed origins`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  
+  // Allowed methods
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  
+  // Allowed headers
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  
+  // Exposed headers (for client to access)
+  exposedHeaders: ['Content-Length', 'X-Request-Id'],
+  
+  // Allow credentials (cookies, authorization headers)
+  credentials: true,
+  
+  // Max age for preflight caching (10 minutes)
+  maxAge: 600,
+};
+
+// Apply CORS middleware with configuration
+app.use(cors(corsOptions));
+
+// Security headers (after CORS)
+app.use(helmet());
+
+// Parse bodies
+app.use(express.json({ limit: '10mb' })); // Increased limit for file uploads
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // Basic routes
 app.get('/', (req, res) => {
