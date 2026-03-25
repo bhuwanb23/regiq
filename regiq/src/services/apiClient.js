@@ -256,7 +256,7 @@ export const generateReport = async (data) => {
  */
 export const scheduleReport = async (data) => {
   try {
-    const response = await apiClient.post('/api/reports/schedule', data);
+    const response = await apiClient.post('/api/reports/schedules', data);
     return response;
   } catch (error) {
     console.error('Error scheduling report:', error);
