@@ -42,7 +42,7 @@ pymc>=5.0.0
 arviz>=0.15.0
 prophet>=1.1.0
 statsmodels>=0.14.0
-monte-carlo>=0.1.0
+# monte-carlo is a local module, not a PyPI package
 
 # =============================================================================
 # DATA PROCESSING & STORAGE - Local First
