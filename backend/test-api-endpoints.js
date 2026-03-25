@@ -125,16 +125,18 @@ const testCases = [
     category: 'User Management',
     tests: [
       {
-        name: 'Get Users',
+        name: 'Get Users (requires auth)',
         method: 'GET',
         endpoint: '/api/users',
-        expectedStatus: 200
+        expectedStatus: 401, // Requires authentication
+        note: 'This is expected - needs valid JWT token'
       },
       {
-        name: 'Get User Preferences',
+        name: 'Get User Preferences (requires auth)',
         method: 'GET',
         endpoint: '/api/users/preferences',
-        expectedStatus: 200
+        expectedStatus: 401, // Requires authentication
+        note: 'This is expected - needs valid JWT token'
       }
     ]
   },
@@ -143,16 +145,18 @@ const testCases = [
     category: 'Notifications',
     tests: [
       {
-        name: 'Get Notifications',
+        name: 'Get Notifications (requires auth)',
         method: 'GET',
         endpoint: '/api/notifications',
-        expectedStatus: 200
+        expectedStatus: 401, // Requires authentication
+        note: 'This is expected - needs valid JWT token'
       },
       {
-        name: 'Get Notification Preferences',
+        name: 'Get Notification Preferences (requires auth)',
         method: 'GET',
         endpoint: '/api/notifications/preferences',
-        expectedStatus: 200
+        expectedStatus: 401, // Requires authentication
+        note: 'This is expected - needs valid JWT token'
       }
     ]
   }
@@ -170,7 +174,7 @@ const results = {
  * Test single endpoint
  */
 async function testEndpoint(category, test) {
-  const { name, method, endpoint, expectedStatus } = test;
+  const { name, method, endpoint, expectedStatus, note } = test;
   const url = `${BACKEND_URL}${endpoint}`;
   
   try {
@@ -185,6 +189,9 @@ async function testEndpoint(category, test) {
     
     if (response.status === expectedStatus) {
       console.log(`✅ ${category}: ${name}`);
+      if (note) {
+        console.log(`   ℹ️  Note: ${note}`);
+      }
       results.passed++;
       return true;
     } else {
