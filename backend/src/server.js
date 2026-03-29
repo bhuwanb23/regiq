@@ -115,7 +115,7 @@ app.use('/api/dashboard', apiDashboardRoutes);
 
 // Regulatory routes
 const regulatoryRoutes = require('./routes/regulatory.routes');
-app.use('/regulatory', regulatoryRoutes);
+app.use('/api/regulatory', regulatoryRoutes);
 
 // Bias Analysis routes
 const biasAnalysisRoutes = require('./routes/biasAnalysis.routes');
