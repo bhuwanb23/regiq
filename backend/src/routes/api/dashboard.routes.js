@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @route   GET /api/dashboard
- * @desc    Get comprehensive dashboard data
+ * @desc    Get comprehensive dashboard data 
  * @access  Public (for development)
  */
 router.get('/', dashboardController.getDashboardData);
