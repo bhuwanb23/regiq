@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getDashboardData } from '../services/apiClient';
 
 const useDashboardData = () => {
   const [loading, setLoading] = useState(true);
@@ -200,18 +201,12 @@ const useDashboardData = () => {
     },
   });
 
-  // Simulate API call
+  // Fetch dashboard data from API
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In a real app, this would be an API call
-      // const response = await fetch('/api/dashboard');
-      // const data = await response.json();
-      // setDashboardData(data);
-      
+      const response = await getDashboardData();
+      setDashboardData(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);

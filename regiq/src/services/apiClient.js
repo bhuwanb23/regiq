@@ -328,6 +328,21 @@ export const getUsers = async (params = {}) => {
   }
 };
 
+// ---------- DASHBOARD ----------
+/**
+ * Get dashboard data
+ * @returns {Promise<Object>} Dashboard data
+ */
+export const getDashboardData = async () => {
+  try {
+    const response = await apiClient.get('/api/dashboard');
+    return response;
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    throw error;
+  }
+};
+
 /**
  * Get user by ID
  * @param {string} id - User ID

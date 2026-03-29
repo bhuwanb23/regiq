@@ -109,6 +109,10 @@ app.use('/users', userRoutes);
 const apiUserRoutes = require('./routes/api/user.routes');
 app.use('/api/users', apiUserRoutes);
 
+// API Dashboard routes
+const apiDashboardRoutes = require('./routes/api/dashboard.routes');
+app.use('/api/dashboard', apiDashboardRoutes);
+
 // Regulatory routes
 const regulatoryRoutes = require('./routes/regulatory.routes');
 app.use('/regulatory', regulatoryRoutes);
