@@ -468,6 +468,38 @@ class UserController {
   }
 
   /**
+   * Get public user profile (no auth) - FOR DEVELOPMENT
+   * Returns a default user profile for testing
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getPublicUserProfile(req, res) {
+    try {
+      // For development/testing - return a demo user
+      res.status(200).json({
+        success: true,
+        data: {
+          id: 'demo_user_1',
+          email: 'demo@regiq.com',
+          firstName: 'Demo',
+          lastName: 'User',
+          role: 'compliance_officer',
+          department: 'Risk Management',
+          phone: '+1-555-0123',
+          avatar: null,
+          createdAt: new Date(),
+          lastLogin: new Date()
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
    * Update authenticated user's profile
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
@@ -483,6 +515,41 @@ class UserController {
         success: true,
         message: 'Profile updated successfully',
         data: user
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Update public user profile (no auth) - FOR DEVELOPMENT
+   * Accepts updates but doesn't persist for testing
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updatePublicUserProfile(req, res) {
+    try {
+      // For development/testing - accept any valid data
+      const { firstName, lastName, email, phone, department } = req.body;
+      
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully (demo mode)',
+        data: {
+          id: 'demo_user_1',
+          email: email || 'demo@regiq.com',
+          firstName: firstName || 'Demo',
+          lastName: lastName || 'User',
+          role: 'compliance_officer',
+          department: department || 'Risk Management',
+          phone: phone || '+1-555-0123',
+          avatar: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
       });
     } catch (error) {
       res.status(400).json({
@@ -514,6 +581,41 @@ class UserController {
   }
 
   /**
+   * Get public user preferences (no auth) - FOR DEVELOPMENT
+   * Returns default preferences for testing
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getPublicUserPreferences(req, res) {
+    try {
+      // For development/testing - return default preferences
+      res.status(200).json({
+        success: true,
+        data: {
+          userId: 'demo_user_1',
+          theme: 'dark',
+          language: 'en',
+          timezone: 'America/New_York',
+          notifications: {
+            email: true,
+            push: true,
+            sms: false
+          },
+          dashboard: {
+            defaultView: 'compliance',
+            itemsPerPage: 20
+          }
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
    * Update authenticated user's preferences
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
@@ -526,6 +628,44 @@ class UserController {
         success: true,
         message: 'Preferences updated successfully',
         data: preferences
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Update public user preferences (no auth) - FOR DEVELOPMENT
+   * Accepts updates but doesn't persist for testing
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async updatePublicUserPreferences(req, res) {
+    try {
+      // For development/testing - accept and echo back preferences
+      const preferences = req.body || {};
+      
+      res.status(200).json({
+        success: true,
+        message: 'Preferences updated successfully (demo mode)',
+        data: {
+          userId: 'demo_user_1',
+          theme: preferences.theme || 'dark',
+          language: preferences.language || 'en',
+          timezone: preferences.timezone || 'America/New_York',
+          notifications: {
+            email: preferences.email ?? true,
+            push: preferences.push ?? true,
+            sms: preferences.sms ?? false
+          },
+          dashboard: {
+            defaultView: preferences.defaultView || 'compliance',
+            itemsPerPage: preferences.itemsPerPage || 20
+          }
+        }
       });
     } catch (error) {
       res.status(400).json({
