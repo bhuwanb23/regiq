@@ -40,16 +40,17 @@ const RegulationIntelligenceScreen = ({ navigation }) => {
   const [detailLoading, setDetailLoading] = useState(false);
 
   const handleRegulationPress = useCallback(async (regulation) => {
-    console.log('Regulation pressed:', regulation.id);
+    console.log('📋 Regulation pressed:', regulation.id);
     setDetailLoading(true);
     try {
-      // Fetch full regulation details from API
-      const fullRegulation = await fetchRegulationById(regulation.id);
-      setSelectedRegulation(fullRegulation);
+      // For real-world data, we already have all the details
+      // No need to fetch from API since our data is complete
+      console.log('✅ Using existing regulation data (no API call needed)');
+      setSelectedRegulation(regulation);
       setModalVisible(true);
     } catch (error) {
       console.error('Error fetching regulation details:', error);
-      // Fallback to the partial regulation data we already have
+      // Fallback: use the regulation object as-is
       setSelectedRegulation(regulation);
       setModalVisible(true);
     } finally {

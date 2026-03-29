@@ -132,7 +132,14 @@ const RegulationDetailModal = ({
                 {/* Key Requirements */}
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Key Requirements</Text>
-                  <Text style={styles.requirementsText}>{regulation.fullDetails}</Text>
+                  <ScrollView 
+                    style={styles.requirementsScroll}
+                    contentContainerStyle={styles.requirementsContent}
+                  >
+                    <Text style={styles.requirementsText}>
+                      {String(regulation.fullDetails || '').trim()}
+                    </Text>
+                  </ScrollView>
                 </View>
 
                 {/* Tags */}
@@ -273,6 +280,12 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSize.sm,
     color: COLORS.textSecondary,
     lineHeight: 20,
+  },
+  requirementsScroll: {
+    height: 150,
+  },
+  requirementsContent: {
+    paddingVertical: SPACING.xs,
   },
   requirementsText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
