@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
+import { getAIModelAnalyses, getBiasScores } from '../services/apiClient';
+import { 
+  getSampleRealWorldModels, 
+  calculateOverview,
+  calculateRiskLevel,
+  formatDate 
+} from '../services/realWorldAIModels';
 
 const useAIAuditData = () => {
   const [loading, setLoading] = useState(true);
@@ -85,21 +92,90 @@ const useAIAuditData = () => {
     ],
   });
 
-  // Simulate API call
+  // Fetch AI model audit data from API
   const fetchAuditData = async () => {
     setLoading(true);
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('🔍 Fetching AI model analyses from API...');
       
-      // In a real app, this would be an API call
-      // const response = await fetch('/api/ai-audit');
-      // const data = await response.json();
-      // setAuditData(data);
+      // Fetch real analyses from backend
+      const analysesResponse = await getAIModelAnalyses();
+      console.log('📦 AI Model Analyses Response:', analysesResponse);
+      
+      // Handle different response formats
+      let analyses = [];
+      if (Array.isArray(analysesResponse)) {
+        analyses = analysesResponse;
+        console.log('✅ Array response, count:', analyses.length);
+      } else if (analysesResponse?.data && Array.isArray(analysesResponse.data)) {
+        analyses = analysesResponse.data;
+        console.log('✅ Object.data response, count:', analyses.length);
+      } else {
+        console.warn('⚠️ Unexpected response format or empty');
+        analyses = [];
+      }
+      
+      // If no data from API, use sample real-world models
+      if (analyses.length === 0) {
+        console.log('💾 No analyses in database, loading sample real-world AI models...');
+        const sampleModels = getSampleRealWorldModels();
+        const overview = calculateOverview(sampleModels);
+        
+        setAuditData({
+          overview,
+          models: sampleModels,
+        });
+      } else {
+        // Transform API response to UI format
+        const models = analyses.map(analysis => ({
+          id: analysis.id || analysis.model_id,
+          name: analysis.model_name || 'Unknown Model',
+          type: analysis.model_type || 'General AI',
+          status: analysis.status || 'Unknown',
+          lastAudit: formatDate(analysis.created_at),
+          biasScore: analysis.overall_bias_score || 0,
+          version: analysis.model_version || '1.0.0',
+          riskLevel: calculateRiskLevel(analysis.overall_bias_score),
+          accuracy: analysis.fairness_metrics?.accuracy || 0,
+          driftScore: analysis.drift_score || 0,
+          lastUpdated: formatDate(analysis.updated_at),
+          fairnessMetrics: analysis.fairness_metrics,
+          protectedAttributes: analysis.protected_attributes,
+          description: analysis.description || '',
+        }));
+        
+        // Calculate overview statistics
+        const overview = {
+          activeModels: models.filter(m => m.status === 'Completed' || m.status === 'Active').length,
+          riskScore: calculateOverview(models).riskScore,
+          modelsThisMonth: calculateOverview(models).modelsThisMonth,
+          riskLevel: calculateOverview(models).riskLevel,
+          totalAudits: models.length,
+          criticalIssues: calculateOverview(models).criticalIssues,
+        };
+        
+        console.log('📊 Final models count:', models.length);
+        console.log('📊 Overview:', overview);
+        
+        setAuditData({
+          overview,
+          models,
+        });
+      }
       
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching audit data:', error);
+      console.error('❌ Error fetching audit data:', error);
+      console.log('💾 Loading sample real-world AI models due to error');
+      
+      // Load sample real-world models on error
+      const sampleModels = getSampleRealWorldModels();
+      const overview = calculateOverview(sampleModels);
+      
+      setAuditData({
+        overview,
+        models: sampleModels,
+      });
       setLoading(false);
     }
   };

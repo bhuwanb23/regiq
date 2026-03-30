@@ -98,6 +98,51 @@ export const getBiasReports = async (params = {}) => {
 };
 
 /**
+ * Get all AI model analyses
+ * @param {Object} params - Query parameters
+ * @returns {Promise<Array>} List of model analyses
+ */
+export const getAIModelAnalyses = async (params = {}) => {
+  try {
+    const response = await apiClient.get('/bias/analyses', { params });
+    return response;
+  } catch (error) {
+    console.error('Error fetching AI model analyses:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get AI model analysis by ID
+ * @param {string} id - Analysis ID
+ * @returns {Promise<Object>} Analysis data
+ */
+export const getAIModelAnalysisById = async (id) => {
+  try {
+    const response = await apiClient.get(`/bias/analyses/${id}`);
+    return response;
+  } catch (error) {
+    console.error(`Error fetching AI model analysis ${id}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get bias scores for a model
+ * @param {string} modelId - Model ID
+ * @returns {Promise<Object>} Bias scores
+ */
+export const getBiasScores = async (modelId) => {
+  try {
+    const response = await apiClient.get(`/bias/scores?modelId=${modelId}`);
+    return response;
+  } catch (error) {
+    console.error(`Error fetching bias scores for model ${modelId}:`, error);
+    throw error;
+  }
+};
+
+/**
  * Get bias report by ID
  * @param {string} id - Report ID
  * @returns {Promise<Object>} Bias report data
