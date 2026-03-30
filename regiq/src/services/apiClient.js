@@ -104,7 +104,7 @@ export const getBiasReports = async (params = {}) => {
  */
 export const getAIModelAnalyses = async (params = {}) => {
   try {
-    const response = await apiClient.get('/bias/analyses', { params });
+    const response = await apiClient.get('/bias/analysis/model', { params });
     return response;
   } catch (error) {
     console.error('Error fetching AI model analyses:', error);
@@ -119,7 +119,7 @@ export const getAIModelAnalyses = async (params = {}) => {
  */
 export const getAIModelAnalysisById = async (id) => {
   try {
-    const response = await apiClient.get(`/bias/analyses/${id}`);
+    const response = await apiClient.get(`/bias/analysis/model/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching AI model analysis ${id}:`, error);
