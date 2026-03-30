@@ -452,22 +452,8 @@ graph LR
 ## 👥 **Team & Recognition**
 
 <div align="center">
-
-### 🏆 **Built by Passionate Innovators**
-
 <table>
 <tr>
-<td align="center" width="50%">
-<img src="https://github.com/DhikshaG.png" width="100" height="100" style="border-radius: 50%;" alt="Dhiksha G"/>
-<br/>
-<strong>Dhiksha Shivruthi G</strong>
-<br/>
-<em>🎯 Team Leader & AI/ML Architect</em>
-<br/>
-<a href="https://github.com/DhikshaG">@DhikshaG</a>
-<br/>
-<small>Vision & Strategy • AI Services & Models</small>
-</td>
 <td align="center" width="50%">
 <img src="https://github.com/bhuwanb23.png" width="100" height="100" style="border-radius: 50%;" alt="Bhuwan B"/>
 <br/>
