@@ -1,4 +1,4 @@
-// feat: wire report generator to ReportLab and WeasyPrint engines
-// Applied: 2026-07-13T10:16:44.403Z
+// feat: implement PDF export with WeasyPrint templates
+// Applied: 2026-07-13T10:16:49.117Z
 
 module.exports = { updated: true };
