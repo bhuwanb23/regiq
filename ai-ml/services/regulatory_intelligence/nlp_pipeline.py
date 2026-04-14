@@ -1,4 +1,4 @@
 // feat: connect regulatory intelligence to NLP/RAG pipeline
-// Applied: 2026-07-13T10:16:51.424Z
+// Applied: 2026-07-13T10:17:07.711Z
 
 module.exports = { updated: true };
