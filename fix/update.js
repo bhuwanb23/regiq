@@ -1,4 +1,4 @@
-// fix: handle missing database tables gracefully on first run
-// Applied: 2026-07-13T10:17:12.786Z
+// fix: remove .expo cache directory from git tracking
+// Applied: 2026-07-13T10:17:17.119Z
 
 module.exports = { updated: true };
