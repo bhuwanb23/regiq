@@ -33,7 +33,10 @@ router = APIRouter(
     summary="Setup Risk Simulation",
     description="Configure parameters for a risk simulation."
 )
-async def setup_simulation(request: SimulationSetupRequest) -> SimulationSetupResponse:
+async def setup_simulation(
+    request: SimulationSetupRequest,
+    current_user: dict = Depends(get_current_user),
+) -> SimulationSetupResponse:
     """Setup a risk simulation."""
     try:
         logger.info(f"Setting up simulation: {request.name}")
@@ -62,7 +65,11 @@ async def setup_simulation(request: SimulationSetupRequest) -> SimulationSetupRe
     summary="Run Risk Simulation",
     description="Execute a configured risk simulation."
 )
-async def run_simulation(simulation_id: str, request: SimulationExecutionRequest) -> SimulationExecutionResponse:
+async def run_simulation(
+    simulation_id: str,
+    request: SimulationExecutionRequest,
+    current_user: dict = Depends(get_current_user),
+) -> SimulationExecutionResponse:
     """Run a risk simulation."""
     try:
         logger.info(f"Running simulation: {simulation_id}")
@@ -90,7 +97,10 @@ async def run_simulation(simulation_id: str, request: SimulationExecutionRequest
     summary="Stream Simulation Results",
     description="Stream real-time results from a running simulation using Server-Sent Events."
 )
-async def stream_results(job_id: str):
+async def stream_results(
+    job_id: str,
+    current_user: dict = Depends(get_current_user),
+):
     """Stream simulation results in real-time."""
     try:
         logger.info(f"Streaming results for job: {job_id}")
@@ -133,7 +143,11 @@ async def stream_results(job_id: str):
     summary="List Risk Scenarios",
     description="List available risk scenarios for simulation."
 )
-async def list_scenarios(page: int = 1, page_size: int = 10) -> ScenarioListResponse:
+async def list_scenarios(
+    page: int = 1,
+    page_size: int = 10,
+    current_user: dict = Depends(get_current_user),
+) -> ScenarioListResponse:
     """List available risk scenarios."""
     try:
         logger.info(f"Listing scenarios - page: {page}, page_size: {page_size}")
@@ -175,7 +189,10 @@ async def list_scenarios(page: int = 1, page_size: int = 10) -> ScenarioListResp
     summary="Create Risk Scenario",
     description="Create a new risk scenario for simulation."
 )
-async def create_scenario(request: ScenarioCreateRequest) -> ScenarioCreateResponse:
+async def create_scenario(
+    request: ScenarioCreateRequest,
+    current_user: dict = Depends(get_current_user),
+) -> ScenarioCreateResponse:
     """Create a new risk scenario."""
     try:
         logger.info(f"Creating scenario: {request.name}")
@@ -203,7 +220,9 @@ async def create_scenario(request: ScenarioCreateRequest) -> ScenarioCreateRespo
     summary="Get Regulatory Frameworks",
     description="List all available regulatory compliance frameworks."
 )
-async def get_frameworks() -> Dict[str, Any]:
+async def get_frameworks(
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get list of regulatory frameworks."""
     try:
         logger.info("Retrieving regulatory frameworks")
@@ -253,7 +272,10 @@ async def get_frameworks() -> Dict[str, Any]:
     summary="Run Monte Carlo Simulation",
     description="Execute Monte Carlo risk simulation with Latin Hypercube sampling."
 )
-async def run_monte_carlo(request: Dict[str, Any]) -> Dict[str, Any]:
+async def run_monte_carlo(
+    request: Dict[str, Any],
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Run Monte Carlo simulation."""
     try:
         simulation_id = request.get("simulation_id", "sim_001")
@@ -294,7 +316,10 @@ async def run_monte_carlo(request: Dict[str, Any]) -> Dict[str, Any]:
     summary="Run Bayesian Inference",
     description="Execute Bayesian inference using MCMC/NUTS sampler."
 )
-async def run_bayesian(request: Dict[str, Any]) -> Dict[str, Any]:
+async def run_bayesian(
+    request: Dict[str, Any],
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Run Bayesian inference."""
     try:
         prior = request.get("prior", {"mean": 0.5, "std": 0.1})

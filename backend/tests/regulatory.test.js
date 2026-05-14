@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/server');
+const { app } = require('../src/server');
 
 describe('Regulatory Intelligence API', () => {
   const authToken = 'test_jwt_token';

@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../src/server');
+const { app } = require('../src/server');
 
 describe('Bias Analysis API', () => {
   const testModelId = 'test-model-id';

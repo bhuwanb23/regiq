@@ -36,7 +36,8 @@ async def upload_model(
     model_name: str = Form(...),
     description: str = Form(""),
     target_variable: str = Form(...),
-    protected_attributes: str = Form(...)
+    protected_attributes: str = Form(...),
+    current_user: dict = Depends(get_current_user),
 ) -> ModelMetadataResponse:
     """Upload a machine learning model."""
     try:
@@ -87,7 +88,10 @@ async def upload_model(
     summary="Trigger Bias Analysis",
     description="Trigger bias analysis for an uploaded model."
 )
-async def trigger_analysis(request: AnalysisTriggerRequest) -> AnalysisJobResponse:
+async def trigger_analysis(
+    request: AnalysisTriggerRequest,
+    current_user: dict = Depends(get_current_user),
+) -> AnalysisJobResponse:
     """Trigger bias analysis for a model."""
     try:
         logger.info(f"Triggering analysis for model: {request.model_id}")
@@ -116,7 +120,10 @@ async def trigger_analysis(request: AnalysisTriggerRequest) -> AnalysisJobRespon
     summary="Get Bias Analysis Results",
     description="Retrieve detailed bias analysis results."
 )
-async def get_analysis_results(analysis_id: str) -> BiasMetricsResponse:
+async def get_analysis_results(
+    analysis_id: str,
+    current_user: dict = Depends(get_current_user),
+) -> BiasMetricsResponse:
     """Get bias analysis results."""
     try:
         logger.info(f"Retrieving results for analysis: {analysis_id}")
@@ -162,7 +169,10 @@ async def get_analysis_results(analysis_id: str) -> BiasMetricsResponse:
     summary="Generate Bias Analysis Report",
     description="Generate a report for bias analysis results."
 )
-async def generate_report(request: ReportGenerationRequest) -> ReportGenerationResponse:
+async def generate_report(
+    request: ReportGenerationRequest,
+    current_user: dict = Depends(get_current_user),
+) -> ReportGenerationResponse:
     """Generate a bias analysis report."""
     try:
         logger.info(f"Generating report for analysis: {request.analysis_id}")
@@ -191,7 +201,10 @@ async def generate_report(request: ReportGenerationRequest) -> ReportGenerationR
     summary="Get Bias Scores",
     description="Calculate bias scores and fairness metrics for a model."
 )
-async def get_bias_scores(request: Dict[str, Any]) -> Dict[str, Any]:
+async def get_bias_scores(
+    request: Dict[str, Any],
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get bias scores and fairness metrics."""
     try:
         logger.info(f"Calculating bias scores for model: {request.get('modelId', 'unknown')}")
@@ -222,7 +235,10 @@ async def get_bias_scores(request: Dict[str, Any]) -> Dict[str, Any]:
     summary="Get Model Explanations (SHAP/LIME)",
     description="Generate SHAP and LIME explanations for model predictions."
 )
-async def get_explanation(request: Dict[str, Any]) -> Dict[str, Any]:
+async def get_explanation(
+    request: Dict[str, Any],
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get model explanations using SHAP or LIME."""
     try:
         analysis_id = request.get("analysis_id", "unknown")
@@ -271,7 +287,10 @@ async def get_explanation(request: Dict[str, Any]) -> Dict[str, Any]:
     summary="Get Fairness Metrics",
     description="Retrieve comprehensive fairness metrics for an analysis."
 )
-async def get_fairness_metrics(analysis_id: str) -> Dict[str, Any]:
+async def get_fairness_metrics(
+    analysis_id: str,
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get fairness metrics for a specific analysis."""
     try:
         logger.info(f"Retrieving fairness metrics for analysis: {analysis_id}")
@@ -298,7 +317,9 @@ async def get_fairness_metrics(analysis_id: str) -> Dict[str, Any]:
     summary="Get Visualization Data",
     description="Generate data for bias visualization dashboards."
 )
-async def get_visualization_data() -> Dict[str, Any]:
+async def get_visualization_data(
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get visualization data for bias analysis."""
     try:
         logger.info("Generating visualization data")

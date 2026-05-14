@@ -32,7 +32,10 @@ router = APIRouter(
     summary="Analyze Regulatory Document",
     description="Analyze a regulatory document and extract compliance requirements, risks, and recommendations."
 )
-async def analyze_document(request: DocumentAnalysisRequest) -> DocumentAnalysisResponse:
+async def analyze_document(
+    request: DocumentAnalysisRequest,
+    current_user: dict = Depends(get_current_user),
+) -> DocumentAnalysisResponse:
     """Analyze a regulatory document."""
     try:
         logger.info(f"Analyzing document of type: {request.document_type}")
@@ -74,7 +77,10 @@ async def analyze_document(request: DocumentAnalysisRequest) -> DocumentAnalysis
     summary="Summarize Regulatory Content",
     description="Generate a summary of regulatory content with key points extraction."
 )
-async def summarize_content(request: SummarizationRequest) -> SummarizationResponse:
+async def summarize_content(
+    request: SummarizationRequest,
+    current_user: dict = Depends(get_current_user),
+) -> SummarizationResponse:
     """Generate a summary of regulatory content."""
     try:
         logger.info(f"Generating {request.summary_type} summary")
@@ -107,7 +113,10 @@ async def summarize_content(request: SummarizationRequest) -> SummarizationRespo
     summary="Answer Regulatory Questions",
     description="Ask questions about regulatory content and get AI-powered answers with citations."
 )
-async def answer_question(request: QARequest) -> QAResponse:
+async def answer_question(
+    request: QARequest,
+    current_user: dict = Depends(get_current_user),
+) -> QAResponse:
     """Answer questions about regulatory content."""
     try:
         logger.info(f"Answering question: {request.question}")
@@ -139,7 +148,10 @@ async def answer_question(request: QARequest) -> QAResponse:
     summary="Search Regulatory Database",
     description="Search the regulatory database for relevant documents and provisions."
 )
-async def search_regulations(request: SearchRequest) -> SearchResponse:
+async def search_regulations(
+    request: SearchRequest,
+    current_user: dict = Depends(get_current_user),
+) -> SearchResponse:
     """Search the regulatory database."""
     try:
         logger.info(f"Searching for: {request.query}")

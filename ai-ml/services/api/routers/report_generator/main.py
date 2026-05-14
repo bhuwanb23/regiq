@@ -31,7 +31,10 @@ router = APIRouter(
     summary="Create Report",
     description="Create a new compliance report."
 )
-async def create_report(request: ReportCreateRequest) -> ReportCreateResponse:
+async def create_report(
+    request: ReportCreateRequest,
+    current_user: dict = Depends(get_current_user),
+) -> ReportCreateResponse:
     """Create a new compliance report."""
     try:
         logger.info(f"Creating {request.report_type} report: {request.title}")
@@ -60,7 +63,10 @@ async def create_report(request: ReportCreateRequest) -> ReportCreateResponse:
     summary="Generate Report (Alias)",
     description="Generate a compliance report (alias for /create endpoint)."
 )
-async def generate_report(request: Dict[str, Any]) -> Dict[str, Any]:
+async def generate_report(
+    request: Dict[str, Any],
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Generate a compliance report."""
     try:
         report_type = request.get("report_type", "fairness")
