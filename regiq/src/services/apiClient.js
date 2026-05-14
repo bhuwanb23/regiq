@@ -149,7 +149,7 @@ export const getBiasScores = async (modelId) => {
  */
 export const getBiasReportById = async (id) => {
   try {
-    const response = await apiClient.get(`/api/bias/reports/${id}`);
+    const response = await apiClient.get(`/bias/reports/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching bias report ${id}:`, error);
@@ -179,7 +179,7 @@ export const createBiasAnalysis = async (data) => {
  */
 export const getBiasMitigation = async (modelId) => {
   try {
-    const response = await apiClient.get(`/api/bias/mitigation/${modelId}`);
+    const response = await apiClient.get(`/bias/mitigation/${modelId}`);
     return response;
   } catch (error) {
     console.error(`Error fetching bias mitigation for model ${modelId}:`, error);
@@ -210,7 +210,7 @@ export const getRiskSimulations = async (params = {}) => {
  */
 export const getRiskSimulationById = async (id) => {
   try {
-    const response = await apiClient.get(`/api/risk/simulations/${id}`);
+    const response = await apiClient.get(`/risk/simulations/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching risk simulation ${id}:`, error);
@@ -271,7 +271,7 @@ export const getReports = async (params = {}) => {
  */
 export const getReportById = async (id) => {
   try {
-    const response = await apiClient.get(`/api/reports/${id}`);
+    const response = await apiClient.get(`/reports/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching report ${id}:`, error);
@@ -316,7 +316,7 @@ export const scheduleReport = async (data) => {
  */
 export const exportReportPdf = async (id) => {
   try {
-    const response = await apiClient.get(`/api/reports/${id}/export/pdf`, {
+    const response = await apiClient.get(`/reports/${id}/export/pdf`, {
       responseType: 'blob'
     });
     return response.data;
@@ -333,7 +333,7 @@ export const exportReportPdf = async (id) => {
  */
 export const exportReportCsv = async (id) => {
   try {
-    const response = await apiClient.get(`/api/reports/${id}/export/csv`, {
+    const response = await apiClient.get(`/reports/${id}/export/csv`, {
       responseType: 'blob'
     });
     return response.data;
@@ -350,7 +350,7 @@ export const exportReportCsv = async (id) => {
  */
 export const exportReportJson = async (id) => {
   try {
-    const response = await apiClient.get(`/api/reports/${id}/export/json`);
+    const response = await apiClient.get(`/reports/${id}/export/json`);
     return response.data;
   } catch (error) {
     console.error(`Error exporting report ${id} as JSON:`, error);
@@ -395,7 +395,7 @@ export const getDashboardData = async () => {
  */
 export const getUserById = async (id) => {
   try {
-    const response = await apiClient.get(`/api/users/${id}`);
+    const response = await apiClient.get(`/users/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching user ${id}:`, error);
@@ -482,7 +482,7 @@ export const getNotifications = async (params = {}) => {
  */
 export const getNotificationById = async (id) => {
   try {
-    const response = await apiClient.get(`/api/notifications/${id}`);
+    const response = await apiClient.get(`/notifications/${id}`);
     return response;
   } catch (error) {
     console.error(`Error fetching notification ${id}:`, error);
