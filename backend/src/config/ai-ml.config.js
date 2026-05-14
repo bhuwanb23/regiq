@@ -29,10 +29,9 @@ module.exports = {
 
     // Risk Simulator Service  →  ai-ml/services/risk_simulator/
     risk: {
-      simulate:    process.env.RISK_MODEL_ENDPOINT    || '/api/v1/risk-simulator/simulate',
-      monteCarlo:  '/api/v1/risk-simulator/monte-carlo',
-      bayesian:    '/api/v1/risk-simulator/bayesian',
-      stressTest:  '/api/v1/risk-simulator/stress-test',
+      setup:       process.env.RISK_MODEL_ENDPOINT    || '/api/v1/risk-simulator/setup',
+      run:         '/api/v1/risk-simulator/run',
+      stream:      '/api/v1/risk-simulator/stream',
       scenarios:   '/api/v1/risk-simulator/scenarios',
       frameworks:  '/api/v1/risk-simulator/frameworks',
     },
@@ -66,7 +65,7 @@ module.exports = {
     riskAssessment: {
       name:     process.env.RISK_MODEL_NAME    || 'financial-risk-assessor',
       version:  process.env.RISK_MODEL_VERSION || 'v1',
-      endpoint: process.env.RISK_MODEL_ENDPOINT || '/api/v1/risk-simulator/simulate',
+      endpoint: process.env.RISK_MODEL_ENDPOINT || '/api/v1/risk-simulator/setup',
     },
     biasAnalysis: {
       name:     process.env.BIAS_MODEL_NAME    || 'bias-fairness-analyzer',
@@ -76,7 +75,17 @@ module.exports = {
     reportGenerator: {
       name:     process.env.REPORT_MODEL_NAME    || 'compliance-report-generator',
       version:  process.env.REPORT_MODEL_VERSION || 'v1',
-      endpoint: process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/report-generator/generate',
+      endpoint: process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/reports/generate',
+    },
+    sentimentAnalysis: {
+      name:     process.env.SENTIMENT_MODEL_NAME    || 'regulatory-sentiment-analyzer',
+      version:  process.env.SENTIMENT_MODEL_VERSION || 'v1',
+      endpoint: process.env.SENTIMENT_MODEL_ENDPOINT || '/api/v1/regulatory-intelligence/sentiment',
+    },
+    anomalyDetection: {
+      name:     process.env.ANOMALY_MODEL_NAME    || 'risk-anomaly-detector',
+      version:  process.env.ANOMALY_MODEL_VERSION || 'v1',
+      endpoint: process.env.ANOMALY_MODEL_ENDPOINT || '/api/v1/risk-simulator/anomalies',
     },
   },
 

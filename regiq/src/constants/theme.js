@@ -18,9 +18,14 @@ export const COLORS = {
   
   // Status Colors
   success: '#10B981', // Green
+  successLight: '#D1FAE5', // Light Green (tinted background)
   warning: '#F59E0B', // Amber
+  warningLight: '#FEF3C7', // Light Amber
   error: '#EF4444', // Red
+  errorLight: '#FEE2E2', // Light Red
+  danger: '#EF4444', // Alias for error
   info: '#3B82F6', // Blue
+  infoLight: '#DBEAFE', // Light Blue
   
   // Neutral Colors
   white: '#FFFFFF',

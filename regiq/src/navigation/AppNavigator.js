@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Import screens (will be created)
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
-import RegulationScreen from '../screens/regulations/RegulationScreen';
+import RegulationIntelligenceScreen from '../screens/regulations/RegulationIntelligenceScreen';
 import ModelAuditScreen from '../screens/ai-audit/ModelAuditScreen';
 import SimulationScreen from '../screens/simulation/SimulationScreen';
 import ReportsScreen from '../screens/reports/ReportsScreen';
@@ -78,7 +78,7 @@ function MainTabNavigator() {
       />
       <Tab.Screen 
         name="Regulations" 
-        component={RegulationScreen}
+        component={RegulationIntelligenceScreen}
         options={{
           title: 'Regulation Feed',
         }}
