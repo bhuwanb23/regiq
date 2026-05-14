@@ -7,7 +7,9 @@ module.exports = {
   // ── Core AI/ML Service Connection ────────────────────────────────────
   aiMlService: {
     baseUrl: process.env.AI_ML_SERVICE_BASE_URL || 'http://localhost:8000',
-    apiKey:  process.env.AI_ML_SERVICE_API_KEY  || 'regiq-internal-api-key',
+    // Default matches FastAPI middleware default (services/api/middleware/api_key_auth.py)
+    // so local dev works without setting env vars on either side.
+    apiKey:  process.env.AI_ML_SERVICE_API_KEY  || process.env.SERVICE_API_KEY || 'regiq_service_api_key_here_change_in_production',
     timeout:    parseInt(process.env.AI_ML_SERVICE_TIMEOUT)    || 60000,
     maxRetries: parseInt(process.env.AI_ML_SERVICE_MAX_RETRIES) || 3,
   },

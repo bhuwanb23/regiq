@@ -7,13 +7,13 @@ const { authenticate } = require('../middleware/auth.middleware');
 router.use(authenticate);
 
 // Job status tracking endpoints
-router.get('/jobs/:jobId', jobStatusController.getJobStatus);
+// IMPORTANT: specific routes (e.g. /jobs/history) must precede the
+// generic /:jobId catcher, otherwise Express captures them as IDs.
 router.get('/jobs', jobStatusController.getAllJobStatuses);
+router.get('/jobs/history', jobStatusController.getJobHistory);
+router.get('/jobs/:jobId', jobStatusController.getJobStatus);
 router.put('/jobs/:jobId/cancel', jobStatusController.cancelJob);
 router.put('/jobs/:jobId/progress', jobStatusController.updateProgress);
-
-// Job history management
-router.get('/jobs/history', jobStatusController.getJobHistory);
 
 // Performance metrics collection
 router.get('/metrics/performance', jobStatusController.getPerformanceMetrics);

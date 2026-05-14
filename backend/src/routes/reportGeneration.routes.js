@@ -26,14 +26,16 @@ router.delete('/templates/:id', reportTemplateController.deleteTemplate);
 router.get('/templates-active', reportTemplateController.getActiveTemplates);
 
 // Report Generation Routes
+// IMPORTANT: specific routes must be declared BEFORE generic `/:id` so that
+// paths like `/user/reports` and `/type/:reportType` are not captured by `/:id`.
 router.post('/generate', reportGenerationController.generateReport);
-router.get('/:id', reportGenerationController.getReport);
 router.get('/', reportGenerationController.listReports);
-router.put('/:id', reportGenerationController.updateReport);
-router.delete('/:id', reportGenerationController.deleteReport);
 router.get('/user/reports', reportGenerationController.getUserReports);
 router.get('/type/:reportType', reportGenerationController.getReportsByType);
 router.get('/:id/convert', reportGenerationController.convertReport);
+router.get('/:id', reportGenerationController.getReport);
+router.put('/:id', reportGenerationController.updateReport);
+router.delete('/:id', reportGenerationController.deleteReport);
 
 // Report Scheduling Routes
 router.post('/schedules', reportSchedulingController.createSchedule);
