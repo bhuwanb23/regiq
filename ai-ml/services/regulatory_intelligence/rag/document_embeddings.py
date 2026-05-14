@@ -159,32 +159,124 @@ class DocumentEmbeddingService:
         return True
     
     def get_document_by_id(self, document_id: str) -> Optional[Dict[str, Any]]:
-        """Retrieve a specific document by ID."""
+        """Retrieve a specific document by ID directly from the underlying store.
+
+        Supports ChromaDB collections (`collection.get(ids=...)`) and falls back
+        to a FAISS-side metadata scan when ChromaDB isn't available.
+        """
         try:
-            # This would require additional implementation in the vector database
-            # For now, return a placeholder
-            self.logger.warning("get_document_by_id not fully implemented")
+            collection = getattr(self.vector_db, "collection", None)
+            if collection is not None and hasattr(collection, "get"):
+                try:
+                    result = collection.get(
+                        ids=[document_id],
+                        include=["documents", "metadatas"],
+                    )
+                except TypeError:
+                    # Some Chroma versions reject `include` for ids-only get.
+                    result = collection.get(ids=[document_id])
+
+                if result and result.get("ids"):
+                    docs = (result.get("documents") or [None])
+                    metas = (result.get("metadatas") or [None])
+                    return {
+                        "document_id": document_id,
+                        "content": docs[0] if docs else None,
+                        "metadata": metas[0] if metas else None,
+                    }
+                return None
+
+            # FAISS fallback: scan the in-memory metadata list maintained by
+            # FAISSManager. Returns content-less hits if the index was loaded
+            # without text payloads.
+            faiss_mgr = getattr(self.vector_db, "faiss", None) or getattr(
+                self.vector_db, "faiss_manager", None
+            )
+            if faiss_mgr is not None:
+                for meta in getattr(faiss_mgr, "metadata", []) or []:
+                    if isinstance(meta, dict) and meta.get("document_id") == document_id:
+                        return {
+                            "document_id": document_id,
+                            "content": meta.get("content"),
+                            "metadata": meta,
+                        }
+
+            self.logger.warning(
+                f"get_document_by_id: no vector store available to look up {document_id}"
+            )
             return None
         except Exception as e:
             self.logger.error(f"Error retrieving document {document_id}: {e}")
             return None
-    
+
     def update_document(self, document_id: str, content: str, metadata: DocumentMetadata) -> bool:
-        """Update an existing document."""
+        """Update an existing document by deleting and re-adding it.
+
+        ChromaDB supports `upsert`/`update` natively; we prefer it when
+        available and otherwise fall back to delete + add to keep the
+        write path consistent across stores.
+        """
         try:
-            # For now, we'll remove and re-add the document
-            # This could be optimized in a production system
-            self.logger.info(f"Updating document: {document_id}")
+            collection = getattr(self.vector_db, "collection", None)
+            if collection is not None and hasattr(collection, "upsert"):
+                db_metadata = {
+                    "document_id": metadata.document_id,
+                    "title": metadata.title,
+                    "source": metadata.source,
+                    "document_type": metadata.document_type,
+                    "date": metadata.date,
+                    "content_length": metadata.content_length,
+                    "keywords": json.dumps(metadata.keywords),
+                    "regulation_type": metadata.regulation_type or "",
+                    "compliance_level": metadata.compliance_level or "",
+                    "risk_level": metadata.risk_level or "",
+                }
+                collection.upsert(
+                    documents=[content],
+                    metadatas=[db_metadata],
+                    ids=[document_id],
+                )
+                self.logger.info(f"Upserted document: {document_id}")
+                return True
+
+            self.delete_document(document_id)
             return self.process_document(document_id, content, metadata)
         except Exception as e:
             self.logger.error(f"Error updating document {document_id}: {e}")
             return False
-    
+
     def delete_document(self, document_id: str) -> bool:
         """Delete a document from the vector database."""
         try:
-            # This would require additional implementation in the vector database
-            self.logger.warning("delete_document not fully implemented")
+            collection = getattr(self.vector_db, "collection", None)
+            if collection is not None and hasattr(collection, "delete"):
+                collection.delete(ids=[document_id])
+                self.logger.info(f"Deleted document {document_id} from vector store")
+                return True
+
+            faiss_mgr = getattr(self.vector_db, "faiss", None) or getattr(
+                self.vector_db, "faiss_manager", None
+            )
+            if faiss_mgr is not None and hasattr(faiss_mgr, "metadata"):
+                before = len(faiss_mgr.metadata or [])
+                faiss_mgr.metadata = [
+                    m for m in (faiss_mgr.metadata or [])
+                    if not (isinstance(m, dict) and m.get("document_id") == document_id)
+                ]
+                removed = before - len(faiss_mgr.metadata)
+                if hasattr(faiss_mgr, "_save_index"):
+                    try:
+                        faiss_mgr._save_index()
+                    except Exception as inner:
+                        self.logger.warning(f"FAISS metadata save failed: {inner}")
+                self.logger.info(
+                    f"FAISS delete removed {removed} metadata entries for {document_id}"
+                )
+                return removed > 0
+
+            self.logger.warning(
+                f"delete_document: no vector store available to delete {document_id}"
+            )
             return False
         except Exception as e:
             self.logger.error(f"Error deleting document {document_id}: {e}")
