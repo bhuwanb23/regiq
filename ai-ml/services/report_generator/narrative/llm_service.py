@@ -28,10 +28,12 @@ import time
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 try:
-    import google.generativeai as genai
-    from google.generativeai.types import HarmCategory, HarmBlockThreshold
+    from google import genai
+    from google.genai import types as genai_types
     GENAI_AVAILABLE = True
 except ImportError:
+    genai = None
+    genai_types = None
     GENAI_AVAILABLE = False
 
 from config.env_config import get_env_config
@@ -98,13 +100,14 @@ class LLMNarrativeService:
         self.config = get_env_config()
         
         # Initialize Gemini if available
-        self.model = None
+        self.client = None
+        self.model_name = "gemini-2.5-flash"
         self.is_available = False
-        
+
         if GENAI_AVAILABLE:
             self._initialize_gemini()
         else:
-            self.logger.warning("Google GenerativeAI not available - using mock responses")
+            self.logger.warning("google-genai SDK not available - using mock responses")
         
         # Response cache for performance
         self._response_cache: Dict[str, NarrativeResponse] = {}
@@ -119,33 +122,25 @@ class LLMNarrativeService:
         }
     
     def _initialize_gemini(self) -> None:
-        """Initialize Gemini model."""
+        """Initialize Gemini client (google-genai SDK)."""
         try:
-            # Configure Gemini
-            api_key = self.config.get("GEMINI_API_KEY")
+            api_key = self.config.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
             if not api_key:
                 self.logger.error("GEMINI_API_KEY not found in configuration")
                 return
-            
-            genai.configure(api_key=api_key)
-            
-            # Initialize model
-            self.model = genai.GenerativeModel(
-                model_name="gemini-1.5-pro",
-                safety_settings={
-                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                }
-            )
-            
+
+            # google-genai picks up the API key from env automatically;
+            # also pass explicitly for resilience.
+            os.environ.setdefault("GEMINI_API_KEY", api_key)
+            self.client = genai.Client(api_key=api_key) if api_key else genai.Client()
+
             self.is_available = True
-            self.logger.info("Gemini 1.5 Pro initialized successfully")
-            
+            self.logger.info(f"Gemini ({self.model_name}) initialized successfully")
+
         except Exception as e:
             self.logger.error(f"Failed to initialize Gemini: {str(e)}")
             self.is_available = False
+            self.client = None
     
     def generate_narrative(
         self, 
@@ -173,7 +168,7 @@ class LLMNarrativeService:
                 return cached_response
             
             # Generate narrative
-            if self.is_available and self.model:
+            if self.is_available and self.client is not None:
                 narrative = self._generate_with_gemini(request)
             else:
                 narrative = self._generate_fallback(request)
@@ -190,7 +185,7 @@ class LLMNarrativeService:
                 processing_time=processing_time,
                 token_count=token_count,
                 metadata={
-                    "model": "gemini-1.5-pro" if self.is_available else "fallback",
+                    "model": self.model_name if self.is_available else "fallback",
                     "audience_type": request.audience_type,
                     "section_type": request.section_type,
                     "temperature": request.temperature
@@ -212,28 +207,55 @@ class LLMNarrativeService:
             return self._create_error_response(request, str(e))
     
     def _generate_with_gemini(self, request: NarrativeRequest) -> str:
-        """Generate narrative using Gemini."""
+        """Generate narrative using Gemini (google-genai SDK)."""
         try:
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                temperature=request.temperature,
-                max_output_tokens=request.max_tokens,
-                top_p=self.default_settings["top_p"],
-                top_k=self.default_settings["top_k"]
+            # Build generation config and safety settings using google-genai types.
+            config_kwargs = {
+                "temperature": request.temperature,
+                "max_output_tokens": request.max_tokens,
+                "top_p": self.default_settings["top_p"],
+                "top_k": self.default_settings["top_k"],
+            }
+
+            try:
+                safety_settings = [
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_HARASSMENT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_HATE_SPEECH",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                    genai_types.SafetySetting(
+                        category="HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold="BLOCK_MEDIUM_AND_ABOVE",
+                    ),
+                ]
+                config_kwargs["safety_settings"] = safety_settings
+            except Exception:
+                # If the SDK version lacks SafetySetting, fall back without it.
+                pass
+
+            generate_config = genai_types.GenerateContentConfig(**config_kwargs)
+
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=request.prompt,
+                config=generate_config,
             )
-            
-            # Generate response
-            response = self.model.generate_content(
-                request.prompt,
-                generation_config=generation_config
-            )
-            
-            if response.text:
-                return response.text.strip()
-            else:
-                self.logger.warning("Empty response from Gemini")
-                return self._generate_fallback(request)
-                
+
+            text = getattr(response, "text", None) or getattr(response, "output_text", None)
+            if text:
+                return text.strip()
+
+            self.logger.warning("Empty response from Gemini")
+            return self._generate_fallback(request)
+
         except Exception as e:
             self.logger.error(f"Gemini generation failed: {str(e)}")
             return self._generate_fallback(request)
@@ -366,7 +388,7 @@ class LLMNarrativeService:
             "cache_size": len(self._response_cache),
             "cache_enabled": self.cache_enabled,
             "model_available": self.is_available,
-            "model_type": "gemini-1.5-pro" if self.is_available else "fallback"
+            "model_type": self.model_name if self.is_available else "fallback"
         }
     
     def validate_service(self) -> Tuple[bool, List[str]]:
@@ -376,7 +398,7 @@ class LLMNarrativeService:
         try:
             # Check Gemini availability
             if not GENAI_AVAILABLE:
-                errors.append("Google GenerativeAI library not available")
+                errors.append("google-genai SDK not available")
             
             # Check API key
             if not self.config.get("GEMINI_API_KEY"):
