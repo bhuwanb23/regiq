@@ -95,7 +95,11 @@ async def generate_report(
     summary="List Report Templates",
     description="List available report templates."
 )
-async def list_templates(page: int = 1, page_size: int = 10) -> TemplateListResponse:
+async def list_templates(
+    page: int = 1,
+    page_size: int = 10,
+    current_user: dict = Depends(get_current_user),
+) -> TemplateListResponse:
     """List available report templates."""
     try:
         logger.info(f"Listing templates - page: {page}, page_size: {page_size}")
@@ -137,7 +141,10 @@ async def list_templates(page: int = 1, page_size: int = 10) -> TemplateListResp
     summary="Create Report Template",
     description="Create a new report template."
 )
-async def create_template(request: TemplateCreateRequest) -> TemplateCreateResponse:
+async def create_template(
+    request: TemplateCreateRequest,
+    current_user: dict = Depends(get_current_user),
+) -> TemplateCreateResponse:
     """Create a new report template."""
     try:
         logger.info(f"Creating template: {request.name}")
@@ -167,7 +174,11 @@ async def create_template(request: TemplateCreateRequest) -> TemplateCreateRespo
     summary="Export Report",
     description="Export a report in the specified format."
 )
-async def export_report(report_id: str, format: str = "pdf") -> ExportResponse:
+async def export_report(
+    report_id: str,
+    format: str = "pdf",
+    current_user: dict = Depends(get_current_user),
+) -> ExportResponse:
     """Export a report in the specified format."""
     try:
         logger.info(f"Exporting report {report_id} as {format}")
@@ -197,7 +208,10 @@ async def export_report(report_id: str, format: str = "pdf") -> ExportResponse:
     summary="Get Report Status",
     description="Get the current status of a report generation process."
 )
-async def get_report_status(report_id: str) -> ReportStatusResponse:
+async def get_report_status(
+    report_id: str,
+    current_user: dict = Depends(get_current_user),
+) -> ReportStatusResponse:
     """Get the status of a report generation process."""
     try:
         logger.info(f"Getting status for report: {report_id}")
@@ -225,7 +239,9 @@ async def get_report_status(report_id: str) -> ReportStatusResponse:
     summary="Get Compliance Glossary",
     description="Get a glossary of compliance terms and definitions."
 )
-async def get_glossary() -> Dict[str, Any]:
+async def get_glossary(
+    current_user: dict = Depends(get_current_user),
+) -> Dict[str, Any]:
     """Get compliance glossary."""
     try:
         logger.info("Retrieving compliance glossary")

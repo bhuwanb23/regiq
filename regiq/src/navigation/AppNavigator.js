@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
-// Import screens (will be created)
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import RegulationIntelligenceScreen from '../screens/regulations/RegulationIntelligenceScreen';
 import ModelAuditScreen from '../screens/ai-audit/ModelAuditScreen';
@@ -18,6 +18,7 @@ import WelcomeScreen from '../screens/onboarding/WelcomeScreen';
 import AuthScreen from '../screens/onboarding/AuthScreen';
 import ProfileSetupScreen from '../screens/onboarding/ProfileSetupScreen';
 
+import { getToken } from '../utils/storage';
 import { COLORS } from '../constants/theme';
 
 const Tab = createBottomTabNavigator();
@@ -110,9 +111,36 @@ function MainTabNavigator() {
 
 // Root Stack Navigator
 export default function AppNavigator() {
-  // In a real app, you'd check authentication state here
-  const isAuthenticated = false; // This will be managed by context/state
-  const hasCompletedOnboarding = false;
+  // Auth state is sourced from persisted token storage. Once a token is
+  // present we treat the user as authenticated and route them into the main
+  // app stack; otherwise we show the onboarding/auth flow.
+  const [authReady, setAuthReady] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        if (!cancelled) setIsAuthenticated(Boolean(token));
+      } catch (err) {
+        if (!cancelled) setIsAuthenticated(false);
+      } finally {
+        if (!cancelled) setAuthReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!authReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>

@@ -491,6 +491,32 @@ export const getNotificationById = async (id) => {
 };
 
 /**
+ * Mark a notification as read.
+ * @param {string} id - Notification ID
+ * @returns {Promise<Object>} Updated notification
+ */
+export const markNotificationAsRead = async (id) => {
+  try {
+    const response = await apiClient.put(`/notifications/${id}/read`);
+    return response;
+  } catch (error) {
+    console.error(`Error marking notification ${id} as read:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Snooze (update) a notification. Backend currently only supports admin-level
+ * full updates; for end-users we just mark it read on the server and let the
+ * client hide it locally until the next refresh.
+ * @param {string} id - Notification ID
+ * @returns {Promise<Object>} Updated notification
+ */
+export const snoozeNotification = async (id) => {
+  return markNotificationAsRead(id);
+};
+
+/**
  * Get user notification preferences
  * @returns {Promise<Object>} User notification preferences
  */
