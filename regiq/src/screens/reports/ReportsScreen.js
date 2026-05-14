@@ -22,6 +22,7 @@ import ReportTemplates from '../../components/reports/ReportTemplates';
 
 // Import hook for report data
 import useReportData from '../../hooks/useReportData';
+import { exportReportPdf, exportReportCsv } from '../../services/apiClient';
 
 const ReportsScreen = () => {
   const [activeTab, setActiveTab] = useState('generator');
@@ -95,21 +96,53 @@ const ReportsScreen = () => {
     console.log('Report card pressed:', report.title);
   };
 
+  /**
+   * Push the binary blob returned by the gateway through the device share
+   * sheet so the user can save / send / print it. We avoid `fs` here because
+   * Expo's bare workflow doesn't ship it; the share sheet is universally
+   * available and works in Expo Go as well.
+   */
+  const persistAndShare = async (blob, filename, mimeType) => {
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const dataUrl = reader.result;
+        if (!dataUrl) {
+          Alert.alert('Error', 'Empty export response from server');
+          return;
+        }
+        const supported = await Linking.canOpenURL(dataUrl);
+        if (supported) {
+          await Linking.openURL(dataUrl);
+        } else {
+          Alert.alert(
+            'Export ready',
+            `Generated ${filename}. Copy the data URL from logs to download.`,
+          );
+        }
+      };
+      reader.onerror = () => Alert.alert('Error', 'Failed to read export blob');
+      reader.readAsDataURL(blob);
+    } catch (err) {
+      Alert.alert('Error', err?.message || `Failed to save ${filename}`);
+    }
+  };
+
   const handleExportPDF = async (report) => {
     try {
-      // In a real implementation, this would download the PDF
-      Alert.alert('Export PDF', `Would export ${report.title} as PDF`);
+      const blob = await exportReportPdf(report.id);
+      await persistAndShare(blob, `${report.title || 'report'}.pdf`, 'application/pdf');
     } catch (err) {
-      Alert.alert('Error', 'Failed to export PDF');
+      Alert.alert('Error', err?.message || 'Failed to export PDF');
     }
   };
 
   const handleExportCSV = async (report) => {
     try {
-      // In a real implementation, this would download the CSV
-      Alert.alert('Export CSV', `Would export ${report.title} as CSV`);
+      const blob = await exportReportCsv(report.id);
+      await persistAndShare(blob, `${report.title || 'report'}.csv`, 'text/csv');
     } catch (err) {
-      Alert.alert('Error', 'Failed to export CSV');
+      Alert.alert('Error', err?.message || 'Failed to export CSV');
     }
   };
 

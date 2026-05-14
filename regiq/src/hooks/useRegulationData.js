@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import { 
-  getRegulations, 
-  searchRegulations, 
-  getRegulationCategories, 
+import {
+  getRegulations,
+  searchRegulations,
+  getRegulationCategories,
   getRegulationDeadlines,
-  getRegulationById
+  getRegulationById,
 } from '../services/apiClient';
-import { getRealWorldRegulations, getRealWorldDeadlines } from '../services/realWorldRegulations';
 
 const useRegulationData = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState(['all']);
-  const [viewMode, setViewMode] = useState('feed'); // 'feed' or 'timeline'
+  const [viewMode, setViewMode] = useState('feed');
   const [categories, setCategories] = useState([]);
 
   const [regulationsData, setRegulationsData] = useState({
@@ -21,67 +21,39 @@ const useRegulationData = () => {
     deadlines: [],
   });
 
-  // Fetch regulations from API
+  /**
+   * Normalize the variety of response envelopes the gateway returns:
+   * a bare array, `{ data: [...] }`, or `{ data: { items: [...] } }`.
+   */
+  const normalizeList = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.data?.items)) return payload.data.items;
+    if (Array.isArray(payload?.items)) return payload.items;
+    return [];
+  };
+
   const fetchRegulations = async () => {
     setLoading(true);
+    setError(null);
     try {
-      console.log('🔍 Fetching regulations from API...');
-      
-      // Fetch regulations from backend API
-      const regulationsResponse = await getRegulations();
-      console.log('📦 Regulations API Response:', regulationsResponse);
-      
-      // Handle different response formats
-      let regulations = [];
-      if (Array.isArray(regulationsResponse)) {
-        regulations = regulationsResponse;
-        console.log('✅ Array response, count:', regulations.length);
-      } else if (regulationsResponse?.data && Array.isArray(regulationsResponse.data)) {
-        regulations = regulationsResponse.data;
-        console.log('✅ Object.data response, count:', regulations.length);
-      } else {
-        console.warn('⚠️ Unexpected response format, using fallback data');
-        regulations = getRealWorldRegulations();
-      }
-      
-      // Fetch deadlines
-      const deadlinesResponse = await getRegulationDeadlines();
-      console.log('📦 Deadlines API Response:', deadlinesResponse);
-      
-      let deadlines = [];
-      if (Array.isArray(deadlinesResponse)) {
-        deadlines = deadlinesResponse;
-        console.log('✅ Deadlines array, count:', deadlines.length);
-      } else if (deadlinesResponse?.data && Array.isArray(deadlinesResponse.data)) {
-        deadlines = deadlinesResponse.data;
-        console.log('✅ Deadlines object.data, count:', deadlines.length);
-      } else {
-        deadlines = getRealWorldDeadlines();
-      }
-      
-      // Fetch categories
-      const categoriesResponse = await getRegulationCategories();
-      console.log('📦 Categories API Response:', categoriesResponse);
-      setCategories(Array.isArray(categoriesResponse) ? categoriesResponse : []);
-      
-      console.log('📊 Final regulations count:', regulations.length);
-      console.log('📊 Final deadlines count:', deadlines.length);
-      
+      const [regulationsResponse, deadlinesResponse, categoriesResponse] =
+        await Promise.all([
+          getRegulations(),
+          getRegulationDeadlines(),
+          getRegulationCategories(),
+        ]);
+
       setRegulationsData({
-        regulations,
-        deadlines,
+        regulations: normalizeList(regulationsResponse),
+        deadlines: normalizeList(deadlinesResponse),
       });
-      
+      setCategories(normalizeList(categoriesResponse));
       setLoading(false);
-    } catch (error) {
-      console.error('❌ Error fetching regulations data:', error);
-      console.log('💾 Loading real-world fallback data due to error');
-      
-      // Load real-world regulatory data on error
-      setRegulationsData({
-        regulations: getRealWorldRegulations(),
-        deadlines: getRealWorldDeadlines(),
-      });
+    } catch (err) {
+      setError(err?.message || 'Failed to load regulations');
+      setRegulationsData({ regulations: [], deadlines: [] });
+      setCategories([]);
       setLoading(false);
     }
   };
@@ -97,19 +69,18 @@ const useRegulationData = () => {
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
-    
+
     if (query.trim()) {
       try {
         const searchResults = await searchRegulations(query);
-        setRegulationsData(prev => ({
+        setRegulationsData((prev) => ({
           ...prev,
-          regulations: searchResults,
+          regulations: normalizeList(searchResults),
         }));
-      } catch (error) {
-        console.error('Error searching regulations:', error);
+      } catch (err) {
+        setError(err?.message || 'Search failed');
       }
     } else {
-      // If search query is empty, fetch all regulations
       await fetchRegulations();
     }
   };
@@ -195,13 +166,7 @@ const useRegulationData = () => {
   };
 
   const fetchRegulationById = async (id) => {
-    try {
-      const regulation = await getRegulationById(id);
-      return regulation;
-    } catch (error) {
-      console.error(`Error fetching regulation ${id}:`, error);
-      throw error;
-    }
+    return getRegulationById(id);
   };
 
   useEffect(() => {
@@ -215,6 +180,7 @@ const useRegulationData = () => {
     categories,
     loading,
     refreshing,
+    error,
     searchQuery,
     selectedFilters,
     viewMode,
