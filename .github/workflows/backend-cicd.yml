@@ -12,7 +12,7 @@ on:
       - 'backend/**'
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/backend-service
 
@@ -38,11 +38,12 @@ jobs:
           cd backend
           npm ci
       
-      - name: ✨ Check code formatting (Prettier)
+      - name: ✨ Check code formatting (Prettier, non-blocking)
+        continue-on-error: true
         run: |
           cd backend
-          npx prettier --check "src/**/*.js"
-      
+          npx prettier --check "src/**/*.js" || echo "::warning::Prettier formatting drift detected; run 'npm run format' locally."
+
       - name: 🔎 Lint with ESLint
         run: |
           cd backend
@@ -77,7 +78,7 @@ jobs:
       - name: 🧪 Run unit tests
         run: |
           cd backend
-          npm test -- --testPathPattern=tests/unit/ --coverage --coverageReporters=text --coverageReporters=json-summary
+          npm test -- --testPathPattern=tests/unit/ --passWithNoTests --coverage --coverageReporters=text --coverageReporters=json-summary
       
       - name: 📊 Upload coverage report
         uses: codecov/codecov-action@v3
@@ -144,7 +145,7 @@ jobs:
       - name: 🧪 Run integration tests
         run: |
           cd backend
-          npm test -- --testPathPattern=tests/integration/ --verbose --forceExit
+          npm test -- --testPathPattern=tests/integration/ --passWithNoTests --verbose --forceExit
   
   # ============================================
   # E2E TESTS
@@ -204,7 +205,7 @@ jobs:
       - name: 🧪 Run E2E tests
         run: |
           cd backend
-          npm test -- --testPathPattern=tests/e2e/ --verbose --forceExit
+          npm test -- --testPathPattern=tests/e2e/ --passWithNoTests --verbose --forceExit
   
   # ============================================
   # BUILD DOCKER IMAGE

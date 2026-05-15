@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+dist/
+build/
+migrations/
+tests/fixtures/
+.env
+.env.*
+package-lock.json
+*.log
