@@ -1,4 +1,4 @@
 // feat: implement spaCy NER for regulation entity extraction
-// Applied: 2026-07-13T10:17:52.611Z
+// Applied: 2026-07-13T10:17:53.878Z
 
 module.exports = { updated: true };
