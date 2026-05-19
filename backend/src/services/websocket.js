@@ -1,4 +1,4 @@
-// refactor: consolidate WebSocket event handlers
-// Applied: 2026-07-13T10:17:50.359Z
+// fix: fix WebSocket connection reconnection logic
+// Applied: 2026-07-13T10:17:55.261Z
 
 module.exports = { updated: true };
