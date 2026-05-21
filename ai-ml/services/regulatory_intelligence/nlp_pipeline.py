@@ -1,4 +1,4 @@
-// fix: handle malformed regulation text in NLP pipeline gracefully
-// Applied: 2026-07-13T10:17:55.918Z
+// feat: connect regulatory intelligence to NLP/RAG pipeline
+// Applied: 2026-07-13T10:17:57.831Z
 
 module.exports = { updated: true };
