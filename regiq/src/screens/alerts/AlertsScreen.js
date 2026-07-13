@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,75 +8,13 @@ import {
   StatusBar,
   Dimensions,
   TextInput,
-  ActivityIndicator,
-  RefreshControl,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import useAlertsData from '../../hooks/useAlertsData';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/theme';
 
 const { width: screenWidth } = Dimensions.get('window');
-
-// Map backend notification.type / category to the UI's filter buckets + visuals.
-const TYPE_MAP = {
-  regulation: { type: 'regulation', icon: 'scale', color: COLORS.primary },
-  regulatory: { type: 'regulation', icon: 'scale', color: COLORS.primary },
-  compliance: { type: 'regulation', icon: 'scale', color: COLORS.primary },
-  bias: { type: 'ai-bias', icon: 'hardware-chip', color: COLORS.warning },
-  ai_ethics: { type: 'ai-bias', icon: 'hardware-chip', color: COLORS.warning },
-  'ai-bias': { type: 'ai-bias', icon: 'hardware-chip', color: COLORS.warning },
-  risk: { type: 'risk', icon: 'trending-up', color: COLORS.info },
-  default: { type: 'general', icon: 'notifications', color: COLORS.textSecondary },
-};
-
-const severityFromPriority = (priority) => {
-  if (!priority) return 'low';
-  const p = String(priority).toLowerCase();
-  if (p === 'critical' || p === 'urgent' || p === 'high') return 'high';
-  if (p === 'medium') return 'medium';
-  return 'low';
-};
-
-const formatRelativeTime = (input) => {
-  if (!input) return '';
-  const d = typeof input === 'string' ? new Date(input) : input;
-  if (Number.isNaN(d.getTime())) return String(input);
-  const diff = Date.now() - d.getTime();
-  const sec = Math.floor(diff / 1000);
-  if (sec < 60) return `${sec}s ago`;
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} min ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
-  const day = Math.floor(hr / 24);
-  return `${day} day${day === 1 ? '' : 's'} ago`;
-};
-
-const normalizeAlert = (n) => {
-  const rawType = (n.type || n.category || 'default').toString().toLowerCase();
-  const meta = TYPE_MAP[rawType] || TYPE_MAP.default;
-  const severity = severityFromPriority(n.priority || n.severity);
-  return {
-    id: n.id,
-    type: meta.type,
-    severity,
-    title: n.title || n.subject || 'Notification',
-    description: n.description || n.message || n.body || '',
-    time: formatRelativeTime(n.createdAt || n.created_at || n.timestamp),
-    icon: meta.icon,
-    color: severity === 'high' ? COLORS.error : severity === 'medium' ? COLORS.warning : meta.color,
-    isRead: Boolean(n.isRead || n.status === 'read'),
-    details: {
-      explanation: n.details?.explanation || n.body || n.message || n.description || 'No additional details available.',
-      actions: Array.isArray(n.details?.actions)
-        ? n.details.actions
-        : Array.isArray(n.actions)
-          ? n.actions
-          : [],
-    },
-  };
-};
 
 const AlertsScreen = ({ navigation }) => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -84,27 +22,87 @@ const AlertsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  const {
-    alerts: rawAlerts,
-    loading,
-    refreshing,
-    error,
-    refreshAlerts,
-    markAsRead,
-    snooze,
-  } = useAlertsData();
+  const filters = [
+    { id: 'all', label: 'All', count: 24, icon: null },
+    { id: 'regulation', label: 'Regulation', count: 8, icon: 'scale' },
+    { id: 'ai-bias', label: 'AI Bias', count: 12, icon: 'hardware-chip' },
+    { id: 'risk', label: 'Risk Simulation', count: 4, icon: 'trending-up' },
+  ];
 
-  const alerts = useMemo(() => (rawAlerts || []).map(normalizeAlert), [rawAlerts]);
-
-  const filters = useMemo(() => {
-    const count = (t) => alerts.filter((a) => a.type === t).length;
-    return [
-      { id: 'all', label: 'All', count: alerts.length, icon: null },
-      { id: 'regulation', label: 'Regulation', count: count('regulation'), icon: 'scale' },
-      { id: 'ai-bias', label: 'AI Bias', count: count('ai-bias'), icon: 'hardware-chip' },
-      { id: 'risk', label: 'Risk Simulation', count: count('risk'), icon: 'trending-up' },
-    ];
-  }, [alerts]);
+  const alerts = [
+    {
+      id: 1,
+      type: 'regulation',
+      severity: 'high',
+      title: 'GDPR Compliance Violation Detected',
+      description: 'Personal data processing without explicit consent in customer onboarding flow.',
+      time: '2 min ago',
+      icon: 'scale',
+      color: COLORS.error,
+      details: {
+        explanation: 'The system detected that personal data is being collected and processed in the customer onboarding workflow without obtaining explicit consent as required by GDPR Article 6.',
+        actions: [
+          'Update consent forms in onboarding flow',
+          'Review data processing documentation',
+          'Contact legal team for compliance review'
+        ]
+      }
+    },
+    {
+      id: 2,
+      type: 'ai-bias',
+      severity: 'medium',
+      title: 'AI Model Bias Alert',
+      description: 'Credit scoring model showing potential gender bias in loan approvals.',
+      time: '15 min ago',
+      icon: 'hardware-chip',
+      color: COLORS.warning,
+      details: {
+        explanation: 'Statistical analysis reveals disparate impact in loan approval rates between gender groups, suggesting potential algorithmic bias.',
+        actions: [
+          'Review training data for bias',
+          'Implement fairness constraints',
+          'Conduct bias audit with external team'
+        ]
+      }
+    },
+    {
+      id: 3,
+      type: 'risk',
+      severity: 'low',
+      title: 'Risk Simulation Complete',
+      description: 'Monthly stress test simulation completed with acceptable risk levels.',
+      time: '1 hour ago',
+      icon: 'trending-up',
+      color: COLORS.success,
+      details: {
+        explanation: 'The monthly risk simulation has been completed successfully. All risk metrics are within acceptable thresholds.',
+        actions: [
+          'Review simulation results',
+          'Update risk management policies',
+          'Schedule next simulation'
+        ]
+      }
+    },
+    {
+      id: 4,
+      type: 'regulation',
+      severity: 'medium',
+      title: 'New EU AI Act Requirements',
+      description: 'Updated compliance requirements for high-risk AI systems effective next month.',
+      time: '3 hours ago',
+      icon: 'scale',
+      color: COLORS.warning,
+      details: {
+        explanation: 'The EU AI Act has introduced new requirements for high-risk AI systems that will become effective next month.',
+        actions: [
+          'Review current AI systems classification',
+          'Update compliance documentation',
+          'Schedule team training session'
+        ]
+      }
+    }
+  ];
 
   const handleBack = () => {
     if (navigation?.goBack) {
@@ -121,11 +119,11 @@ const AlertsScreen = ({ navigation }) => {
   };
 
   const handleSnoozeAlert = (alertId) => {
-    snooze(alertId);
+    console.log('Snooze alert:', alertId);
   };
 
   const handleMarkAsRead = (alertId) => {
-    markAsRead(alertId);
+    console.log('Mark as read:', alertId);
   };
 
   const handleSearchPress = () => {
@@ -268,39 +266,7 @@ const AlertsScreen = ({ navigation }) => {
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refreshAlerts}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
-          />
-        }
       >
-        {loading && filteredAlerts.length === 0 && (
-          <View style={{ paddingVertical: SPACING.xl, alignItems: 'center' }}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={{ marginTop: SPACING.sm, color: COLORS.textSecondary }}>Loading alerts...</Text>
-          </View>
-        )}
-
-        {!loading && error && (
-          <View style={{ paddingVertical: SPACING.xl, alignItems: 'center' }}>
-            <Ionicons name="alert-circle" size={32} color={COLORS.error} />
-            <Text style={{ marginTop: SPACING.sm, color: COLORS.error }}>{error}</Text>
-            <TouchableOpacity onPress={refreshAlerts} style={{ marginTop: SPACING.sm }}>
-              <Text style={{ color: COLORS.primary, fontWeight: '600' }}>Retry</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {!loading && !error && filteredAlerts.length === 0 && (
-          <View style={{ paddingVertical: SPACING.xl, alignItems: 'center' }}>
-            <Ionicons name="checkmark-done" size={32} color={COLORS.success} />
-            <Text style={{ marginTop: SPACING.sm, color: COLORS.textSecondary }}>No alerts to show</Text>
-          </View>
-        )}
-
         {filteredAlerts.map((alert) => (
           <TouchableOpacity 
             key={alert.id} 

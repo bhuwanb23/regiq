@@ -1,5 +1,5 @@
-const { SearchIndex, SearchAnalytics, SearchCache, RegulatoryDocument, sequelize, Sequelize } = require('../models');
-const { Op } = require('sequelize');
+const { SearchIndex, SearchAnalytics, SearchCache, RegulatoryDocument } = require('../models');
+const { Op, sequelize } = require('sequelize');
 
 class SearchService {
   /**
@@ -60,7 +60,7 @@ class SearchService {
         // Add query timeout (5 seconds)
         const ftsResults = await sequelize.query(ftsQuery, {
           replacements: [q, limit, offset],
-          type: Sequelize.QueryTypes.SELECT,
+          type: sequelize.QueryTypes.SELECT,
           timeout: 5000
         });
         
@@ -74,7 +74,7 @@ class SearchService {
         
         const countResult = await sequelize.query(countQuery, {
           replacements: [q],
-          type: Sequelize.QueryTypes.SELECT,
+          type: sequelize.QueryTypes.SELECT,
           timeout: 5000
         });
         
@@ -524,7 +524,7 @@ class SearchService {
       
       const suggestions = await sequelize.query(suggestionQuery, {
         replacements: [`${query}*`], // Prefix search for suggestions
-        type: Sequelize.QueryTypes.SELECT
+        type: sequelize.QueryTypes.SELECT
       });
 
       return suggestions.map(s => s.title);
@@ -565,61 +565,6 @@ class SearchService {
     } catch (error) {
       console.warn('Failed to index document:', error.message);
       throw error;
-    }
-  }
-
-  /**
-   * Get cache statistics for the search cache
-   * @returns {Object} Cache stats (totalEntries, activeEntries, expiredEntries, hitRate)
-   */
-  async getCacheStats() {
-    try {
-      const now = new Date();
-
-      const [totalEntries, activeEntries] = await Promise.all([
-        SearchCache.count(),
-        SearchCache.count({
-          where: {
-            expires_at: { [Op.gt]: now }
-          }
-        })
-      ]);
-
-      const expiredEntries = totalEntries - activeEntries;
-
-      // Aggregate access/result counts as a rough hit-rate signal
-      const aggregates = await SearchCache.findOne({
-        attributes: [
-          [Sequelize.fn('SUM', Sequelize.col('result_count')), 'totalResults'],
-          [Sequelize.fn('MIN', Sequelize.col('created_at')), 'oldestEntry'],
-          [Sequelize.fn('MAX', Sequelize.col('accessed_at')), 'latestAccess']
-        ],
-        raw: true
-      });
-
-      return {
-        totalEntries,
-        activeEntries,
-        expiredEntries,
-        totalResults: aggregates && aggregates.totalResults
-          ? parseInt(aggregates.totalResults, 10)
-          : 0,
-        oldestEntry: aggregates ? aggregates.oldestEntry : null,
-        latestAccess: aggregates ? aggregates.latestAccess : null,
-        generatedAt: now
-      };
-    } catch (error) {
-      console.warn('Failed to get cache stats:', error.message);
-      return {
-        totalEntries: 0,
-        activeEntries: 0,
-        expiredEntries: 0,
-        totalResults: 0,
-        oldestEntry: null,
-        latestAccess: null,
-        generatedAt: new Date(),
-        error: error.message
-      };
     }
   }
 

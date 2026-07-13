@@ -98,24 +98,24 @@ def check_package_installation() -> Dict[str, bool]:
     return results
 
 def check_google_api_setup() -> bool:
-    """Check if Google Gemini API credentials are configured."""
+    """Check if Google API credentials are configured."""
     try:
-        from google import genai  # noqa: F401
-        print("\n🔑 google-genai SDK is installed")
-
+        import google.generativeai as genai
+        print("\n🔑 Google Generative AI library is installed")
+        
+        # Check if API key is configured (without exposing it)
         import os
-        api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+        api_key = os.getenv('GOOGLE_API_KEY')
         if api_key:
-            print("✅ GEMINI_API_KEY / GOOGLE_API_KEY environment variable is set")
+            print("✅ GOOGLE_API_KEY environment variable is set")
             return True
         else:
-            print("⚠️  GEMINI_API_KEY (or GOOGLE_API_KEY) environment variable not found")
-            print("   Set it with: setx GEMINI_API_KEY your-api-key (Windows)")
-            print("   Or: export GEMINI_API_KEY='your-api-key' (POSIX)")
+            print("⚠️  GOOGLE_API_KEY environment variable not found")
+            print("   Set it with: export GOOGLE_API_KEY='your-api-key'")
             return False
     except ImportError:
-        print("❌ google-genai SDK not installed")
-        print("   Install with: pip install google-genai")
+        print("❌ Google Generative AI library not installed")
+        print("   Install with: pip install google-generativeai")
         return False
 
 def check_database_setup() -> bool:

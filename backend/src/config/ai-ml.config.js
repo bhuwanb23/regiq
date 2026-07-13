@@ -7,9 +7,7 @@ module.exports = {
   // ── Core AI/ML Service Connection ────────────────────────────────────
   aiMlService: {
     baseUrl: process.env.AI_ML_SERVICE_BASE_URL || 'http://localhost:8000',
-    // Default matches FastAPI middleware default (services/api/middleware/api_key_auth.py)
-    // so local dev works without setting env vars on either side.
-    apiKey:  process.env.AI_ML_SERVICE_API_KEY  || process.env.SERVICE_API_KEY || 'regiq_service_api_key_here_change_in_production',
+    apiKey:  process.env.AI_ML_SERVICE_API_KEY  || 'regiq-internal-api-key',
     timeout:    parseInt(process.env.AI_ML_SERVICE_TIMEOUT)    || 60000,
     maxRetries: parseInt(process.env.AI_ML_SERVICE_MAX_RETRIES) || 3,
   },
@@ -31,9 +29,10 @@ module.exports = {
 
     // Risk Simulator Service  →  ai-ml/services/risk_simulator/
     risk: {
-      setup:       process.env.RISK_MODEL_ENDPOINT    || '/api/v1/risk-simulator/setup',
-      run:         '/api/v1/risk-simulator/run',
-      stream:      '/api/v1/risk-simulator/stream',
+      simulate:    process.env.RISK_MODEL_ENDPOINT    || '/api/v1/risk-simulator/simulate',
+      monteCarlo:  '/api/v1/risk-simulator/monte-carlo',
+      bayesian:    '/api/v1/risk-simulator/bayesian',
+      stressTest:  '/api/v1/risk-simulator/stress-test',
       scenarios:   '/api/v1/risk-simulator/scenarios',
       frameworks:  '/api/v1/risk-simulator/frameworks',
     },
@@ -67,7 +66,7 @@ module.exports = {
     riskAssessment: {
       name:     process.env.RISK_MODEL_NAME    || 'financial-risk-assessor',
       version:  process.env.RISK_MODEL_VERSION || 'v1',
-      endpoint: process.env.RISK_MODEL_ENDPOINT || '/api/v1/risk-simulator/setup',
+      endpoint: process.env.RISK_MODEL_ENDPOINT || '/api/v1/risk-simulator/simulate',
     },
     biasAnalysis: {
       name:     process.env.BIAS_MODEL_NAME    || 'bias-fairness-analyzer',
@@ -77,17 +76,7 @@ module.exports = {
     reportGenerator: {
       name:     process.env.REPORT_MODEL_NAME    || 'compliance-report-generator',
       version:  process.env.REPORT_MODEL_VERSION || 'v1',
-      endpoint: process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/reports/generate',
-    },
-    sentimentAnalysis: {
-      name:     process.env.SENTIMENT_MODEL_NAME    || 'regulatory-sentiment-analyzer',
-      version:  process.env.SENTIMENT_MODEL_VERSION || 'v1',
-      endpoint: process.env.SENTIMENT_MODEL_ENDPOINT || '/api/v1/regulatory-intelligence/sentiment',
-    },
-    anomalyDetection: {
-      name:     process.env.ANOMALY_MODEL_NAME    || 'risk-anomaly-detector',
-      version:  process.env.ANOMALY_MODEL_VERSION || 'v1',
-      endpoint: process.env.ANOMALY_MODEL_ENDPOINT || '/api/v1/risk-simulator/anomalies',
+      endpoint: process.env.REPORT_GENERATE_ENDPOINT || '/api/v1/report-generator/generate',
     },
   },
 

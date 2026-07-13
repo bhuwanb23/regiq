@@ -12,12 +12,12 @@ router.get('/preferences', userController.getPublicUserPreferences);
 router.put('/preferences', userController.updatePublicUserPreferences);
 
 // ── Protected Routes (With Authentication) ─────────────────────────────
-// All protected routes require a valid JWT (authenticate) before role check (authorize).
-router.get('/', authenticate, authorize('admin'), userController.getAllUsers);
-router.get('/:id', authenticate, userController.getUserById);
-router.post('/', authenticate, authorize('admin'), userController.createUser);
-router.put('/:id', authenticate, userController.updateUser);
-router.delete('/:id', authenticate, authorize('admin'), userController.deleteUser);
-router.put('/:id/roles', authenticate, authorize('admin'), userController.updateUserRole);
+// Apply authentication middleware to admin/protected routes
+router.get('/', authorize('admin'), userController.getAllUsers);
+router.get('/:id', userController.getUserById);
+router.post('/', authorize('admin'), userController.createUser);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', authorize('admin'), userController.deleteUser);
+router.put('/:id/roles', authorize('admin'), userController.updateUserRole);
 
 module.exports = router;

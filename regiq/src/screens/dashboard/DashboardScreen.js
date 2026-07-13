@@ -40,34 +40,32 @@ const DashboardScreen = ({ navigation }) => {
     complianceMetrics,
   } = dashboardData;
 
-  const safeNavigate = (route, params) => {
-    if (navigation && typeof navigation.navigate === 'function') {
-      navigation.navigate(route, params);
-    }
-  };
-
   const handleActionPress = (action) => {
-    if (action && action.route) {
-      safeNavigate(action.route);
+    console.log('Action pressed:', action.id);
+    if (action.route) {
+      navigation.navigate(action.route);
     }
   };
 
-  const handleActivityPress = (_activity) => {
-    // No detail screen yet; placeholder until activity drill-down is implemented.
+  const handleActivityPress = (activity) => {
+    console.log('Activity pressed:', activity.id);
+    // Navigate to activity details or handle action
   };
 
   const handleAlertPress = (alert) => {
+    console.log('Alert pressed:', alert.id);
     markAlertAsRead(alert.id);
-    safeNavigate('Alerts', { alertId: alert.id });
+    navigation.navigate('Alerts', { alertId: alert.id });
   };
 
   const handleGenerateReport = () => {
-    safeNavigate('Reports');
+    console.log('Generate report pressed');
+    navigation.navigate('Reports');
   };
 
   const handleViewComplianceDetails = () => {
-    // There is no standalone "Compliance" screen; surface the data via Reports.
-    safeNavigate('Reports');
+    console.log('View compliance details pressed');
+    navigation.navigate('Compliance');
   };
 
   const getAlertIcon = (type) => {
@@ -154,7 +152,7 @@ const DashboardScreen = ({ navigation }) => {
         {/* Recent Activity */}
         <RecentActivity
           activities={recentActivity}
-          onViewAll={() => safeNavigate('Alerts')}
+          onViewAll={() => navigation.navigate('Activity')}
           onActivityPress={handleActivityPress}
         />
 
@@ -162,7 +160,7 @@ const DashboardScreen = ({ navigation }) => {
         <View style={styles.alertsSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Priority Alerts</Text>
-            <TouchableOpacity onPress={() => safeNavigate('Alerts')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
           </View>

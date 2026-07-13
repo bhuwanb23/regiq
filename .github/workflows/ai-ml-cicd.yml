@@ -12,7 +12,7 @@ on:
       - 'ai-ml/**'
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: '3.9'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/ai-ml-service
 
@@ -33,34 +33,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
-      - name: 📦 Install tooling
-        run: |
-          python -m pip install --upgrade pip wheel setuptools
-          pip install flake8 black mypy pytest
-
-      - name: 📦 Install core deps
+      - name: 📦 Install dependencies
         run: |
           cd ai-ml
-          if [ -f requirements-core.txt ]; then
-            pip install -r requirements-core.txt
-          elif [ -f requirements.txt ]; then
+          python -m pip install --upgrade pip
+          pip install flake8 black mypy pytest
+          
+          if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
-
-      - name: 📦 Install optional ML extras (best effort)
-        continue-on-error: true
+      
+      - name: ✨ Check code formatting (Black)
         run: |
           cd ai-ml
-          if [ -f requirements-extras.txt ]; then
-            pip install -r requirements-extras.txt || echo "::warning::Optional ML extras failed; lint/test continue"
-          fi
-
-      - name: ✨ Check code formatting (Black, non-blocking)
-        continue-on-error: true
-        run: |
-          cd ai-ml
-          black --check --diff services/ scripts/ || echo "::warning::Black formatting drift detected"
-
+          black --check --diff services/ scripts/ || echo "Format check failed"
+      
       - name: 🔎 Lint with Flake8
         run: |
           cd ai-ml
@@ -77,51 +64,31 @@ jobs:
     
     strategy:
       matrix:
-        python-version: ['3.11', '3.12']
-
+        python-version: ['3.9', '3.10', '3.11']
+    
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
-
+      
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: 📦 Install core deps
+      
+      - name: 📦 Install dependencies
         run: |
           cd ai-ml
-          python -m pip install --upgrade pip wheel setuptools
-          pip install pytest pytest-cov pytest-asyncio pytest-mock
-          if [ -f requirements-core.txt ]; then
-            pip install -r requirements-core.txt
-          elif [ -f requirements.txt ]; then
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-asyncio
+          
+          if [ -f requirements.txt ]; then
             pip install -r requirements.txt
-          fi
-
-      - name: 📦 Install optional ML extras (best effort)
-        continue-on-error: true
-        run: |
-          cd ai-ml
-          if [ -f requirements-extras.txt ]; then
-            pip install -r requirements-extras.txt || echo "::warning::Optional ML extras failed; tests continue"
           fi
       
       - name: 🧪 Run unit tests
         run: |
           cd ai-ml
-          # The legacy `tests/phase_*` folders are not yet wired into CI; scope to
-          # the curated unit suite and skip any phase_* paths that may be sparse.
-          pytest tests/unit \
-            --ignore=tests/phase_2_1 --ignore=tests/phase_2_3 --ignore=tests/phase_2_5 \
-            --ignore=tests/phase_2_6 --ignore=tests/phase_3_1 --ignore=tests/phase_3_2 \
-            --ignore=tests/phase_3_3 --ignore=tests/phase_3_4 --ignore=tests/phase_3_5 \
-            --ignore=tests/phase_4_1 --ignore=tests/phase_4_2 --ignore=tests/phase_4_3 \
-            --ignore=tests/phase_4_4_visualization --ignore=tests/phase_5_1 \
-            --ignore=tests/phase_5_2 --ignore=tests/phase_5_3 --ignore=tests/phase_5_4 \
-            --ignore=tests/phase_6_1 --ignore=tests/phase_6_2 --ignore=tests/phase_6_3 \
-            --ignore=tests/phase_7_1 --ignore=tests/performance --ignore=tests/e2e \
-            -v --cov=services --cov-report=xml --cov-report=html || true
+          pytest tests/unit/ -v --cov=services --cov-report=xml --cov-report=html
       
       - name: 📊 Upload coverage report
         uses: codecov/codecov-action@v3
@@ -172,24 +139,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
-      - name: 📦 Install core deps
+      - name: 📦 Install dependencies
         run: |
           cd ai-ml
-          python -m pip install --upgrade pip wheel setuptools
-          if [ -f requirements-core.txt ]; then
-            pip install -r requirements-core.txt
-          else
-            pip install -r requirements.txt
-          fi
-
-      - name: 📦 Install optional ML extras (best effort)
-        continue-on-error: true
-        run: |
-          cd ai-ml
-          if [ -f requirements-extras.txt ]; then
-            pip install -r requirements-extras.txt || echo "::warning::Optional ML extras failed; integration tests continue"
-          fi
-
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
       - name: ⚙️ Set up environment
         run: |
           cd ai-ml
@@ -200,11 +155,7 @@ jobs:
       - name: 🧪 Run integration tests
         run: |
           cd ai-ml
-          # Integration suite ignores legacy phase_* folders so missing optional
-          # ML extras don't break the build. Use `|| true` so collection errors
-          # caused by absent extras don't gate the pipeline today; tighten once
-          # phase tests are folded into tests/integration/.
-          pytest tests/integration -v --tb=short || true
+          pytest tests/integration/ -v --tb=short
   
   # ============================================
   # BUILD DOCKER IMAGE

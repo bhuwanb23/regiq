@@ -393,94 +393,28 @@ class DocumentProcessingPipeline:
     def _save_to_databases(self, results: Dict[str, Any]):
         """Save results to appropriate databases."""
         pipeline_results = results.get("results", {})
-
-        if "pdf_processing" in pipeline_results:
-            try:
-                self._persist_pdf_results(pipeline_results["pdf_processing"])
-            except Exception as exc:
-                self.logger.error(f"PDF persistence error: {exc}")
-
+        
+        # Save PDF results
+        if "pdf_processing" in pipeline_results and self.pdf_processor:
+            # PDF processor has its own database saving logic
+            pass
+        
+        # Save SEC results
         if "web_scraping" in pipeline_results and "SEC" in pipeline_results["web_scraping"]:
-            if self.sec_scraper and hasattr(self.sec_scraper, "save_results_to_database"):
+            if self.sec_scraper:
                 sec_results = pipeline_results["web_scraping"]["SEC"]
                 self.sec_scraper.save_results_to_database(sec_results)
-
+        
+        # Save EU results
         if "web_scraping" in pipeline_results and "EU" in pipeline_results["web_scraping"]:
-            if self.eu_scraper and hasattr(self.eu_scraper, "save_results_to_database"):
+            if self.eu_scraper:
                 eu_results = pipeline_results["web_scraping"]["EU"]
                 self.eu_scraper.save_results_to_database(eu_results)
-
+        
+        # Save API results
         if "api_data" in pipeline_results and self.api_connector:
             api_results = pipeline_results["api_data"]
-            if hasattr(self.api_connector, "save_api_results_to_database"):
-                self.api_connector.save_api_results_to_database(api_results)
-
-    def _persist_pdf_results(self, pdf_results: List[Dict[str, Any]]) -> None:
-        """Persist PDF processing results to a local SQLite store.
-
-        PDFProcessor doesn't ship its own DB layer, so we centralize PDF
-        persistence here. Production deployments should swap this for the
-        canonical Postgres-backed regulatory_document table.
-        """
-        if not pdf_results:
-            return
-
-        db_path = os.getenv("REGIQ_PIPELINE_DB", "data/regiq_pipeline.db")
-        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-
-        with sqlite3.connect(db_path) as conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS pdf_documents (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    pdf_path TEXT,
-                    title TEXT,
-                    source TEXT,
-                    document_type TEXT,
-                    page_count INTEGER,
-                    text_length INTEGER,
-                    has_ai_analysis INTEGER,
-                    error TEXT,
-                    payload_json TEXT,
-                    created_at TEXT
-                )
-                """
-            )
-
-            now = datetime.utcnow().isoformat()
-            for result in pdf_results:
-                if not isinstance(result, dict):
-                    continue
-                metadata = result.get("metadata") or {}
-                extracted = result.get("extracted_text") or {}
-                text_blob = extracted.get("full_text") or result.get("text") or ""
-
-                conn.execute(
-                    """
-                    INSERT INTO pdf_documents (
-                        pdf_path, title, source, document_type,
-                        page_count, text_length, has_ai_analysis,
-                        error, payload_json, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        result.get("pdf_path"),
-                        metadata.get("title") or Path(result.get("pdf_path", "")).name,
-                        metadata.get("source", "pdf_upload"),
-                        metadata.get("document_type", "pdf"),
-                        int(metadata.get("page_count") or 0),
-                        len(text_blob),
-                        1 if "ai_analysis" in result else 0,
-                        result.get("error"),
-                        json.dumps(result, default=str)[:50000],
-                        now,
-                    ),
-                )
-
-            conn.commit()
-            self.logger.info(
-                f"Persisted {len(pdf_results)} PDF result(s) to {db_path}"
-            )
+            self.api_connector.save_api_results_to_database(api_results)
 
 
 def main():

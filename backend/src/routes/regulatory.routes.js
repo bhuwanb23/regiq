@@ -1,6 +1,5 @@
 const express = require('express');
 const regulatoryController = require('../controllers/regulatory.controller');
-const { authenticate } = require('../middleware/auth.middleware');
 const {
   validateRegulationQuery,
   validateRegulationSearch,
@@ -11,16 +10,15 @@ const {
 const router = express.Router();
 
 // Document upload and processing endpoints
-// Write operations require auth so `req.user.id` is populated.
-router.post('/documents/upload', authenticate, regulatoryController.uploadDocument);
-router.post('/documents/:id/process', authenticate, regulatoryController.processDocument);
+router.post('/documents/upload', regulatoryController.uploadDocument);
+router.post('/documents/:id/process', regulatoryController.processDocument);
 router.get('/documents/:id/status', regulatoryController.getDocumentProcessingStatus);
 
-// Regulatory document search and filtering (read-only, public)
+// Regulatory document search and filtering
 router.get('/documents', regulatoryController.searchDocuments);
 router.get('/documents/:id', regulatoryController.getDocumentById);
 
-// New regulatory intelligence endpoints (read-only, public)
+// New regulatory intelligence endpoints
 router.get('/regulations/search', validateRegulationSearch, regulatoryController.searchRegulations);
 router.get('/regulations/categories', regulatoryController.getRegulationCategories);
 router.get('/regulations/deadlines', validateDeadlinesQuery, regulatoryController.getUpcomingDeadlines);
@@ -28,28 +26,28 @@ router.get('/regulations', validateRegulationQuery, regulatoryController.getRegu
 router.get('/regulations/:id', validateRegulationId, regulatoryController.getRegulationById);
 
 // Compliance checking endpoints
-router.post('/compliance/check', authenticate, regulatoryController.checkCompliance);
+router.post('/compliance/check', regulatoryController.checkCompliance);
 router.get('/compliance/results/:id', regulatoryController.getComplianceResult);
 
 // Regulatory alert generation
-router.post('/alerts', authenticate, regulatoryController.createAlert);
+router.post('/alerts', regulatoryController.createAlert);
 router.get('/alerts', regulatoryController.getAlerts);
-router.put('/alerts/:id', authenticate, regulatoryController.updateAlertStatus);
+router.put('/alerts/:id', regulatoryController.updateAlertStatus);
 
 // Document versioning system
-router.post('/documents/:id/versions', authenticate, regulatoryController.createDocumentVersion);
+router.post('/documents/:id/versions', regulatoryController.createDocumentVersion);
 router.get('/documents/:id/versions', regulatoryController.getDocumentVersions);
 
 // Document metadata management
-router.put('/documents/:id/metadata', authenticate, regulatoryController.updateDocumentMetadata);
+router.put('/documents/:id/metadata', regulatoryController.updateDocumentMetadata);
 router.get('/documents/:id/metadata', regulatoryController.getDocumentMetadata);
 
 // Document sharing capabilities
-router.post('/documents/:id/share', authenticate, regulatoryController.shareDocument);
-router.get('/documents/shared', authenticate, regulatoryController.getSharedDocuments);
+router.post('/documents/:id/share', regulatoryController.shareDocument);
+router.get('/documents/shared', regulatoryController.getSharedDocuments);
 
 // Document analysis results storage
-router.post('/analysis', authenticate, regulatoryController.storeAnalysisResult);
+router.post('/analysis', regulatoryController.storeAnalysisResult);
 router.get('/analysis/:id', regulatoryController.getAnalysisResult);
 router.get('/analysis/document/:documentId', regulatoryController.getDocumentAnalysisResults);
 

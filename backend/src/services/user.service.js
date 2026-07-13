@@ -1,5 +1,4 @@
 const { User, AuditLog } = require('../models');
-const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 class UserService {
@@ -235,7 +234,7 @@ class UserService {
         where: { 
           userId: id,
           action: {
-            [Op.in]: ['LOGIN', 'LOGOUT', 'FAILED_LOGIN']
+            [sequelize.Op.in]: ['LOGIN', 'LOGOUT', 'FAILED_LOGIN']
           }
         },
         order: [['createdAt', 'DESC']],

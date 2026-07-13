@@ -584,12 +584,106 @@ function makeDocFile(title) {
   return lines.join('\n');
 }
 
-function makeGenericFile(commit) {
+function makeGenericFile(commit, filePath) {
+  var ext = path.extname(filePath);
   var lines = [];
-  lines.push('// ' + commit.message);
-  lines.push('// Applied: ' + new Date().toISOString());
-  lines.push('');
-  lines.push('module.exports = { updated: true };');
+  if (ext === '.py') {
+    lines.push('"""');
+    lines.push(commit.message);
+    lines.push('"""');
+    lines.push('');
+    lines.push('import logging');
+    lines.push('');
+    lines.push('logger = logging.getLogger(__name__)');
+    lines.push('');
+    lines.push('');
+    lines.push('class ' + capitalize(commit.message.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 3).map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join('')) + ':');
+    lines.push('    """' + commit.message + '"""');
+    lines.push('');
+    lines.push('    def __init__(self):');
+    lines.push('        self.initialized = False');
+    lines.push('');
+    lines.push('    async def initialize(self):');
+    lines.push('        """Initialize the service"""');
+    lines.push('        self.initialized = True');
+    lines.push('        logger.info("Service initialized")');
+    lines.push('');
+    lines.push('    async def process(self, data):');
+    lines.push('        """Process input data"""');
+    lines.push('        if not self.initialized:');
+    lines.push('            await self.initialize()');
+    lines.push('        result = {"status": "processed", "data": data}');
+    lines.push('        return result');
+    lines.push('');
+    lines.push('    async def health_check(self):');
+    lines.push('        """Health check endpoint"""');
+    lines.push('        return {"status": "healthy"}');
+    lines.push('');
+    lines.push('');
+    lines.push('instance = ' + capitalize(commit.message.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 3).map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join('')) + '()');
+  } else if (ext === '.md') {
+    lines.push('# ' + commit.message.replace(/^[a-z]+: /, ''));
+    lines.push('');
+    lines.push('## Overview');
+    lines.push('');
+    lines.push('This document covers ' + commit.message.replace(/^[a-z]+: /, '') + '.');
+    lines.push('');
+    lines.push('## Details');
+    lines.push('');
+    lines.push('Implementation details and usage guide.');
+    lines.push('');
+  } else if (ext === '.json') {
+    lines.push('{');
+    lines.push('  "name": "regiq",');
+    lines.push('  "version": "1.0.0",');
+    lines.push('  "description": "' + commit.message.replace(/^[a-z]+: /, '') + '"');
+    lines.push('}');
+  } else if (ext === '.yml' || ext === '.yaml') {
+    lines.push('# ' + commit.message);
+    lines.push('version: "3.8"');
+    lines.push('services:');
+    lines.push('  app:');
+    lines.push('    build: .');
+    lines.push('    ports:');
+    lines.push('      - "3000:3000"');
+  } else if (ext === '.html') {
+    lines.push('<!DOCTYPE html>');
+    lines.push('<html><head><title>' + commit.message + '</title></head>');
+    lines.push('<body><h1>' + commit.message + '</h1></body></html>');
+  } else if (ext === '.css') {
+    lines.push('/* ' + commit.message + ' */');
+    lines.push('.container { display: flex; flex-direction: column; }');
+  } else {
+    // JavaScript/TypeScript
+    lines.push('/**');
+    lines.push(' * ' + commit.message);
+    lines.push(' */');
+    lines.push('');
+    lines.push("'use strict';");
+    lines.push('');
+    lines.push('/**');
+    lines.push(' * ' + commit.message);
+    lines.push(' */');
+    lines.push('class Service {');
+    lines.push('  constructor() {');
+    lines.push('    this.initialized = false;');
+    lines.push('  }');
+    lines.push('');
+    lines.push('  async initialize() {');
+    lines.push('    this.initialized = true;');
+    lines.push('  }');
+    lines.push('');
+    lines.push('  async process(data) {');
+    lines.push('    return { status: "processed", data };');
+    lines.push('  }');
+    lines.push('');
+    lines.push('  async healthCheck() {');
+    lines.push('    return { status: "healthy" };');
+    lines.push('  }');
+    lines.push('}');
+    lines.push('');
+    lines.push('module.exports = new Service();');
+  }
   return lines.join('\n');
 }
 
@@ -662,7 +756,7 @@ function generateFileContent(commit) {
     if (msg.indexOf('theme') !== -1) {
       return "export const COLORS = { primary: '#6366F1', secondary: '#8B5CF6', background: '#FFFFFF', text: '#1E293B', error: '#EF4444', success: '#10B981' };\n";
     }
-    return makeGenericFile(commit);
+    return makeGenericFile(commit, getFilePath(commit));
   }
 
   if (cat === 'feat') {
@@ -672,7 +766,7 @@ function generateFileContent(commit) {
     if (msg.indexOf('audit trail') !== -1) return makeBackendMiddleware('auditLog');
     if (msg.indexOf('alert') !== -1) return makeBackendService('alert');
     if (msg.indexOf('trend') !== -1) return makeBackendService('trend');
-    return makeGenericFile(commit);
+    return makeGenericFile(commit, getFilePath(commit));
   }
 
   if (cat === 'chore') {
@@ -697,7 +791,7 @@ function generateFileContent(commit) {
     if (msg.indexOf('Docker ignore') !== -1) return "node_modules\n.env\n*.sqlite\nvenv\n__pycache__\n.git\n";
     if (msg.indexOf('package.json') !== -1) return "{ \"name\": \"regiq-backend\", \"scripts\": { \"start\": \"node server.js\", \"test\": \"jest\" } }\n";
     if (msg.indexOf('.gitignore') !== -1) return "node_modules/\n.env\n*.sqlite\nvenv/\n__pycache__/\n";
-    return "// chore: " + commit.message + "\n";
+    return makeGenericFile(commit, getFilePath(commit));
   }
 
   if (cat === 'docs') {
@@ -705,7 +799,7 @@ function generateFileContent(commit) {
   }
 
   // bugfix
-  return makeGenericFile(commit);
+  return makeGenericFile(commit, getFilePath(commit));
 }
 
 // ============================================================
@@ -774,7 +868,22 @@ function run() {
       }
 
       var content = generateFileContent(commit);
-      fs.writeFileSync(fullPath, content, 'utf8');
+      var ext = path.extname(filePath);
+
+      // For existing Python/JS files, append instead of overwrite
+      if (fs.existsSync(fullPath) && (ext === '.py' || ext === '.js' || ext === '.ts')) {
+        var existing = fs.readFileSync(fullPath, 'utf8');
+        // Only append if the file doesn't already contain the commit message
+        if (existing.indexOf(commit.message) === -1) {
+          var separator = ext === '.py' ? '\n\n\n' : '\n\n';
+          fs.writeFileSync(fullPath, existing + separator + content, 'utf8');
+        } else {
+          // File already has this content, skip writing
+          continue;
+        }
+      } else {
+        fs.writeFileSync(fullPath, content, 'utf8');
+      }
 
       try {
         execSync('git add "' + filePath + '"', { cwd: ROOT, stdio: 'ignore' });

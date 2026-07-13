@@ -13,23 +13,6 @@ import ReportsScreen from './src/screens/reports/ReportsScreen';
 import AlertsScreen from './src/screens/alerts/AlertsScreen';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
 
-// Map known route names from screens to internal tab/state targets.
-// Any route not in this list falls back to a Dashboard navigation no-op so
-// stray `navigation.navigate('Foo')` calls do not crash the app.
-const TAB_ROUTES = new Set([
-  'Dashboard',
-  'Regulations',
-  'AI Audit',
-  'Simulation',
-  'Reports',
-]);
-
-const ROUTE_ALIASES = {
-  Compliance: 'Reports',
-  Activity: 'Dashboard',
-  AIAudit: 'AI Audit',
-};
-
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [activeTab, setActiveTab] = useState('Dashboard');
@@ -61,46 +44,20 @@ export default function App() {
     setShowAlerts(false);
   };
 
-  // Synthetic navigation object passed to every active screen.
-  // Bridges react-navigation-style `navigation.navigate(...)` calls into the
-  // tab/modal state we manage manually in App.js.
-  const navigation = {
-    navigate: (routeName, params) => {
-      if (routeName === 'Alerts') {
-        setShowAlerts(true);
-        return;
-      }
-      if (routeName === 'Profile' || routeName === 'Settings') {
-        setShowProfile(true);
-        return;
-      }
-      const target = ROUTE_ALIASES[routeName] || routeName;
-      if (TAB_ROUTES.has(target)) {
-        setActiveTab(target);
-      } else if (__DEV__) {
-        console.warn(`navigation.navigate: unknown route "${routeName}" - ignored`);
-      }
-    },
-    goBack: () => {
-      if (showAlerts) setShowAlerts(false);
-      else if (showProfile) setShowProfile(false);
-    },
-  };
-
   const renderActiveScreen = () => {
     switch (activeTab) {
       case 'Dashboard':
-        return <DashboardScreen navigation={navigation} />;
+        return <DashboardScreen />;
       case 'Regulations':
-        return <RegulationIntelligenceScreen navigation={navigation} />;
+        return <RegulationIntelligenceScreen />;
       case 'AI Audit':
-        return <AIAuditScreen navigation={navigation} />;
+        return <AIAuditScreen />;
       case 'Simulation':
-        return <AIRiskSimulationScreen navigation={navigation} />;
+        return <AIRiskSimulationScreen />;
       case 'Reports':
-        return <ReportsScreen navigation={navigation} />;
+        return <ReportsScreen />;
       default:
-        return <DashboardScreen navigation={navigation} />;
+        return <DashboardScreen />;
     }
   };
 

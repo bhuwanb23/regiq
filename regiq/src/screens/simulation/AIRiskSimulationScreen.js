@@ -89,7 +89,7 @@ const AIRiskSimulationScreen = ({ navigation = null }) => {
 
   const handleViewInAudit = () => {
     if (navigation) {
-      navigation.navigate('AI Audit');
+      navigation.navigate('AIAudit');
     } else {
       console.log('View in AI Audit pressed');
     }
